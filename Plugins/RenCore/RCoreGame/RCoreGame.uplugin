@@ -1,0 +1,38 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "RCoreGame",
+	"Description": "",
+	"Category": "Ren Core",
+	"CreatedBy": "polygonvariable",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": false,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "RCoreGame",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "RCoreDelegate",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreLibrary",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreSettings",
+			"Enabled": true
+		}
+	]
+}

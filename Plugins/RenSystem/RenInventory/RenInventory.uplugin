@@ -1,0 +1,80 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "RenInventory",
+	"Description": "",
+	"Category": "Ren System",
+	"CreatedBy": "polygonvariable",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "RenInventory",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RenEnhanceItem",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RenExchangeItem",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "StructUtils",
+			"Enabled": true
+		},
+		{
+			"Name": "RCorePool",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreFilter",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreInventory",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreStorage",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreLibrary",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreDelegate",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreSettings",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreEnhance",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreExchange",
+			"Enabled": true
+		},
+		{
+			"Name": "RenCounter",
+			"Enabled": true
+		}
+	]
+}

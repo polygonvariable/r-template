@@ -1,0 +1,58 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "RenStorage",
+	"Description": "",
+	"Category": "Ren System",
+	"CreatedBy": "polygonvariable",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": false,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "RenStorage",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "StructUtils",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreClock",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreInventory",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreCounter",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreQuest",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreDelegate",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreLibrary",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreStorage",
+			"Enabled": true
+		}
+	]
+}
