@@ -7,6 +7,7 @@
 #include "InstancedStruct.h"
 
 // Project Headers
+#include "Widget/CatalogEntry.h"
 
 // Generated Headers
 #include "InventoryEntry.generated.h"
@@ -20,14 +21,12 @@ struct FInventoryRecord;
  *
  */
 UCLASS()
-class UInventoryEntry : public UObject
+class UInventoryEntry : public UCatalogEntry
 {
 
 	GENERATED_BODY()
 
 public:
-
-	FPrimaryAssetId AssetId = FPrimaryAssetId();
 
 	int Quantity = 0;
 
@@ -37,9 +36,10 @@ public:
 
 	FInstancedStruct Payload;
 
-	void ResetData()
+	virtual void ResetData() override
 	{
-		AssetId = FPrimaryAssetId();
+		Super::ResetData();
+
 		Quantity = 0;
 		Record = nullptr;
 

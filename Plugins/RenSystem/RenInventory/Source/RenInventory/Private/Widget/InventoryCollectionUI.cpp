@@ -22,7 +22,7 @@
 #include "RenInventory/Public/InventorySubsystem.h"
 
 
-
+/*
 void UInventoryCollectionUI::DisplayItems()
 {
 	UPoolSubsystem* Pool = PoolSubsystem.Get();
@@ -88,7 +88,7 @@ void UInventoryCollectionUI::ClearItems()
 			continue;
 		}
 		Entry->ResetData();
-		Pool->ReturnToPool<UInventoryEntry>(Entry);
+		Pool->ReturnToPool(Entry);
 	}
 
 	ItemList->ClearListItems();
@@ -179,7 +179,7 @@ void UInventoryCollectionUI::NativeConstruct()
 void UInventoryCollectionUI::NativeDestruct()
 {
 	ClearItems();
-
+	
 	if (ItemList)
 	{
 		ItemList->OnItemSelectionChanged().RemoveAll(this);
@@ -197,4 +197,50 @@ void UInventoryCollectionUI::NativeDestruct()
 
 	Super::NativeDestruct();
 }
+*/
 
+
+
+void UInventoryCollectionUI::DisplayEntries()
+{
+	UInventorySubsystem* Inventory = InventorySubsystem.Get();
+	if (!IsValid(Inventory))
+	{
+		LOG_ERROR(LogInventory, TEXT("PoolSubsystem, InventorySubsystem is invalid"));
+		return;
+	}
+
+	const UFilterCriterion* FilterRoot = GetFilterRoot();
+
+	Inventory->QueryItems(FilterRoot, QueryRule, [this](const FInventorySortEntry& SortEntry)
+		{
+			UInventoryEntry* Entry = GetEntryFromPool<UInventoryEntry>();
+			if (IsValid(Entry))
+			{
+				Entry->AssetId = SortEntry.AssetId;
+				Entry->Quantity = SortEntry.ItemQuantity;
+				Entry->Record = SortEntry.Record;
+
+				AddEntry(Entry);
+			}
+		}
+	);
+}
+
+void UInventoryCollectionUI::NativeConstruct()
+{
+	UGameInstance* GameInstance = GetGameInstance();
+	if (IsValid(GameInstance))
+	{
+		UInventorySubsystem* Inventory = GameInstance->GetSubsystem<UInventorySubsystem>();
+		InventorySubsystem = TWeakObjectPtr<UInventorySubsystem>(Inventory);
+	}
+
+	Super::NativeConstruct();
+}
+
+void UInventoryCollectionUI::NativeDestruct()
+{
+	InventorySubsystem.Reset();
+	Super::NativeDestruct();
+}

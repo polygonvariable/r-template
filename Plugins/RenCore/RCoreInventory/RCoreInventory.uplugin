@@ -28,6 +28,10 @@
 	],
 	"Plugins": [
 		{
+			"Name": "RCoreAssetManager",
+			"Enabled": true
+		},
+		{
 			"Name": "StructUtils",
 			"Enabled": true
 		},

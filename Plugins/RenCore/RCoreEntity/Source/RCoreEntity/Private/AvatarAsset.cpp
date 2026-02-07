@@ -9,18 +9,32 @@
 
 
 
+const UAssetCollectionRule_Dictionary* UAvatarAsset::GetExperienceItems(int InExperience, int InLevel, int InRank) const
+{
+	if (!IsValid(ExperienceItems))
+	{
+		return nullptr;
+	}
+
+	return ExperienceItems->GetCollectionRule<UAssetCollectionRule_Dictionary>();
+}
+
+
+const UAssetCollectionRule_Dictionary* UAvatarAsset::GetRankItems(int InExperience, int InLevel, int InRank) const
+{
+	if (!IsValid(RankItems))
+	{
+		return nullptr;
+	}
+
+	FAssetRuleContext_Sequence Context;
+	Context.Index = InRank;
+
+	return RankItems->GetCollectionRule<UAssetCollectionRule_Dictionary>(Context);
+}
+
 FPrimaryAssetId UAvatarAsset::GetPrimaryAssetId() const
 {
-	return FPrimaryAssetId(UAvatarAsset::GetPrimaryAssetType(), GetFName());
-}
-
-FPrimaryAssetType UAvatarAsset::GetPrimaryAssetType()
-{
-	return TEXT("Entity.Avatar");
-}
-
-FPrimaryAssetId UAvatarAsset::MakePrimaryAssetId(const FName& AssetName)
-{
-	return FPrimaryAssetId(UAvatarAsset::GetPrimaryAssetType(), AssetName);
+	return FPrimaryAssetId(TEXT("Entity.Avatar"), GetFName());
 }
 

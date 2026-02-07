@@ -9,6 +9,7 @@
 #include "InstancedStruct.h"
 
 // Project Headers
+#include "Interface/AssetDecomposeInterface.h"
 #include "RCoreExchange/Public/ExchangeProviderInterface.h"
 
 #include "RCoreInventory/Public/InventoryItemRarity.h"
@@ -25,7 +26,7 @@
  *
  */
 UCLASS(Abstract, MinimalAPI)
-class UInventoryAsset : public UPrimaryDataAsset, public IExchangeProviderInterface
+class UInventoryAsset : public UPrimaryDataAsset, public IExchangeProviderInterface, public IAssetStructureInterface
 {
 
 	GENERATED_BODY()
@@ -75,6 +76,11 @@ public:
 	// ~ UPrimaryDataAsset
 	RCOREINVENTORY_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 	// ~ End of UPrimaryDataAsset
+
+	// ~ IAssetStructureInterface
+	RCOREINVENTORY_API virtual const UAssetCollectionRule_Dictionary* GetBreakdownAssets(const FGameplayTagContainer& InTags) const { return nullptr; }
+	RCOREINVENTORY_API virtual const UAssetCollectionRule_Dictionary* GetRebuildAssets(const FGameplayTagContainer& InTags) const { return nullptr; }
+	// ~ End of IAssetStructureInterface
 
 	// ~ IExchangeProviderInterface
 	RCOREINVENTORY_API virtual float GetExchangedNumber(FInstancedStruct& Context) const override;

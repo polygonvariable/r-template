@@ -5,7 +5,8 @@
 // Engine Headers
 
 // Project Headers
-#include "RCoreEntity/Public/AvatarRecord.h"
+#include "AvatarRecord.h"
+#include "Widget/CatalogEntry.h"
 
 // Generated Headers
 #include "AvatarEntry.generated.h"
@@ -18,29 +19,14 @@
  *
  */
 UCLASS()
-class UAvatarEntry : public UObject
+class UAvatarEntry : public UCatalogEntry
 {
 
 	GENERATED_BODY()
 
 public:
 
-	FPrimaryAssetId AvatarId = FPrimaryAssetId();
-	FAvatarRecord Record = FAvatarRecord();
-
-	void ResetData()
-	{
-		AvatarId = FPrimaryAssetId();
-		Record = FAvatarRecord();
-	}
-
-	// ~ UObject
-	virtual void BeginDestroy() override
-	{
-		ResetData();
-		Super::BeginDestroy();
-	}
-	// ~ End of UObject
+	FAvatarRecord AvatarRecord;
 
 };
 

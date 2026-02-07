@@ -31,6 +31,7 @@ public class RCoreInventory : ModuleRules
                 "RCoreCommon",
                 "RCoreEnhance",
                 "RCoreExchange",
+                "RCoreAssetManager",
             }
 			);
 			

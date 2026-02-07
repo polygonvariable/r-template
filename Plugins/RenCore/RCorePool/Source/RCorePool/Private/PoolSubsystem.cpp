@@ -30,6 +30,14 @@ void UPoolSubsystem::ReturnToPool(UClass* Class, UObject* Item)
 	}
 }
 
+void UPoolSubsystem::ReturnToPool(UObject* Item)
+{
+	if (IsValid(Item))
+	{
+		ReturnToPool(Item->GetClass(), Item);
+	}
+}
+
 bool UPoolSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 {
 	return true;

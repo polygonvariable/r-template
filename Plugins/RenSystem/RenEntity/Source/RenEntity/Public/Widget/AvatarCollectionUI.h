@@ -3,21 +3,15 @@
 #pragma once
 
 // Engine Headers
-#include "Blueprint/UserWidget.h"
 
 // Project Headers
+#include "Widget/CatalogCollectionUI.h"
 
 // Generated Headers
 #include "AvatarCollectionUI.generated.h"
 
 // Forward Declarations
-class UListView;
-
-class UPoolSubsystem;
 class UAvatarSubsystem;
-class UAvatarEntry;
-
-struct FAvatarRecord;
 
 
 
@@ -25,45 +19,21 @@ struct FAvatarRecord;
  *
  */
 UCLASS(Abstract)
-class UAvatarCollectionUI : public UUserWidget
+class UAvatarCollectionUI : public UCatalogCollectionUI
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UAvatarEntry> EntryClass;
-
-	UFUNCTION(BlueprintCallable)
-	void DisplayEntries();
-
-	UFUNCTION(BlueprintCallable)
-	void ClearEntries();
-
-	UFUNCTION(BlueprintCallable)
-	void RefreshEntries();
-
-	UFUNCTION(BlueprintCallable)
-	UAvatarEntry* GetSelectedEntry();
-
-
-	DECLARE_MULTICAST_DELEGATE_OneParam(FOnEntityEntrySelected, const UAvatarEntry* /* Entry */);
-	FOnEntityEntrySelected OnEntrySelected;
+	// ~ UCatalogCollectionUI
+	virtual void DisplayEntries() override;
+	// ~ End of UCatalogCollectionUI
 
 protected:
 
 	UPROPERTY()
-	TWeakObjectPtr<UPoolSubsystem> PoolSubsystem;
-
-	UPROPERTY()
-	TWeakObjectPtr<UAvatarSubsystem> AvatarSubsystem;
-
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UListView> EntityList = nullptr;
-
-
-	virtual void HandleSelectedEntry(UObject* Object);
+	TWeakObjectPtr<UAvatarSubsystem> AvatarSubsystem = nullptr;
 
 	// ~ UUserWidget
 	virtual void NativeConstruct() override;

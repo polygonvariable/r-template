@@ -163,6 +163,72 @@ bool UInventorySubsystem::RemoveItemById(FName ContainerId, const FPrimaryAssetI
 }
 
 
+
+bool UInventorySubsystem::ContainsItems(FName ContainerId, const TMap<FPrimaryAssetId, int>& Items, bool bUseOr) const
+{
+	IInventoryProviderInterface* InventoryProvider = InventoryProviderInterface.Get();
+	if (!ContainerId.IsValid() || !InventoryProvider)
+	{
+		return false;
+	}
+	bool bResult = false;
+	int Multiplier = 1;
+
+	for (const TPair<FPrimaryAssetId, int>& Kv : Items)
+	{
+		const FPrimaryAssetId& AssetId = Kv.Key;
+		int Quantity = Kv.Value * Multiplier;
+
+		if (!InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0)
+		{
+			continue;
+		}
+
+		const FInventoryStack* Stack = GetInventoryStack(ContainerId, AssetId, InventoryProvider);
+		const TArray<FInventoryRecord>* RecordList = GetRecords(ContainerId, Stack);
+		if (!Stack || !RecordList)
+		{
+			continue;
+		}
+
+		bool bStackable = Stack->bStackable;
+		if (bStackable)
+		{
+			if (!RecordList->IsValidIndex(0))
+			{
+				continue;
+			}
+
+			const FInventoryRecord& Record = (*RecordList)[0];
+			if (Record.Quantity >= Quantity)
+			{
+				bResult = true;
+				break;
+			}
+		}
+		else
+		{
+			int Count = RecordList->Num();
+			if (Count >= Quantity)
+			{
+				bResult = true;
+				break;
+			}
+		}
+	}
+
+	return bResult;
+}
+
+
+
+
+
+
+
+
+
+
 bool UInventorySubsystem::ContainsItem(FName ContainerId, const FPrimaryAssetId& AssetId, int Quantity) const
 {
 	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0)
@@ -487,7 +553,7 @@ const FInventoryRecord* UInventorySubsystem::GetRecordById(FName ContainerId, co
 }
 
 
-void UInventorySubsystem::QueryItems(UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback)
+void UInventorySubsystem::QueryItems(const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback)
 {
 	if (QueryRule.QuerySource == EInventoryQuerySource::Glossary)
 	{
@@ -721,7 +787,7 @@ void UInventorySubsystem::HandleItemSorting(TArray<FInventorySortEntry>& SortedI
 	}
 }
 
-void UInventorySubsystem::HandleGlossaryItems(UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback) const
+void UInventorySubsystem::HandleGlossaryItems(const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback) const
 {
 	IInventoryProviderInterface* InventoryProvider = InventoryProviderInterface.Get();
 	if (!IsValid(AssetManager) || !InventoryProvider)
@@ -794,7 +860,7 @@ void UInventorySubsystem::HandleGlossaryItems(UFilterCriterion* FilterCriterion,
 	}
 }
 
-void UInventorySubsystem::HandleInventoryItems(UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback) const
+void UInventorySubsystem::HandleInventoryItems(const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback) const
 {
 	IInventoryProviderInterface* InventoryProvider = InventoryProviderInterface.Get();
 	if (!InventoryProvider)

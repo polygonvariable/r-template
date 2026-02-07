@@ -28,17 +28,12 @@ public:
 
 	RCOREPOOL_API UObject* AcquireObject(UClass* Class);
 	RCOREPOOL_API void ReturnToPool(UClass* Class, UObject* Item);
+	RCOREPOOL_API void ReturnToPool(UObject* Item);
 
 	template<typename T>
 	T* AcquireObject()
 	{
 		return Cast<T>(AcquireObject(T::StaticClass()));
-	}
-
-	template<typename T>
-	void ReturnToPool(T* Item)
-	{
-		ReturnToPool(T::StaticClass(), Item);
 	}
 
 protected:

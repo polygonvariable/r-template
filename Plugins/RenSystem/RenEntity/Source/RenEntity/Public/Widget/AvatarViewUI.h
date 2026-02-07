@@ -3,10 +3,9 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 
 // Project Headers
-#include "RenEntity/Public/Widget/AvatarUI.h"
+#include "Widget/CatalogUI.h"
 
 // Generated Headers
 #include "AvatarViewUI.generated.h"
@@ -16,6 +15,8 @@ class UButton;
 
 class UAvatarCollectionUI;
 class UAvatarDetailUI;
+class UCatalogEntry;
+class UCatalogCollectionUI;
 
 
 
@@ -23,28 +24,39 @@ class UAvatarDetailUI;
  *
  */
 UCLASS(Abstract)
-class UAvatarViewUI : public UAvatarUI
+class UAvatarViewUI : public UCatalogUI
 {
 
 	GENERATED_BODY()
 
-public:
-
-	// ~ UAvatarViewUI
-	virtual void InitializeDetails(const UAvatarEntry* Entry);
-	// ~ End of UAvatarViewUI
-
 protected:
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UAvatarCollectionUI> EntryCollection = nullptr;
+	TObjectPtr<UAvatarCollectionUI> AvatarCollection = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UAvatarDetailUI> EntryDetail = nullptr;
+	TObjectPtr<UAvatarDetailUI> AvatarDetail = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UButton> CloseButton = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
+	TSubclassOf<UCatalogUI> EnhanceWidgetClass = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	TObjectPtr<UButton> EnhanceButton = nullptr;
+
+
+	TWeakObjectPtr<const UCatalogEntry> ActiveEntry = nullptr;
+	TWeakObjectPtr<const UPrimaryDataAsset> ActiveAsset = nullptr;
+
+
+	UFUNCTION()
+	void HandleEnhanceClicked();
+
+	// ~ UCatalogUI
+	virtual void SetPrimaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset) override;
+	// ~ End of UCatalogUI
 
 	// ~ UUserWidget
 	virtual void NativePreConstruct() override;

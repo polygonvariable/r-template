@@ -57,6 +57,10 @@
 		{
 			"Name": "RenAbility",
 			"Enabled": true
+		},
+		{
+			"Name": "RCoreEnhance",
+			"Enabled": true
 		}
 	]
 }

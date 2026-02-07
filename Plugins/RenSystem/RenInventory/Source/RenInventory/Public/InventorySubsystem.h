@@ -7,6 +7,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 
 // Project Headers
+#include "InventoryManagerInterface.h"
 
 // Generated Headers
 #include "InventorySubsystem.generated.h"
@@ -34,7 +35,7 @@ struct FInventorySortEntry;
  * 
  */
 UCLASS(MinimalAPI)
-class UInventorySubsystem : public UGameInstanceSubsystem
+class UInventorySubsystem : public UGameInstanceSubsystem, public IInventoryManagerInterface
 {
 
 	GENERATED_BODY()
@@ -58,6 +59,12 @@ public:
 	RENINVENTORY_API bool RemoveItems(FName ContainerId, const TMap<FPrimaryAssetId, int>& Items);
 	RENINVENTORY_API bool RemoveItems(FName ContainerId, const TMap<FPrimaryAssetId, int>& Items, int Multiplier);
 	RENINVENTORY_API bool RemoveItemById(FName ContainerId, const FPrimaryAssetId& AssetId, FName RecordId, int Quantity);
+
+
+
+	virtual bool ContainsItems(FName ContainerId, const TMap<FPrimaryAssetId, int>& InItems, bool bUseOr) const override;
+
+
 
 	RENINVENTORY_API bool ContainsItem(FName ContainerId, const FPrimaryAssetId& AssetId, int Quantity) const;
 	RENINVENTORY_API bool ContainsItems(FName ContainerId, const TMap<FPrimaryAssetId, int>& Items) const;
@@ -88,7 +95,7 @@ public:
 	RENINVENTORY_API const FInventoryRecord* GetRecord(FName ContainerId, const FPrimaryAssetId& AssetId, int Index = 0) const;
 	RENINVENTORY_API const FInventoryRecord* GetRecordById(FName ContainerId, const FPrimaryAssetId& AssetId, FName RecordId) const;
 
-	RENINVENTORY_API void QueryItems(UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback);
+	RENINVENTORY_API void QueryItems(const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback);
 
 	UFUNCTION(BlueprintCallable)
 	bool CreateContainer(FName ContainerId);
@@ -113,8 +120,8 @@ protected:
 	virtual void HandleAddItem(const FPrimaryAssetId& AssetId, FInventoryRecord& Record);
 
 	virtual void HandleItemSorting(TArray<FInventorySortEntry>& SortedItems, const FInventoryQueryRule& QueryRule) const;
-	virtual void HandleGlossaryItems(UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback) const;
-	virtual void HandleInventoryItems(UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback) const;
+	virtual void HandleGlossaryItems(const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback) const;
+	virtual void HandleInventoryItems(const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback) const;
 
 	virtual void HandleStorageLoaded();
 	// ~ End of Bindings

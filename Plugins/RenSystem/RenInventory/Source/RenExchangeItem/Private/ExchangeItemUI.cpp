@@ -30,7 +30,7 @@
 
 
 void UExchangeItemUI::DisplayStockItems()
-{
+{/*
 	ICounterManagerInterface* CounterManager = CounterManagerInterface.Get();
 	if (!CatalogList || !CounterManager)
 	{
@@ -76,11 +76,11 @@ void UExchangeItemUI::DisplayStockItems()
 		AssetCriterion->Included.Append(AssetIds);
 	}
 
-	CatalogList->RefreshItems();
+	CatalogList->RefreshItems();*/
 }
 
 void UExchangeItemUI::DisplayRequiredItems(UObject* LoadedAsset)
-{
+{/*
 	if (!RequiredList)
 	{
 		return;
@@ -112,7 +112,7 @@ void UExchangeItemUI::DisplayRequiredItems(UObject* LoadedAsset)
 		AssetCriterion->Included.Append(AssetIds);
 	}
 
-	RequiredList->RefreshItems();
+	RequiredList->RefreshItems();*/
 }
 
 
@@ -158,14 +158,14 @@ void UExchangeItemUI::ExchangeItem()
 
 
 void UExchangeItemUI::HandleItemExchanged(bool bSuccess)
-{
+{/*
 	if (bSuccess)
 	{
 		DisplayStockItems();
 
 		if (ItemDetail) ItemDetail->RefreshDetails();
 		if (RequiredList) RequiredList->RefreshItems();
-	}
+	}*/
 }
 
 void UExchangeItemUI::CloseWidget()
@@ -199,7 +199,7 @@ void UExchangeItemUI::InitializeDetails(const FPrimaryAssetId& AssetId, int Quan
 
 
 void UExchangeItemUI::NativePreConstruct()
-{
+{/*
 	Super::NativePreConstruct();
 
 	if (CatalogList)
@@ -222,11 +222,11 @@ void UExchangeItemUI::NativePreConstruct()
 	{
 		ItemDetail->bAutoRefresh = false;
 		ItemDetail->ContainerId = ContainerId;
-	}
+	}*/
 }
 
 void UExchangeItemUI::NativeConstruct()
-{
+{/*
 	UGameInstance* GameInstance = GetGameInstance();
 	if (IsValid(GameInstance))
 	{
@@ -254,24 +254,24 @@ void UExchangeItemUI::NativeConstruct()
 		CloseButton->OnClicked.AddDynamic(this, &UExchangeItemUI::CloseWidget);
 	}
 
-	Super::NativeConstruct();
+	Super::NativeConstruct();*/
 }
 
 void UExchangeItemUI::NativeDestruct()
-{
+{/*
 	CounterManagerInterface.Reset();
 	InventorySubsystem.Reset();
 
 	if (CatalogList) CatalogList->OnItemSelected.RemoveAll(this);
 	if (ExchangeButton) ExchangeButton->OnClicked.RemoveAll(this);
 
-	Super::NativeDestruct();
+	Super::NativeDestruct();*/
 }
 
 
 
 void UExchangeItemEntryUI::InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record)
-{
+{/*
 	TWeakObjectPtr<UExchangeItemEntryUI> WeakThis(this);
 	TFunction<void(bool, UObject*)> AsyncCallback = [WeakThis, Quantity](bool, UObject* LoadedAsset)
 		{
@@ -287,7 +287,7 @@ void UExchangeItemEntryUI::InitializeDetails(const FPrimaryAssetId& AssetId, int
 			}
 		};
 
-	AssetManagerUtils::LoadPrimaryAsset(this, AssetManager, AssetId, MoveTemp(AsyncCallback));
+	AssetManagerUtils::LoadPrimaryAsset(this, AssetManager, AssetId, MoveTemp(AsyncCallback));*/
 }
 
 void UExchangeItemEntryUI::SetTertiaryDetails(UInventoryEntry* Entry)

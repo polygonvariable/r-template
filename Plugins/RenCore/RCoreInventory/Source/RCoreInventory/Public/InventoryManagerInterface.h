@@ -34,8 +34,7 @@ class RCOREINVENTORY_API IInventoryManagerInterface
 
 public:
 
-	virtual bool AddItem(FName ContainerId, UInventoryAsset* ItemAsset, int Quantity) = 0;
-	virtual bool AddItems(FName ContainerId, const TMap<UInventoryAsset*, int>& ItemQuantities) = 0;
+	virtual bool ContainsItems(FName ContainerId, const TMap<FPrimaryAssetId, int>& InItems, bool bUseOr) const = 0;
 
 };
 

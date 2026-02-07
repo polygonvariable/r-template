@@ -7,114 +7,70 @@
 #include "Components/ListView.h"
 
 // Project Headers
+#include "RCoreFilter/Public/FilterGroup.h"
+#include "RCoreFilter/Public/FilterLeafCriterion.h"
+#include "RCoreFilter/Public/FilterContext.h"
+#include "RCoreFilter/Public/FilterCriterion.h"
+
 #include "RCoreLibrary/Public/LogCategory.h"
 #include "RCoreLibrary/Public/LogMacro.h"
 #include "RCorePool/Public/PoolSubsystem.h"
 
 #include "RenEntity/Public/Widget/AvatarEntry.h"
 #include "RenEntity/Public/Subsystem/AvatarSubsystem.h"
-
+#include "RenEntity/Public/EntityPrimaryAsset.h"
 
 
 
 void UAvatarCollectionUI::DisplayEntries()
 {
-	UPoolSubsystem* Pool = PoolSubsystem.Get();
 	UAvatarSubsystem* Avatar = AvatarSubsystem.Get();
-	if (!IsValid(Pool) || !IsValid(Avatar) || !IsValid(EntryClass) || !EntityList)
+	if (!IsValid(Avatar))
 	{
-		LOG_ERROR(LogInventory, TEXT("PoolSubsystem, AvatarSubsystem, EntryClass, EntityList is invalid"));
+		LOG_ERROR(LogAvatar, TEXT("PoolSubsystem, AvatarSubsystem is invalid"));
 		return;
 	}
 
 	const TMap<FPrimaryAssetId, FAvatarRecord>* AvatarRecords = Avatar->GetAvatarRecords();
 	if (!AvatarRecords)
 	{
-		LOG_ERROR(LogInventory, TEXT("AvatarRecords is invalid"));
+		LOG_ERROR(LogAvatar, TEXT("AvatarRecords is invalid"));
 		return;
 	}
 
+	const UFilterCriterion* Filter = GetFilterRoot();
+	
 	for (const TPair<FPrimaryAssetId, FAvatarRecord>& Pair : *AvatarRecords)
 	{
-		UAvatarEntry* Entry = Pool->AcquireObject<UAvatarEntry>();
-		if (IsValid(Entry))
+		if (IsValid(Filter))
 		{
-			Entry->AvatarId = Pair.Key;
-			Entry->Record = Pair.Value;
+			FFilterContext Context;
+			Context.SetValue("AssetId", Pair.Key);
 
-			EntityList->AddItem(Entry);
+			if (!Filter->Evaluate(Context))
+			{
+				continue;
+			}
 		}
-	}
-}
 
-void UAvatarCollectionUI::ClearEntries()
-{
-	UPoolSubsystem* Pool = PoolSubsystem.Get();
-	if (!IsValid(Pool) || !EntityList)
-	{
-		return;
-	}
-
-	const TArray<UObject*>& Items = EntityList->GetListItems();
-	for (UObject* Item : Items)
-	{
-		UAvatarEntry* Entry = Cast<UAvatarEntry>(Item);
+		UAvatarEntry* Entry = GetEntryFromPool<UAvatarEntry>();
 		if (!IsValid(Entry))
 		{
 			continue;
 		}
-		Entry->ResetData();
-		Pool->ReturnToPool<UAvatarEntry>(Entry);
-	}
+		Entry->AssetId = Pair.Key;
+		Entry->AvatarRecord = Pair.Value;
 
-	EntityList->ClearListItems();
-	EntityList->RegenerateAllEntries();
-}
-
-void UAvatarCollectionUI::RefreshEntries()
-{
-	
-}
-
-UAvatarEntry* UAvatarCollectionUI::GetSelectedEntry()
-{
-	if (!EntityList)
-	{
-		return nullptr;
-	}
-	return EntityList->GetSelectedItem<UAvatarEntry>();
-}
-
-void UAvatarCollectionUI::HandleSelectedEntry(UObject* Object)
-{
-	UAvatarEntry* Entry = Cast<UAvatarEntry>(Object);
-	if (IsValid(Entry))
-	{
-		OnEntrySelected.Broadcast(Entry);
+		AddEntry(Entry);
 	}
 }
 
 void UAvatarCollectionUI::NativeConstruct()
 {
-	if (EntityList)
-	{
-		EntityList->OnItemSelectionChanged().RemoveAll(this);
-		EntityList->OnItemSelectionChanged().AddUObject(this, &UAvatarCollectionUI::HandleSelectedEntry);
-	}
-
 	UGameInstance* GameInstance = GetGameInstance();
 	if (IsValid(GameInstance))
 	{
-		UPoolSubsystem* Pool = GameInstance->GetSubsystem<UPoolSubsystem>();
 		UAvatarSubsystem* Avatar = GameInstance->GetSubsystem<UAvatarSubsystem>();
-
-		if (!IsValid(Avatar) || !IsValid(Pool))
-		{
-			LOG_ERROR(LogAvatar, TEXT("AvatarSubsystem, Pool is invalid"));
-			return;
-		}
-
-		PoolSubsystem = TWeakObjectPtr<UPoolSubsystem>(Pool);
 		AvatarSubsystem = TWeakObjectPtr<UAvatarSubsystem>(Avatar);
 	}
 
@@ -123,15 +79,7 @@ void UAvatarCollectionUI::NativeConstruct()
 
 void UAvatarCollectionUI::NativeDestruct()
 {
-	if (EntityList)
-	{
-		EntityList->OnItemSelectionChanged().RemoveAll(this);
-		EntityList->OnItemSelectionChanged().AddUObject(this, &UAvatarCollectionUI::HandleSelectedEntry);
-	}
-
-	PoolSubsystem.Reset();
 	AvatarSubsystem.Reset();
-
 	Super::NativeDestruct();
 }
 

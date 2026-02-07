@@ -20,9 +20,15 @@
 
 
 
-void UAvatarEntryUI::SetPrimaryDetails(const UAvatarAsset* Asset)
+bool UAvatarEntryUI::IsValidAssetId(const FPrimaryAssetId& AssetId) const
 {
-	if (!IsValid(Asset))
+	return EntityPrimaryAsset::IsValid(AssetId);
+}
+
+void UAvatarEntryUI::SetPrimaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset)
+{
+	const UAvatarAsset* AvatarAsset = Cast<UAvatarAsset>(Asset);
+	if (!IsValid(AvatarAsset))
 	{
 		EntryName->SetText(FText::GetEmpty());
 		EntryIcon->SetBrushFromSoftTexture(nullptr);
@@ -32,34 +38,11 @@ void UAvatarEntryUI::SetPrimaryDetails(const UAvatarAsset* Asset)
 
 	if (EntryName)
 	{
-		EntryName->SetText(Asset->DisplayName);
+		EntryName->SetText(AvatarAsset->DisplayName);
 	}
 	if (EntryIcon)
 	{
-		EntryIcon->SetBrushFromSoftTexture(Asset->Icon);
+		EntryIcon->SetBrushFromSoftTexture(AvatarAsset->Icon);
 	}
 }
 
-void UAvatarEntryUI::SetSecondaryDetails(const UAvatarAsset* Asset, const FAvatarRecord& Record)
-{
-}
-
-void UAvatarEntryUI::ResetDetails()
-{
-	CancelLatentFetch();
-
-	SetPrimaryDetails(nullptr);
-}
-
-void UAvatarEntryUI::NativeOnListItemObjectSet(UObject* ListItemObject)
-{
-	CancelLatentFetch();
-
-	UAvatarEntry* Entry = Cast<UAvatarEntry>(ListItemObject);
-	InitializeDetails(Entry);
-}
-
-void UAvatarEntryUI::NativeOnItemSelectionChanged(bool bSelected)
-{
-
-}

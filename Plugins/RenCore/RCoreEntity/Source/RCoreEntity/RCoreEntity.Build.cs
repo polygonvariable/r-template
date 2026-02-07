@@ -28,6 +28,8 @@ public class RCoreEntity : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
                 "RCoreEnhance",
+                "RCoreExchange",
+                "GameplayTags",
             }
 			);
 			
@@ -40,6 +42,7 @@ public class RCoreEntity : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
+				"RCoreAssetManager",
             }
 			);
 		

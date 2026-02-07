@@ -19,7 +19,7 @@
 
 
 void UInventoryViewUI::DisplayEnhanceItem()
-{
+{/*
 	if (!ItemList)
 	{
 		LOG_ERROR(LogInventory, TEXT("InventoryCollection is invalid"));
@@ -54,7 +54,7 @@ void UInventoryViewUI::DisplayEnhanceItem()
 		);
 
 		EnhanceItemUI = Widget;
-	}
+	}*/
 }
 
 TArray<UInventorySwitchUI*> UInventoryViewUI::GetDetailSwitches_Implementation() const
@@ -75,15 +75,15 @@ void UInventoryViewUI::InitializeDetails(const FPrimaryAssetId& AssetId, int Qua
 
 
 void UInventoryViewUI::NativePreConstruct()
-{
+{/*
 	Super::NativePreConstruct();
 
 	if (ItemDetail) ItemDetail->ContainerId = ContainerId;
-	if (ItemList) ItemList->QueryRule.ContainerId = ContainerId;
+	if (ItemList) ItemList->QueryRule.ContainerId = ContainerId;*/
 }
 
 void UInventoryViewUI::NativeConstruct()
-{
+{/*
 	if (ItemList)
 	{
 		ItemList->OnItemSelected.RemoveAll(this);
@@ -94,15 +94,15 @@ void UInventoryViewUI::NativeConstruct()
 	{
 		CloseButton->OnClicked.RemoveAll(this);
 		CloseButton->OnClicked.AddDynamic(this, &UInventoryViewUI::CloseWidget);
-	}
+	}*/
 
 	UUserWidget::NativeConstruct();
 }
 
 void UInventoryViewUI::NativeDestruct()
-{
+{/*
 	if (ItemList) ItemList->OnItemSelected.RemoveAll(this);
-	if (CloseButton) CloseButton->OnClicked.RemoveAll(this);
+	if (CloseButton) CloseButton->OnClicked.RemoveAll(this);*/
 
 	UUserWidget::NativeDestruct();
 }

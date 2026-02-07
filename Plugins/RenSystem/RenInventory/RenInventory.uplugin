@@ -37,6 +37,10 @@
 			"Enabled": true
 		},
 		{
+			"Name": "RCoreAssetManager",
+			"Enabled": true
+		},
+		{
 			"Name": "RCorePool",
 			"Enabled": true
 		},

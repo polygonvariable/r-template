@@ -106,7 +106,7 @@ void UEnhanceItemUI::TryRankUp()
 
 
 void UEnhanceItemUI::DisplayLevelUpItems()
-{
+{/*
 	IEnhanceProviderInterface* EnhanceProvider = ActiveAsset.Get();
 	if (!LevelUpList || !EnhanceProvider || !ActiveItemId.IsValid())
 	{
@@ -144,11 +144,11 @@ void UEnhanceItemUI::DisplayLevelUpItems()
 		ItemIdCriterion->Included.Add(ActiveItemId);
 	}
 
-	LevelUpList->RefreshItems();
+	LevelUpList->RefreshItems();*/
 }
 
 void UEnhanceItemUI::DisplayRankUpItems()
-{
+{/*
 	UEnhanceItemSubsystem* EnhanceItem = EnhanceItemSubsystem.Get();
 	IEnhanceProviderInterface* EnhanceProvider = ActiveAsset.Get();
 
@@ -196,7 +196,7 @@ void UEnhanceItemUI::DisplayRankUpItems()
 
 			RankUpList->RefreshItems();
 		}
-	}
+	}*/
 }
 
 
@@ -237,7 +237,7 @@ void UEnhanceItemUI::HandleItemSelected(const FPrimaryAssetId& AssetId, int Quan
 
 
 void UEnhanceItemUI::NativePreConstruct()
-{
+{/*
 	Super::NativePreConstruct();
 
 	if (LevelUpList)
@@ -255,11 +255,11 @@ void UEnhanceItemUI::NativePreConstruct()
 	if (ItemDetail)
 	{
 		ItemDetail->ContainerId = ContainerId;
-	}
+	}*/
 }
 
 void UEnhanceItemUI::NativeConstruct()
-{
+{/*
 	UGameInstance* GameInstance = GetGameInstance();
 	if (IsValid(GameInstance))
 	{
@@ -294,11 +294,11 @@ void UEnhanceItemUI::NativeConstruct()
 		CloseButton->OnClicked.AddDynamic(this, &UEnhanceItemUI::CloseWidget);
 	}
 
-	Super::NativeConstruct();
+	Super::NativeConstruct();*/
 }
 
 void UEnhanceItemUI::NativeDestruct()
-{
+{/*
 	ResetDetails();
 
 	if (LevelUpList) LevelUpList->OnItemSelected.RemoveAll(this);
@@ -316,6 +316,6 @@ void UEnhanceItemUI::NativeDestruct()
 
 	EnhanceItemSubsystem.Reset();
 
-	Super::NativeDestruct();
+	Super::NativeDestruct();*/
 }
 

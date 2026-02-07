@@ -10,6 +10,7 @@
 
 // Project Headers
 #include "RenInventory/Public/InventoryDefinition.h"
+#include "Widget/CatalogCollectionUI.h"
 
 // Generated Headers
 #include "InventoryCollectionUI.generated.h"
@@ -33,13 +34,13 @@ struct FInventoryRecord;
  *
  */
 UCLASS(Abstract)
-class UInventoryCollectionUI : public UUserWidget
+class UInventoryCollectionUI : public UCatalogCollectionUI
 {
 
 	GENERATED_BODY()
 
 public:
-
+	/*
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (ExposeOnSpawn = true))
 	TSubclassOf<UInventoryEntry> EntryClass;
 
@@ -96,10 +97,30 @@ protected:
 
 public:
 
-	DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnInventoryItemSelected, const FPrimaryAssetId& /* AssetId */, int /* Quantity */, const FInventoryRecord* /* Record */);
+	DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnInventoryItemSelected, const FPrimaryAssetId&, int, const FInventoryRecord*);
 	FOnInventoryItemSelected OnItemSelected;
 
 protected:
+
+	// ~ UUserWidget
+	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
+	// ~ End of UUserWidget
+	*/
+
+public:
+
+	// ~ UCatalogCollectionUI
+	virtual void DisplayEntries() override;
+	// ~ End of UCatalogCollectionUI
+
+protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
+	FInventoryQueryRule QueryRule = FInventoryQueryRule();
+
+	UPROPERTY()
+	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem;
 
 	// ~ UUserWidget
 	virtual void NativeConstruct() override;

@@ -3,68 +3,55 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 
 // Project Headers
-#include "RenEntity/Public/Widget/AvatarUI.h"
+#include "Widget/CatalogDetailUI.h"
 
 // Generated Headers
 #include "AvatarDetailUI.generated.h"
 
 // Forward Declarations
-class UImage;
 class UTextBlock;
-class UPanelWidget;
-class UWidgetSwitcher;
 
-class UAvatarSubsystem;
-class UAvatarAsset;
-
+struct FAvatarRecord;
 
 
 /**
  *
  */
-UCLASS(Abstract, MinimalAPI)
-class UAvatarDetailUI : public UAvatarUI
+UCLASS(Abstract)
+class UAvatarDetailUI : public UCatalogDetailUI
 {
 
 	GENERATED_BODY()
 
-public:
-
-	// ~ UInventoryUI
-	virtual void ResetDetails() override;
-	virtual void RefreshDetails() override;
-	// ~ End of UInventoryUI
-
 protected:
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UImage> EntryIcon = nullptr;
-
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UTextBlock> EntryName = nullptr;
-
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UTextBlock> EntryDescription = nullptr;
-
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> EntryExperience = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UTextBlock> EntryLevel = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UTextBlock> EntryRank = nullptr;
 
 
-	// ~ UInventoryUI
-	virtual void SetPrimaryDetails(const UAvatarAsset* Asset) override;
-	virtual void SetSecondaryDetails(const UAvatarAsset* Asset, const FAvatarRecord& Record) override;
-	// ~ End of UInventoryUI
+	UFUNCTION()
+	virtual void HandleAvatarDataChanged(FPrimaryAssetId AssetId);
 
-	// ~ End of UUserWidget
+	// ~ UCatalogDetailUI
+	virtual void RefreshDetails() override;
+	
+	virtual bool IsValidAssetId(const FPrimaryAssetId& AssetId) const override;
+
+	virtual void SetPrimaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset) override;
+	virtual void SetSecondaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset) override;
+	// ~ End of UCatalogDetailUI
+
+	virtual void SetSecondaryDetails(const FAvatarRecord& Entry, const UPrimaryDataAsset* Asset);
+
+	// ~ UUserWidget
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 	// ~ End of UUserWidget

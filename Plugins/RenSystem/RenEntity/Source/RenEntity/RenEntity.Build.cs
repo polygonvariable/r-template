@@ -37,7 +37,8 @@ public class RenEntity : ModuleRules
                 "RenStorage",
                 "RenAbility",
                 "GameplayAbilities",
-				"HTTP",
+                "RCoreEnhance",
+                "HTTP",
 				"Json",
 				"JsonUtilities"
             }

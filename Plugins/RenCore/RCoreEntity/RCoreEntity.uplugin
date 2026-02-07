@@ -23,7 +23,15 @@
 	],
 	"Plugins": [
 		{
+			"Name": "RCoreAssetManager",
+			"Enabled": true
+		},
+		{
 			"Name": "RCoreEnhance",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreExchange",
 			"Enabled": true
 		}
 	]

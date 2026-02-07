@@ -34,6 +34,7 @@ public class RenInventory : ModuleRules
                 "RCoreExchange",
                 "RCoreCraft",
                 "RCoreShop",
+                "RCoreAssetManager",
             }
 			);
 			
