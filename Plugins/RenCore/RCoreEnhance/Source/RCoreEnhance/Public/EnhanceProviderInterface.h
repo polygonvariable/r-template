@@ -12,6 +12,7 @@
 #include "EnhanceProviderInterface.generated.h"
 
 // Forward Declarations
+class UAssetCollectionRule_Dictionary;
 struct FExchangeRule;
 
 
@@ -40,6 +41,9 @@ public:
 	virtual int GetMaxRank() const = 0;
 	virtual const FExchangeRule& GetEnhanceRules() const = 0;
 	virtual const TArray<FExchangeRule>& GetRankingRules() const = 0;
+
+	virtual const UAssetCollectionRule_Dictionary* GetExperienceItems(int InExperience, int InLevel, int InRank) const = 0;
+	virtual const UAssetCollectionRule_Dictionary* GetRankItems(int InExperience, int InLevel, int InRank) const = 0;
 
 };
 

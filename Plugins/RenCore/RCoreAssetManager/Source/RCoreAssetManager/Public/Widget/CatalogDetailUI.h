@@ -27,13 +27,16 @@ class UCatalogDetailUI : public UCatalogUI
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	UPROPERTY(EditAnywhere, Meta = (BindWidget))
+	bool bAutoRefresh = false;
+
+	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UImage> EntryIcon = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UTextBlock> EntryName = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UTextBlock> EntryDescription = nullptr;
 
 };

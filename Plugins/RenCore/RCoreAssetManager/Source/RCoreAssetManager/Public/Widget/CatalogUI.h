@@ -51,12 +51,13 @@ protected:
 	TObjectPtr<URAssetManager> AssetManager;
 
 
-	RCOREASSETMANAGER_API virtual bool IsValidAssetId(const FPrimaryAssetId& AssetId) const;
+	RCOREASSETMANAGER_API virtual bool IsPrimaryAssetIdValid(const FPrimaryAssetId& AssetId) const;
 
 	RCOREASSETMANAGER_API virtual void SetPrimaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset);
 	RCOREASSETMANAGER_API virtual void SetSecondaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset);
 
 	RCOREASSETMANAGER_API virtual void CancelAssetLoading();
+	RCOREASSETMANAGER_API virtual void SwitchDetails(bool bPrimary);
 
 	// ~ UUserWidget
 	RCOREASSETMANAGER_API virtual void NativeConstruct() override;

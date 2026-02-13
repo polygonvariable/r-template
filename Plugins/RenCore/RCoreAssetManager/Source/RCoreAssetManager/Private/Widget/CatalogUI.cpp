@@ -26,7 +26,7 @@ void UCatalogUI::InitializeDetails(const UCatalogEntry* Entry)
 	}
 
 	ActiveAssetId = Entry->AssetId;
-	if (!IsValidAssetId(ActiveAssetId) || !LatentId.IsValid() || !IsValid(AssetManager))
+	if (!IsPrimaryAssetIdValid(ActiveAssetId) || !LatentId.IsValid() || !IsValid(AssetManager))
 	{
 		LOG_ERROR(LogAvatar, TEXT("AssetId, LatentId, AssetManager is invalid"));
 		return;
@@ -67,7 +67,7 @@ void UCatalogUI::InitializeDetails(const UCatalogEntry* Entry, const UPrimaryDat
 	SetSecondaryDetails(Entry, Asset);
 }
 
-bool UCatalogUI::IsValidAssetId(const FPrimaryAssetId& AssetId) const
+bool UCatalogUI::IsPrimaryAssetIdValid(const FPrimaryAssetId& AssetId) const
 {
 	return AssetId.IsValid();
 }
@@ -94,6 +94,11 @@ void UCatalogUI::CancelAssetLoading()
 	{
 		AssetManager->CancelFetch(LatentId);
 	}
+}
+
+void UCatalogUI::SwitchDetails(bool bPrimary)
+{
+
 }
 
 void UCatalogUI::CloseWidget()

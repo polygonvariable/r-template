@@ -16,7 +16,7 @@ class UButton;
 class UAvatarDetailUI;
 class UCatalogEntry;
 class UCatalogCollectionUI;
-class UAvatarEnhanceSubsystem;
+class UAvatarAscensionSubsystem;
 
 
 
@@ -41,13 +41,15 @@ protected:
 	TObjectPtr<UButton> CloseButton = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<UAvatarEnhanceSubsystem> EnhanceSubsystem = nullptr;
+	TObjectPtr<UAvatarAscensionSubsystem> AscensionSubsystem = nullptr;
 
 
 
+	UFUNCTION()
 	void AddExperiencePoints(const UCatalogEntry* Entry);
-	void AddRankPoints();
 
+	UFUNCTION()
+	void AddRankPoints();
 
 	UFUNCTION()
 	virtual void HandleItemSelected(const UCatalogEntry* Entry);

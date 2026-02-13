@@ -1,0 +1,28 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+// Engine Headers
+#include "CoreMinimal.h"
+
+// Project Headers
+#include "InventoryAsset.h"
+
+// Generated Headers
+#include "NonPurchasableAsset.generated.h"
+
+// Forward Declarations
+
+
+
+/**
+ * 
+ */
+UCLASS(MinimalAPI, Abstract)
+class UNonPurchasableAsset : public UInventoryAsset
+{
+
+	GENERATED_BODY()
+
+};
+

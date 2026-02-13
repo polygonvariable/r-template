@@ -31,10 +31,12 @@ void UCatalogEntryUI::NativeOnListItemObjectSet(UObject* ListItemObject)
 
 	UCatalogEntry* Entry = Cast<UCatalogEntry>(ListItemObject);
 	InitializeDetails(Entry);
+
+	Execute_OnListItemObjectSet(this, ListItemObject);
 }
 
 void UCatalogEntryUI::NativeOnItemSelectionChanged(bool bSelected)
 {
-
+	Execute_BP_OnItemSelectionChanged(this, bSelected);
 }
 

@@ -73,7 +73,7 @@ void UCatalogCollectionUI::DisplayEntries()
 {
 }
 
-void UCatalogCollectionUI::ClearEntries()
+void UCatalogCollectionUI::ClearEntries(bool bRegenerate)
 {
 	if (!IsValid(EntryList))
 	{
@@ -93,12 +93,17 @@ void UCatalogCollectionUI::ClearEntries()
 	}
 
 	EntryList->ClearListItems();
-	EntryList->RegenerateAllEntries();
+
+	if (bRegenerate)
+	{
+		EntryList->RegenerateAllEntries();
+	}
 }
 
 void UCatalogCollectionUI::RefreshEntries()
 {
-	
+	ClearEntries(true);
+	DisplayEntries();
 }
 
 UCatalogEntry* UCatalogCollectionUI::GetSelectedEntry()
@@ -131,6 +136,8 @@ void UCatalogCollectionUI::NativeConstruct()
 
 void UCatalogCollectionUI::NativeDestruct()
 {
+	ClearEntries(false);
+
 	if (IsValid(EntryList))
 	{
 		EntryList->OnItemSelectionChanged().RemoveAll(this);

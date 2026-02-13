@@ -34,12 +34,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	RCOREASSETMANAGER_API virtual void DisplayEntries();
 
+	UFUNCTION(BlueprintCallable)
+	RCOREASSETMANAGER_API void ClearEntries(bool bRegenerate);
 
 	UFUNCTION(BlueprintCallable)
-	RCOREASSETMANAGER_API void ClearEntries();
-
-	UFUNCTION(BlueprintCallable)
-	RCOREASSETMANAGER_API void RefreshEntries();
+	RCOREASSETMANAGER_API virtual void RefreshEntries();
 
 	UFUNCTION(BlueprintCallable)
 	RCOREASSETMANAGER_API UCatalogEntry* GetSelectedEntry();

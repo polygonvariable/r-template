@@ -19,7 +19,7 @@
  * 
  */
 USTRUCT(BlueprintType)
-struct FInventoryRecord
+struct FInventoryItem
 {
 
 	GENERATED_BODY()
@@ -30,7 +30,7 @@ public:
 	 * 
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FName ItemId = NAME_None;
+	FGuid ItemId;
 
 	/*
 	 * 
@@ -39,7 +39,7 @@ public:
 	int Quantity = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FEnhanceRecord Enhancement = FEnhanceRecord();
+	FAscensionData Ascension;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FInstancedStruct Metadata;
@@ -49,12 +49,12 @@ public:
 		return ItemId.IsValid() && Quantity > 0;
 	}
 
-	friend inline bool operator == (const FInventoryRecord& A, const FInventoryRecord& B)
+	friend inline bool operator == (const FInventoryItem& A, const FInventoryItem& B)
 	{
 		return A.ItemId == B.ItemId && A.Quantity == B.Quantity;
 	}
 
-	friend inline uint32 GetTypeHash(const FInventoryRecord& Record)
+	friend inline uint32 GetTypeHash(const FInventoryItem& Record)
 	{
 		return HashCombine(GetTypeHash(Record.ItemId.ToString()), GetTypeHash(Record.Quantity));
 	}

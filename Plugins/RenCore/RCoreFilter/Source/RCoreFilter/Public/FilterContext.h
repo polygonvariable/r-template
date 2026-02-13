@@ -35,6 +35,8 @@ struct FFilterContext
 
 	GENERATED_BODY()
 
+public:
+
 	template<typename T>
 	void SetValue(FName Key, T Value)
 	{

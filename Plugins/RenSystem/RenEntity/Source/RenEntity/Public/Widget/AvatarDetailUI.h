@@ -13,7 +13,7 @@
 // Forward Declarations
 class UTextBlock;
 
-struct FAvatarRecord;
+struct FAvatarData;
 
 
 /**
@@ -38,18 +38,16 @@ protected:
 
 
 	UFUNCTION()
-	virtual void HandleAvatarDataChanged(FPrimaryAssetId AssetId);
+	virtual void HandleAvatarDataChanged(const FPrimaryAssetId& AssetId);
 
 	// ~ UCatalogDetailUI
 	virtual void RefreshDetails() override;
-	
-	virtual bool IsValidAssetId(const FPrimaryAssetId& AssetId) const override;
-
+	virtual bool IsPrimaryAssetIdValid(const FPrimaryAssetId& AssetId) const override;
 	virtual void SetPrimaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset) override;
 	virtual void SetSecondaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset) override;
 	// ~ End of UCatalogDetailUI
 
-	virtual void SetSecondaryDetails(const FAvatarRecord& Entry, const UPrimaryDataAsset* Asset);
+	virtual void SetSecondaryDetails(const FAvatarData& Entry, const UPrimaryDataAsset* Asset);
 
 	// ~ UUserWidget
 	virtual void NativeConstruct() override;

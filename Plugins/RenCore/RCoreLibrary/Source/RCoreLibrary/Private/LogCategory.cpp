@@ -8,6 +8,10 @@
 // Project Headers
 
 
+// ~ Task Categories
+DEFINE_LOG_CATEGORY(LogTask);
+// ~ End of Library Task
+// 
 // ~ Library Categories
 DEFINE_LOG_CATEGORY(LogTimer);
 // ~ End of Library Categories

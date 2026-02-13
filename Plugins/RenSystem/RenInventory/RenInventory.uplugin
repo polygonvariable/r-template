@@ -16,18 +16,18 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "RenInventory",
+			"Name": "RInventory",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RenEnhanceItem",
-			"Type": "Runtime",
+			"Name": "RInventoryEd",
+			"Type": "Editor",
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RenExchangeItem",
-			"Type": "Runtime",
+			"Name": "RInventoryUI",
+			"Type": "Editor",
 			"LoadingPhase": "Default"
 		}
 	],
@@ -74,6 +74,10 @@
 		},
 		{
 			"Name": "RCoreExchange",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreCommon",
 			"Enabled": true
 		},
 		{

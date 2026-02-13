@@ -25,7 +25,7 @@ struct FInventoryStack
 public:
 
 	UPROPERTY()
-	TArray<FInventoryRecord> ItemRecords;
+	TArray<FInventoryItem> ItemList;
 
 	UPROPERTY()
 	FGuid StackId;

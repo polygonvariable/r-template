@@ -13,8 +13,9 @@
 #include "LogMacro.h"
 #include "Widget/CatalogEntry.h"
 
-#include "EntityPrimaryAsset.h"
-#include "Subsystem/AvatarSubsystem.h"
+#include "Subsystem/AvatarAscensionSubsystem.h"
+#include "TaskDefinition.h"
+
 #include "Widget/AvatarCollectionUI.h"
 #include "Widget/AvatarDetailUI.h"
 
@@ -22,41 +23,36 @@
 
 void UAvatarEnhanceUI::AddExperiencePoints(const UCatalogEntry* Entry)
 {
-	if (!IsValid(EnhanceSubsystem) || !IsValid(Entry))
+	if (!IsValid(AscensionSubsystem) || !IsValid(Entry))
 	{
-		LOG_ERROR(LogAvatar, TEXT("EnhanceSubsystem or Entry is invalid"));
+		LOG_ERROR(LogAvatar, TEXT("AscensionSubsystem, Entry is invalid"));
 		return;
 	}
 
 	FGuid TaskId = FGuid::NewGuid();
-	ULatentTask* Task = EnhanceSubsystem->AddExperiencePoints(TaskId, ActiveAssetId, Entry->AssetId);
-	if (IsValid(Task))
-	{
-		FLatentTaskDelegate& TaskDelegate = Task->LatentDelegate;
-		TaskDelegate.OnStarted.AddWeakLambda(this, [](FGuid) { UE_LOG(LogAvatar, Log, TEXT("Enhance Task Started")); });
-		TaskDelegate.OnFinished.AddWeakLambda(this, [](FGuid, bool, const FString&) { UE_LOG(LogAvatar, Log, TEXT("Enhance Task Finished")); });
-
-		Task->StartTask();
-	}
+	AscensionSubsystem->AddExperiencePoints(TaskId, ActiveAssetId, Entry->AssetId,
+		FTaskCallback::CreateWeakLambda(this,
+			[](ETaskState State, const FString&)
+			{
+				if (State == ETaskState::Started)
+				{
+					UE_LOG(LogAvatar, Log, TEXT("Task Started"));
+				}
+				else
+				{
+					UE_LOG(LogAvatar, Log, TEXT("Task Finished"));
+				}
+			}
+		)
+	);
 }
 
 void UAvatarEnhanceUI::AddRankPoints()
 {
-	if (!IsValid(EnhanceSubsystem))
+	if (!IsValid(AscensionSubsystem))
 	{
-		LOG_ERROR(LogAvatar, TEXT("EnhanceSubsystem is invalid"));
+		LOG_ERROR(LogAvatar, TEXT("AscensionSubsystem is invalid"));
 		return;
-	}
-
-	FGuid TaskId = FGuid::NewGuid();
-	ULatentTask* Task = EnhanceSubsystem->AddRankPoints(TaskId, ActiveAssetId);
-	if (IsValid(Task))
-	{
-		FLatentTaskDelegate& TaskDelegate = Task->LatentDelegate;
-		TaskDelegate.OnStarted.AddWeakLambda(this, [](FGuid) { UE_LOG(LogAvatar, Log, TEXT("Enhance Task Started")); });
-		TaskDelegate.OnFinished.AddWeakLambda(this, [](FGuid, bool, const FString&) { UE_LOG(LogAvatar, Log, TEXT("Enhance Task Finished")); });
-
-		Task->StartTask();
 	}
 }
 
@@ -112,7 +108,7 @@ void UAvatarEnhanceUI::NativeConstruct()
 	UGameInstance* GameInstance = GetGameInstance();
 	if (IsValid(GameInstance))
 	{
-		EnhanceSubsystem = GameInstance->GetSubsystem<UAvatarEnhanceSubsystem>();
+		AscensionSubsystem = GameInstance->GetSubsystem<UAvatarAscensionSubsystem>();
 	}
 
 	Super::NativeConstruct();
@@ -130,7 +126,7 @@ void UAvatarEnhanceUI::NativeDestruct()
 		CloseButton->OnClicked.RemoveAll(this);
 	}
 
-	EnhanceSubsystem = nullptr;
+	AscensionSubsystem = nullptr;
 
 	Super::NativeDestruct();
 }

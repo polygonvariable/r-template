@@ -34,6 +34,7 @@ public class RenEntity : ModuleRules
 
                 "RCoreEntity",
                 "RCoreCommon",
+                "RCoreTask",
                 "RenStorage",
                 "RenAbility",
                 "GameplayAbilities",

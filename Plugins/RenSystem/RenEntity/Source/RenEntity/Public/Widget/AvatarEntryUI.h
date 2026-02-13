@@ -26,7 +26,7 @@ class UAvatarEntryUI : public UCatalogEntryUI
 protected:
 
 	// ~ UCatalogEntryUI
-	virtual bool IsValidAssetId(const FPrimaryAssetId& AssetId) const override;
+	virtual bool IsPrimaryAssetIdValid(const FPrimaryAssetId& AssetId) const override;
 	virtual void SetPrimaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset) override;
 	// ~ End of UCatalogEntryUI
 

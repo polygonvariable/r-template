@@ -44,7 +44,7 @@ public:
 
 	/**
 	 * A pair of inventory container with value
-	 * TMap<FName = Container UUID, TMap<FName = Item UUID, FInventoryRecord>>
+	 * TMap<FName = Container UUID, TMap<FName = Item UUID, FInventoryItem>>
 	 */
 	UPROPERTY()
 	TMap<FName, FInventoryContainer> InventoryContainers;

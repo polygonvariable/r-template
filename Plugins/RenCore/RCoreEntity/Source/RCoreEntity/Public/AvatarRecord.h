@@ -18,25 +18,25 @@
  * 
  */
 USTRUCT(BlueprintType)
-struct FAvatarRecord
+struct FAvatarData
 {
 
 	GENERATED_BODY()
 
 public:
 
-	FAvatarRecord() : Health(0) {}
+	FAvatarData() {};
 
 	UPROPERTY()
 	int Health = 0;
 
 	UPROPERTY()
-	FEnhanceRecord Enhance;
+	FAscensionData Ascension;
 
 	void Sanitize()
 	{
 		Health = FMath::Max(0, Health);
-		Enhance.Sanitize();
+		Ascension.Sanitize();
 	}
 
 };

@@ -6,7 +6,7 @@
 #include "GameFramework/SaveGame.h"
 
 // Project Headers
-#include "RCoreEntity/Public/AvatarRecord.h"
+#include "AvatarRecord.h"
 
 // Generated Headers
 #include "EntityStorage.generated.h"
@@ -25,7 +25,7 @@ class UAvatarStorage : public USaveGame
 public:
 
 	UPROPERTY()
-	TMap<FPrimaryAssetId, FAvatarRecord> Records;
+	TMap<FPrimaryAssetId, FAvatarData> AvatarCollection;
 
 protected:
 

@@ -14,7 +14,7 @@
 #include "InventoryFilterRule.generated.h"
 
 // Forward Declarations
-struct FInventoryRecord;
+struct FInventoryItem;
 
 
 
@@ -55,9 +55,9 @@ struct FInventoryFilterRule
 	//EFilterCombination FilterCombination = EFilterCombination::And;
 
 
-	RCOREINVENTORY_API bool Match(const FInventoryRecord* Record) const;
+	RCOREINVENTORY_API bool Match(const FInventoryItem* Item) const;
 	RCOREINVENTORY_API bool Match(const FPrimaryAssetId& AssetId, const FName& AssetType, const FName& AssetRarity) const;
-	RCOREINVENTORY_API bool Match(const FInventoryRecord* Record, const FPrimaryAssetId& AssetId, const FName& AssetType, const FName& AssetRarity) const;
+	RCOREINVENTORY_API bool Match(const FInventoryItem* Item, const FPrimaryAssetId& AssetId, const FName& AssetType, const FName& AssetRarity) const;
 
 protected:
 

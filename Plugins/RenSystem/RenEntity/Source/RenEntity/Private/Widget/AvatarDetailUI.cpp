@@ -11,18 +11,18 @@
 #include "Components/WidgetSwitcher.h"
 
 // Project Headers
-#include "RCoreLibrary/Public/LogCategory.h"
-#include "RCoreLibrary/Public/LogMacro.h"
+#include "LogCategory.h"
+#include "LogMacro.h"
 
-#include "RCoreEntity/Public/AvatarAsset.h"
-#include "RenEntity/Public/EntityPrimaryAsset.h"
-#include "RenEntity/Public/Widget/AvatarEntry.h"
+#include "AvatarAsset.h"
+#include "EntityPrimaryAsset.h"
+#include "Widget/AvatarEntry.h"
 
 #include "Subsystem/AvatarSubsystem.h"
 
 
 
-void UAvatarDetailUI::HandleAvatarDataChanged(FPrimaryAssetId AssetId)
+void UAvatarDetailUI::HandleAvatarDataChanged(const FPrimaryAssetId& AssetId)
 {
 	if (ActiveAssetId == AssetId)
 	{
@@ -34,14 +34,14 @@ void UAvatarDetailUI::RefreshDetails()
 {
 	UGameInstance* GameInstance = GetGameInstance();
 	UAvatarSubsystem* AvatarSubsystem = GameInstance->GetSubsystem<UAvatarSubsystem>();
-	const FAvatarRecord* Record = AvatarSubsystem->GetAvatarRecord(ActiveAssetId);
+	const FAvatarData* Record = AvatarSubsystem->GetAvatarData(ActiveAssetId);
 	if (Record)
 	{
 		SetSecondaryDetails(*Record, nullptr);
 	}
 }
 
-bool UAvatarDetailUI::IsValidAssetId(const FPrimaryAssetId& AssetId) const
+bool UAvatarDetailUI::IsPrimaryAssetIdValid(const FPrimaryAssetId& AssetId) const
 {
 	return EntityPrimaryAsset::IsValid(AssetId);
 }
@@ -67,17 +67,17 @@ void UAvatarDetailUI::SetSecondaryDetails(const UCatalogEntry* Entry, const UPri
 		return;
 	}
 
-	const FAvatarRecord& Record = AvatarEntry->AvatarRecord;
+	const FAvatarData& Record = AvatarEntry->AvatarData;
 	SetSecondaryDetails(Record, Asset);
 }
 
-void UAvatarDetailUI::SetSecondaryDetails(const FAvatarRecord& Record, const UPrimaryDataAsset* Asset)
+void UAvatarDetailUI::SetSecondaryDetails(const FAvatarData& Record, const UPrimaryDataAsset* Asset)
 {
-	const FEnhanceRecord& Enhance = Record.Enhance;
+	const FAscensionData& Ascension = Record.Ascension;
 
-	if (EntryRank) EntryRank->SetText(FText::FromString(FString::FromInt(Enhance.Rank)));
-	if (EntryLevel) EntryLevel->SetText(FText::FromString(FString::FromInt(Enhance.Level)));
-	if (EntryExperience) EntryExperience->SetText(FText::FromString(FString::FromInt(Enhance.Experience)));
+	if (EntryRank) EntryRank->SetText(FText::FromString(FString::FromInt(Ascension.Rank)));
+	if (EntryLevel) EntryLevel->SetText(FText::FromString(FString::FromInt(Ascension.Level)));
+	if (EntryExperience) EntryExperience->SetText(FText::FromString(FString::FromInt(Ascension.Experience)));
 }
 
 void UAvatarDetailUI::NativeConstruct()

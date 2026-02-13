@@ -11,16 +11,16 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "RCoreLibrary/Public/LogCategory.h"
-#include "RCoreLibrary/Public/LogMacro.h"
+#include "LogCategory.h"
+#include "LogMacro.h"
 
-#include "RCoreEntity/Public/AvatarAsset.h"
-#include "RenEntity/Public/Widget/AvatarEntry.h"
-#include "RenEntity/Public/EntityPrimaryAsset.h"
+#include "AvatarAsset.h"
+#include "Widget/AvatarEntry.h"
+#include "EntityPrimaryAsset.h"
 
 
 
-bool UAvatarEntryUI::IsValidAssetId(const FPrimaryAssetId& AssetId) const
+bool UAvatarEntryUI::IsPrimaryAssetIdValid(const FPrimaryAssetId& AssetId) const
 {
 	return EntityPrimaryAsset::IsValid(AssetId);
 }

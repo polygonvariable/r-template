@@ -26,7 +26,7 @@ class UAvatarEntry : public UCatalogEntry
 
 public:
 
-	FAvatarRecord AvatarRecord;
+	FAvatarData AvatarData;
 
 };
 

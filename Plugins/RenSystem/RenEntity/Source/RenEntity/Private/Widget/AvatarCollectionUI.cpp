@@ -7,18 +7,17 @@
 #include "Components/ListView.h"
 
 // Project Headers
-#include "RCoreFilter/Public/FilterGroup.h"
-#include "RCoreFilter/Public/FilterLeafCriterion.h"
-#include "RCoreFilter/Public/FilterContext.h"
-#include "RCoreFilter/Public/FilterCriterion.h"
+#include "FilterGroup.h"
+#include "FilterLeafCriterion.h"
+#include "FilterContext.h"
+#include "FilterCriterion.h"
 
-#include "RCoreLibrary/Public/LogCategory.h"
-#include "RCoreLibrary/Public/LogMacro.h"
-#include "RCorePool/Public/PoolSubsystem.h"
+#include "LogCategory.h"
+#include "LogMacro.h"
 
-#include "RenEntity/Public/Widget/AvatarEntry.h"
-#include "RenEntity/Public/Subsystem/AvatarSubsystem.h"
-#include "RenEntity/Public/EntityPrimaryAsset.h"
+#include "Widget/AvatarEntry.h"
+#include "Subsystem/AvatarSubsystem.h"
+#include "EntityPrimaryAsset.h"
 
 
 
@@ -31,16 +30,16 @@ void UAvatarCollectionUI::DisplayEntries()
 		return;
 	}
 
-	const TMap<FPrimaryAssetId, FAvatarRecord>* AvatarRecords = Avatar->GetAvatarRecords();
-	if (!AvatarRecords)
+	const TMap<FPrimaryAssetId, FAvatarData>* Collection = Avatar->GetAvatarCollection();
+	if (!Collection)
 	{
-		LOG_ERROR(LogAvatar, TEXT("AvatarRecords is invalid"));
+		LOG_ERROR(LogAvatar, TEXT("AvatarCollection is invalid"));
 		return;
 	}
 
 	const UFilterCriterion* Filter = GetFilterRoot();
 	
-	for (const TPair<FPrimaryAssetId, FAvatarRecord>& Pair : *AvatarRecords)
+	for (const TPair<FPrimaryAssetId, FAvatarData>& Pair : *Collection)
 	{
 		if (IsValid(Filter))
 		{
@@ -59,7 +58,7 @@ void UAvatarCollectionUI::DisplayEntries()
 			continue;
 		}
 		Entry->AssetId = Pair.Key;
-		Entry->AvatarRecord = Pair.Value;
+		Entry->AvatarData = Pair.Value;
 
 		AddEntry(Entry);
 	}

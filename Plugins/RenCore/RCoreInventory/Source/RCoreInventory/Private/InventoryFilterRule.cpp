@@ -12,17 +12,17 @@
 
 
 
-bool FInventoryFilterRule::Match(const FInventoryRecord* Record) const
+bool FInventoryFilterRule::Match(const FInventoryItem* Item) const
 {
 	TArray<bool> Results;
 
-	if (Record)
+	if (Item)
 	{
-		Results.Add(FilterId.Matches(Record->ItemId));
-		Results.Add(FilterRank.Matches(Record->Enhancement.Rank));
-		Results.Add(FilterLevel.Matches(Record->Enhancement.Level));
-		Results.Add(FilterExperience.Matches(Record->Enhancement.Experience));
-		Results.Add(FilterQuantity.Matches(Record->Quantity));
+		Results.Add(FilterId.Matches(FName(*Item->ItemId.ToString())));
+		Results.Add(FilterRank.Matches(Item->Ascension.Rank));
+		Results.Add(FilterLevel.Matches(Item->Ascension.Level));
+		Results.Add(FilterExperience.Matches(Item->Ascension.Experience));
+		Results.Add(FilterQuantity.Matches(Item->Quantity));
 	}
 
 	return MatchInternal(Results);
@@ -50,17 +50,17 @@ bool FInventoryFilterRule::Match(const FPrimaryAssetId& AssetId, const FName& As
 	return MatchInternal(Results);
 }
 
-bool FInventoryFilterRule::Match(const FInventoryRecord* Record, const FPrimaryAssetId& AssetId, const FName& AssetType, const FName& AssetRarity) const
+bool FInventoryFilterRule::Match(const FInventoryItem* Item, const FPrimaryAssetId& AssetId, const FName& AssetType, const FName& AssetRarity) const
 {
 	TArray<bool> Results;
 
-	if (Record)
+	if (Item)
 	{
-		Results.Add(FilterId.Matches(Record->ItemId));
-		Results.Add(FilterRank.Matches(Record->Enhancement.Rank));
-		Results.Add(FilterLevel.Matches(Record->Enhancement.Level));
-		Results.Add(FilterExperience.Matches(Record->Enhancement.Experience));
-		Results.Add(FilterQuantity.Matches(Record->Quantity));
+		Results.Add(FilterId.Matches(FName(*Item->ItemId.ToString())));
+		Results.Add(FilterRank.Matches(Item->Ascension.Rank));
+		Results.Add(FilterLevel.Matches(Item->Ascension.Level));
+		Results.Add(FilterExperience.Matches(Item->Ascension.Experience));
+		Results.Add(FilterQuantity.Matches(Item->Quantity));
 	}
 
 	Results.Add(FilterAsset.Matches(AssetId));

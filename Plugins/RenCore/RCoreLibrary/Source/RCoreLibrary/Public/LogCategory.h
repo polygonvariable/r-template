@@ -13,6 +13,10 @@
 
 
 
+// ~ Task Categories
+RCORELIBRARY_API DECLARE_LOG_CATEGORY_EXTERN(LogTask, Log, All);
+// ~ End of Task Categories
+
 // ~ Library Categories
 RCORELIBRARY_API DECLARE_LOG_CATEGORY_EXTERN(LogTimer, Log, All);
 // ~ End of Library Categories

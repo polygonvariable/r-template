@@ -19,3 +19,13 @@ enum class ESelectionCondition : uint8
 	And UMETA(DisplayName = "And"),
 };
 
+/**
+ *
+ */
+UENUM(BlueprintType)
+enum class ESortDirection : uint8
+{
+	Ascending UMETA(DisplayName = "Ascending"),
+	Descending UMETA(DisplayName = "Descending"),
+};
+
