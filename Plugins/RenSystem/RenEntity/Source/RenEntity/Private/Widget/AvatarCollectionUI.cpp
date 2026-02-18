@@ -12,8 +12,8 @@
 #include "FilterContext.h"
 #include "FilterCriterion.h"
 
-#include "LogCategory.h"
-#include "LogMacro.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
 
 #include "Widget/AvatarEntry.h"
 #include "Subsystem/AvatarSubsystem.h"

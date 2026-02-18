@@ -4,14 +4,18 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
+#include "Http.h"
 
 // Project Headers
-#include "RCoreStorage/Public/StorageProviderInterface.h"
+#include "Interface/StorageProviderInterface.h"
+#include "Definition/StorageHandle.h"
+#include "TaskDefinition.h"
 
 // Generated Headers
 #include "StorageSubsystem.generated.h"
 
 // Forward Declarations
+class UStorage;
 class UStorage;
 
 
@@ -27,36 +31,36 @@ class UStorageSubsystem : public UGameInstanceSubsystem, public IStorageProvider
 
 public:
 
-	bool ReadStorage(FName SlotId = "Default", int UserIndex = 0);
-	bool UpdateStorage(FName SlotId = "Default", int UserIndex = 0);
-	bool DoesStorageExist(FName SlotId = "Default", int UserIndex = 0);
-
-
 	// ~ IStorageProviderInterface
-	virtual USaveGame* GetStorage(TSubclassOf<USaveGame> StorageClass, FName Path) override;
-	virtual bool SaveStorage(USaveGame* Storage, FName Path) override;
+	virtual UStorage* GetStorage(const FGuid& StorageId) override;
+	virtual void LoadStorage(FStorageHandle&& Handle) override;
+	virtual void SaveStorage(const FGuid& StorageId) override;
 	// ~ End of IStorageProviderInterface
 
 protected:
 
-	TMap<FString, FString> IdMap;
-
-	FName CurrentSlotId = NAME_None;
-	int CurrentUserIndex = 0;
+	bool bNetLoad = false;
 
 	UPROPERTY()
-	TObjectPtr<UStorage> CurrentStorage;
+	TMap<FGuid, TObjectPtr<UStorage>> StorageCollection;
 
-	bool CreateNewStorage(FName SlotId, int UserIndex);
-	void HandleGameInitialized();
 
-	bool MakeStorageId(TSubclassOf<USaveGame> InStorageClass, FName InSlotName, int InUserIndex, FString& OutStorageId) const;
+	bool MakeStorageId(TSubclassOf<UStorage> InStorageClass, const FString& InSlotName, int InUserIndex, FString& OutStorageId) const;
+	void GetDefaultQuery(const FGuid& StorageId, TSharedPtr<FJsonObject>& QueryJson);
+	void SerializeQuery(TSharedPtr<FJsonObject>& QueryJson, FString& OutString);
 
-public:
 
-	virtual USaveGame* GetLocalStorage() override;
+	UStorage* CreateStorage_Internal(TSubclassOf<UStorage> StorageClass, const FGuid& StorageId);
+	bool SaveStorage_Internal(UStorage* Storage, const FGuid& StorageId);
 
-protected:
+
+	void LoadStorage_Network(FStorageHandle Handle);
+	void LoadStorage_NetworkResponse(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSucceeded, FStorageHandle Handle);
+	UStorage* LoadStorage_Internal(const FGuid& StorageId, TSubclassOf<UStorage> StorageClass);
+
+
+	void OnPreGameInitialized();
+	void SaveAllStorages();
 
 	// ~ UGameInstanceSubsystem
 	virtual bool ShouldCreateSubsystem(UObject* Object) const override;

@@ -8,7 +8,7 @@
 
 // Project Headers
 #include "RCoreDelegate/Public/LatentDelegates.h"
-#include "RCoreLibrary/Public/AssetManagerUtils.h"
+#include "Util/AssetManagerUtil.h"
 #include "RCoreSettings/Public/GameMetadataSettings.h"
 
 
@@ -53,6 +53,6 @@ void URGameInstance::PreloadAssets()
 			Owner->GameInit();
 		};
 
-	AssetManagerUtils::LoadPrimaryAssets(this, AssetManager, PreloadAssets, AsyncCallback);
+	AssetManagerUtil::LoadPrimaryAssets(this, AssetManager, PreloadAssets, AsyncCallback);
 }
 

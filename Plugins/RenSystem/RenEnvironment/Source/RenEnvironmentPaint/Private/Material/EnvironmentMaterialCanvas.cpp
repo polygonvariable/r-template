@@ -14,8 +14,8 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 
 // Project Headers
-#include "RCoreLibrary/Public/LogCategory.h"
-#include "RCoreLibrary/Public/LogMacro.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
 
 #include "RenEnvironmentPaint/Public/EnvironmentBrushInterface.h"
 #include "RenEnvironmentPaint/Public/EnvironmentBrushComponent.h"

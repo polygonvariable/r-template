@@ -11,8 +11,8 @@
 #include "Components/WidgetSwitcher.h"
 
 // Project Headers
-#include "LogCategory.h"
-#include "LogMacro.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
 
 #include "AvatarAsset.h"
 #include "EntityPrimaryAsset.h"

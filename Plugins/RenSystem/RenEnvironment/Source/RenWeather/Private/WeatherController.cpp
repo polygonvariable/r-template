@@ -9,9 +9,9 @@
 // Project Header
 #include "RCoreCommon/Public/Priority/PriorityList.h"
 
-#include "RCoreLibrary/Private/TimerUtils.inl"
-#include "RCoreLibrary/Public/LogCategory.h"
-#include "RCoreLibrary/Public/LogMacro.h"
+#include "RCoreLibrary/Private/Util/TimerUtil.inl"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
 #include "RCoreMaterial/Public/MaterialLibrary.h"
 
 #include "RenEnvironment/Public/Subsystem/EnvironmentSubsystem.h"

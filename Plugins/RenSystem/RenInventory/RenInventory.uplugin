@@ -27,7 +27,12 @@
 		},
 		{
 			"Name": "RInventoryUI",
-			"Type": "Editor",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RItemAscension",
+			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}
 	],

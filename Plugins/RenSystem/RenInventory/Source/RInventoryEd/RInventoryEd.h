@@ -7,7 +7,6 @@
 
 // Forward declaration
 class UInventorySubsystem;
-class UInventoryStorageSubsystem;
 
 
 
@@ -25,7 +24,6 @@ protected:
 
 	TArray<IConsoleCommand*> Commands;
 
-	UInventoryStorageSubsystem* GetInventoryStorageSubsystem(UWorld* World);
 	UInventorySubsystem* GetInventorySubsystem(UWorld* World);
 
 	void RegisterCommand();

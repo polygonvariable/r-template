@@ -4,32 +4,20 @@
 #include "Widget/InventoryDetailUI.h"
 
 // Engine Headers
-#include "Components/EditableTextBox.h"
 #include "Components/Image.h"
-#include "Components/PanelWidget.h"
 #include "Components/TextBlock.h"
-#include "Components/WidgetSwitcher.h"
 
 // Project Headers
-#include "InventoryAsset.h"
-#include "InventoryRecord.h"
+#include "Asset/InventoryAsset.h"
+#include "Definition/InventoryItem.h"
+#include "Definition/InventoryPrimaryAsset.h"
+#include "InventoryEntry.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
+#include "Subsystem/InventorySubsystem.h"
 #include "Widget/AscensionDetailUI.h"
 
-#include "AssetManagerUtils.h"
-#include "LogCategory.h"
-#include "LogMacro.h"
 
-#include "InventoryEntry.h"
-#include "InventoryPrimaryAsset.h"
-#include "InventorySubsystem.h"
-
-
-
-
-void UInventoryDetailUI::SetContainerId(FGuid Id)
-{
-	ContainerId = Id;
-}
 
 void UInventoryDetailUI::RefreshDetails()
 {
@@ -40,8 +28,14 @@ void UInventoryDetailUI::RefreshDetails()
 		return;
 	}
 
-	const FInventoryItem* Item = Inventory->GetItemById(ContainerId, ActiveAssetId, ActiveItemId);
-	int Quantity = Inventory->GetTotalQuantity(ContainerId, ActiveAssetId);
+	const FInventoryItem* Item = Inventory->GetItemById(CatalogId, ActiveAssetId, ActiveItemId);
+	if (!Item)
+	{
+		LOG_ERROR(LogInventory, TEXT("Item is invalid"));
+		return;
+	}
+
+	int Quantity = Item->Quantity;
 	SetCustomDetails(Item, Quantity);
 }
 
@@ -90,20 +84,14 @@ void UInventoryDetailUI::SetCustomDetails(const FInventoryItem* Item, int Quanti
 
 void UInventoryDetailUI::NativeConstruct()
 {
-	UGameInstance* GameInstance = GetGameInstance();
-	if (IsValid(GameInstance))
+	UInventorySubsystem* Inventory = UInventorySubsystem::Get(GetGameInstance());
+	if (IsValid(Inventory))
 	{
-		UInventorySubsystem* Inventory = GameInstance->GetSubsystem<UInventorySubsystem>();
-		if (IsValid(Inventory))
+		if (bAutoRefresh)
 		{
-			if (bAutoRefresh)
-			{
-				Inventory->OnItemAdded.AddWeakLambda(this, [this](FGuid InContainerId, const FPrimaryAssetId&, FGuid) { if (ContainerId == InContainerId) RefreshDetails(); });
-				Inventory->OnItemRemoved.AddWeakLambda(this, [this](FGuid InContainerId, const FPrimaryAssetId&, FGuid) { if (ContainerId == InContainerId) RefreshDetails(); });
-				Inventory->OnItemUpdated.AddWeakLambda(this, [this](FGuid InContainerId, const FPrimaryAssetId&, FGuid) { if (ContainerId == InContainerId) RefreshDetails(); });
-			}
-			InventorySubsystem = TWeakObjectPtr<UInventorySubsystem>(Inventory);
+			Inventory->OnInventoryRefreshed.AddWeakLambda(this, [this](const FGuid& InventoryId) { if (CatalogId == InventoryId) RefreshDetails(); });
 		}
+		InventorySubsystem = TWeakObjectPtr<UInventorySubsystem>(Inventory);
 	}
 
 	Super::NativeConstruct();
@@ -114,9 +102,7 @@ void UInventoryDetailUI::NativeDestruct()
 	UInventorySubsystem* Inventory = InventorySubsystem.Get();
 	if (IsValid(Inventory))
 	{
-		Inventory->OnItemAdded.RemoveAll(this);
-		Inventory->OnItemRemoved.RemoveAll(this);
-		Inventory->OnItemUpdated.RemoveAll(this);
+		Inventory->OnInventoryRefreshed.RemoveAll(this);
 	}
 	InventorySubsystem.Reset();
 

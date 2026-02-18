@@ -9,11 +9,11 @@
 #include "AssetCollection.h"
 #include "AvatarAsset.h"
 #include "LatentDelegates.h"
-#include "LogCategory.h"
-#include "LogMacro.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
 #include "RCoreAssetManager/Private/RAssetManager.inl"
-#include "StorageProviderInterface.h"
-#include "SubsystemUtils.h"
+#include "Interface/StorageProviderInterface.h"
+#include "Util/SubsystemUtil.h"
 
 #include "EntityPrimaryAsset.h"
 #include "Storage/EntityStorage.h"
@@ -129,10 +129,10 @@ bool UAvatarSubsystem::UpdateAvatar(const FPrimaryAssetId& AvatarId, TFunctionRe
 
 
 void UAvatarSubsystem::LoadAvatarStorage()
-{
+{/*
 	FLatentDelegates::OnStorageLoaded.RemoveAll(this);
 
-	IStorageProviderInterface* StorageProvider = SubsystemUtils::GetSubsystemInterface<IStorageProviderInterface>(GetGameInstance());
+	IStorageProviderInterface* StorageProvider = SubsystemUtil::GetSubsystemInterface<IStorageProviderInterface>(GetGameInstance());
 	if (!StorageProvider)
 	{
 		LOG_ERROR(LogAvatar, TEXT("Storage provider not found"));
@@ -149,11 +149,11 @@ void UAvatarSubsystem::LoadAvatarStorage()
 	StorageProviderInterface = TWeakInterfacePtr<IStorageProviderInterface>(StorageProvider);
 	AvatarStorage = Storage;
 
-	LOG_INFO(LogAvatar, TEXT("Storage loaded"));
+	LOG_INFO(LogAvatar, TEXT("Storage loaded"));*/
 }
 
 void UAvatarSubsystem::SaveAvatarStorage()
-{
+{/*
 	UAvatarStorage* Storage = AvatarStorage.Get();
 	IStorageProviderInterface* StorageProvider = StorageProviderInterface.Get();
 	if (StorageProvider || IsValid(Storage))
@@ -162,7 +162,7 @@ void UAvatarSubsystem::SaveAvatarStorage()
 	}
 
 	AvatarStorage = nullptr;
-	StorageProviderInterface.Reset();
+	StorageProviderInterface.Reset();*/
 }
 
 bool UAvatarSubsystem::ShouldCreateSubsystem(UObject* Outer) const

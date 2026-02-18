@@ -2,9 +2,8 @@
 
 #include "RInventoryEd.h"
 #include "HAL/IConsoleManager.h"
-#include "InventorySubsystem.h"
-#include "InventoryStorageSubsystem.h"
-#include "InventoryPrimaryAsset.h"
+#include "Subsystem/InventorySubsystem.h"
+#include "Definition/InventoryPrimaryAsset.h"
 
 #define LOCTEXT_NAMESPACE "FRInventoryEdModule"
 
@@ -53,16 +52,6 @@ void FRInventoryEdModule::UnregisterCommand()
 	}
 }
 
-UInventoryStorageSubsystem* FRInventoryEdModule::GetInventoryStorageSubsystem(UWorld* World)
-{
-	UGameInstance* GameInstance = World->GetGameInstance();
-	if (!IsValid(GameInstance))
-	{
-		return nullptr;
-	}
-	return GameInstance->GetSubsystem<UInventoryStorageSubsystem>();
-}
-
 UInventorySubsystem* FRInventoryEdModule::GetInventorySubsystem(UWorld* World)
 {
 	UGameInstance* GameInstance = World->GetGameInstance();
@@ -81,15 +70,14 @@ void FRInventoryEdModule::AddItem(const TArray<FString>& Args, UWorld* World)
 		return;
 	}
 
-	UInventoryStorageSubsystem* InventoryStorageSubsystem = GetInventoryStorageSubsystem(World);
 	UInventorySubsystem* InventorySubsystem = GetInventorySubsystem(World);
-	if (IsValid(InventorySubsystem) && IsValid(InventoryStorageSubsystem))
+	if (IsValid(InventorySubsystem))
 	{
-		FGuid ContainerId = InventoryStorageSubsystem->GetDefaultStorageId();
+		FGuid InventoryId = UInventorySubsystem::GetStorageId();
 		FPrimaryAssetId AssetId = InventoryPrimaryAsset::GetPrimaryAssetId(FName(*Args[0]));
 		int Quantity = FCString::Atoi(*Args[1]);
 
-		InventorySubsystem->AddItem(ContainerId, AssetId, Quantity);
+		InventorySubsystem->AddItem(InventoryId, AssetId, Quantity);
 	}
 }
 
@@ -101,16 +89,16 @@ void FRInventoryEdModule::RemoveItem(const TArray<FString>& Args, UWorld* World)
 		return;
 	}
 
-	UInventoryStorageSubsystem* InventoryStorageSubsystem = GetInventoryStorageSubsystem(World);
-	UInventorySubsystem* InventorySubsystem = GetInventorySubsystem(World);
-	if (IsValid(InventorySubsystem))
-	{
-		FName ContainerId = FName(*Args[0]);
-		FPrimaryAssetId AssetId = InventoryPrimaryAsset::GetPrimaryAssetId(FName(*Args[1]));
-		int Quantity = FCString::Atoi(*Args[2]);
+	//UInventoryStorageSubsystem* InventoryStorageSubsystem = GetInventoryStorageSubsystem(World);
+	//UInventorySubsystem* InventorySubsystem = GetInventorySubsystem(World);
+	//if (IsValid(InventorySubsystem))
+	//{
+	//	FName ContainerId = FName(*Args[0]);
+	//	FPrimaryAssetId AssetId = InventoryPrimaryAsset::GetPrimaryAssetId(FName(*Args[1]));
+	//	int Quantity = FCString::Atoi(*Args[2]);
 
-		//InventorySubsystem->RemoveItem(ContainerId, ItemGuid, Quantity);
-	}
+	//	//InventorySubsystem->RemoveItem(ContainerId, ItemGuid, Quantity);
+	//}
 }
 
 #undef LOCTEXT_NAMESPACE

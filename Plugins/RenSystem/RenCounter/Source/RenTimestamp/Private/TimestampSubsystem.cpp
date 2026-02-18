@@ -8,8 +8,8 @@
 // Project Headers
 #include "RCoreDelegate/Public/LatentDelegates.h"
 
-#include "RCoreLibrary/Public/LogCategory.h"
-#include "RCoreLibrary/Public/LogMacro.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
 
 #include "RenCounter/Public/CounterSubsystem.h"
 #include "RCoreCounter/Public/CounterContainer.h"

@@ -18,11 +18,14 @@ struct FAssetRuleContext
 
 public:
 
-	FGameplayTagContainer RuleTags;
+	FAssetRuleContext() {}
+	FAssetRuleContext(const FGameplayTagContainer& InTags) : Tags(InTags) {}
+
+	FGameplayTagContainer Tags;
 
 };
 
-struct FAssetRuleContext_Sequence : public FAssetRuleContext
+struct FAssetRuleContext_List : public FAssetRuleContext
 {
 
 public:
@@ -30,3 +33,4 @@ public:
 	int Index = 0;
 	
 };
+

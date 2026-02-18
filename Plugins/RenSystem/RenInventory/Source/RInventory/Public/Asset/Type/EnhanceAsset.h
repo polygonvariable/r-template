@@ -26,17 +26,17 @@ class UEnhanceAsset : public UNonEnhanceableAsset
 
 public:
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	int ExchangePoints = 500;
+	UPROPERTY(EditDefaultsOnly, Instanced)
+	TObjectPtr<UAssetGroup> BreakdownItems = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	FCurveTableRowHandle ExchangeCurve;
+	UPROPERTY(EditDefaultsOnly, Instanced)
+	TObjectPtr<UAssetGroup> RebuildItems = nullptr;
 
-public:
 
-	// ~ IExchangeProviderInterface
-	RINVENTORY_API virtual float GetExchangedNumber(FInstancedStruct& Context) const override;
-	// ~ End of IExchangeProviderInterface
-
+	// ~ IAssetStructureInterface
+	RINVENTORY_API virtual const UAssetCollection* GetBreakdownAssets(const FGameplayTagContainer& InTags) const override;
+	RINVENTORY_API virtual const UAssetCollection* GetRebuildAssets(const FGameplayTagContainer& InTags) const override;
+	// ~ End of IAssetStructureInterface
+	
 };
 

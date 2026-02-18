@@ -6,12 +6,11 @@
 // Engine Headers
 
 // Project Headers
+#include "Definition/InventoryPrimaryAsset.h"
+#include "Definition/InventoryFilterProperty.h"
 #include "FilterContext.h"
 #include "FilterCriterion.h"
 #include "FilterGroup.h"
-#include "InventoryAsset.h"
-#include "InventoryPrimaryAsset.h"
-#include "InventoryRecord.h"
 #include "RAssetManager.h"
 
 
@@ -47,7 +46,14 @@ void UInventoryFilterUI::SetPrimaryDetails(const UCatalogEntry* Entry, const UPr
 	Context.SetValue(InventoryFilterProperty::AssetType, ItemType);
 	Context.SetValue(InventoryFilterProperty::AssetRarity, ItemRarity);
 
-	bool bPrimary = FilterRule->CriterionRoot->Evaluate(Context);
-	SwitchDetails(bPrimary);
+	UFilterCriterion* FilterRoot = FilterRule->CriterionRoot;
+	if (IsValid(FilterRoot))
+	{
+		SwitchDetails(FilterRoot->Evaluate(Context));
+	}
+	else
+	{
+		SwitchDetails(false);
+	}
 }
 

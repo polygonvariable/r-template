@@ -6,26 +6,19 @@
 // Engine Headers
 
 // Project Headers
-#include "EnhanceRecord.h"
+#include "Asset/AssetRuleDefinition.h"
+#include "AssetCollection.h"
+#include "Definition/AscensionData.h"
 
 
 
-float UEnhanceAsset::GetExchangedNumber(FInstancedStruct& Context) const
+const UAssetCollection* UEnhanceAsset::GetBreakdownAssets(const FGameplayTagContainer& InTags) const
 {
-	const FEnhanceRecord* EnhanceRecord = Context.GetPtr<FEnhanceRecord>();
-	if (!EnhanceRecord)
-	{
-		return ExchangePoints;
-	}
+	return BreakdownItems->GetCollectionRule<UAssetCollection>(FAssetRuleContext(InTags));
+}
 
-	FString RowName = ExchangeCurve.RowName.ToString();
-	int NewPoints = ExchangePoints;
-
-	if (ExchangeCurve.IsValid(RowName))
-	{
-		NewPoints = ExchangeCurve.GetCurve(RowName)->Eval(EnhanceRecord->Level);
-	}
-
-	return FMath::Max(1, NewPoints);
+const UAssetCollection* UEnhanceAsset::GetRebuildAssets(const FGameplayTagContainer& InTags) const
+{
+	return RebuildItems->GetCollectionRule<UAssetCollection>(FAssetRuleContext(InTags));
 }
 

@@ -12,7 +12,7 @@
 #include "AvatarAsset.generated.h"
 
 // Forward Declarations
-class UAssetCollectionGroup;
+class UAssetGroup;
 
 
 
@@ -83,18 +83,14 @@ public:
 
 
 	UPROPERTY(EditDefaultsOnly, Instanced)
-	TObjectPtr<UAssetCollectionGroup> ExperienceItems = nullptr;
+	TObjectPtr<UAssetGroup> ExperienceItems = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Instanced)
-	TObjectPtr<UAssetCollectionGroup> RankItems = nullptr;
+	TObjectPtr<UAssetGroup> RankItems = nullptr;
 
 
-	UPROPERTY(EditDefaultsOnly, Instanced)
-	TObjectPtr<UAssetCollectionGroup> Decompose = nullptr;
-
-
-	RCOREENTITY_API virtual const UAssetCollectionRule_Dictionary* GetExperienceItems(int InExperience, int InLevel, int InRank) const;
-	RCOREENTITY_API virtual const UAssetCollectionRule_Dictionary* GetRankItems(int InExperience, int InLevel, int InRank) const;
+	RCOREENTITY_API virtual const UAssetCollection* GetExperienceItems(int InExperience, int InLevel, int InRank) const;
+	RCOREENTITY_API virtual const UAssetCollection* GetRankItems(int InExperience, int InLevel, int InRank) const;
 
 	// ~ UPrimaryDataAsset
 	RCOREENTITY_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
@@ -103,48 +99,5 @@ public:
 };
 
 
-
-
-
-/**
- *
- *
- *
- */
-UCLASS(MinimalAPI)
-class UMetadataAsset : public UPrimaryDataAsset
-{
-
-	GENERATED_BODY()
-
-public:
-
-	// ~ UPrimaryDataAsset
-	RCOREENTITY_API virtual FPrimaryAssetId GetPrimaryAssetId() const override
-	{
-		return FPrimaryAssetId(TEXT("Metadata"), GetFName());
-	}
-	// ~ End of UPrimaryDataAsset
-
-};
-
-
-/**
- *
- *
- *
- */
-UCLASS(MinimalAPI)
-class UExperiencePointAsset : public UMetadataAsset
-{
-
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditDefaultsOnly, AssetRegistrySearchable)
-	int Experience = 0;
-
-};
 
 

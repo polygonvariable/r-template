@@ -9,8 +9,8 @@
 // Project Headers
 #include "AvatarAsset.h"
 #include "FilterLeafCriterion.h"
-#include "LogCategory.h"
-#include "LogMacro.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
 #include "Widget/CatalogEntry.h"
 
 #include "EntityPrimaryAsset.h"

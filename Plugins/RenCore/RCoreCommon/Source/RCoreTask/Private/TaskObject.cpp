@@ -11,30 +11,28 @@
 
 void UTaskObject::StartTask()
 {
-	Callback.ExecuteIfBound(ETaskState::Started, TEXT(""));
-
+	Callback.ExecuteIfBound(FTaskResult(ETaskState::Pending));
 	OnStarted();
 }
 
 void UTaskObject::StopTask()
 {
 	OnStopped();
-
-	Callback.ExecuteIfBound(ETaskState::Stopped, TEXT(""));
+	Callback.ExecuteIfBound(FTaskResult(ETaskState::Cancelled));
 	OnFinished.ExecuteIfBound(TaskId);
 	Cleanup();
 }
 
 void UTaskObject::Succeed()
 {
-	Callback.ExecuteIfBound(ETaskState::Finished, TEXT(""));
+	Callback.ExecuteIfBound(FTaskResult(ETaskState::Completed));
 	OnFinished.ExecuteIfBound(TaskId);
 	Cleanup();
 }
 
 void UTaskObject::Fail(const FString& Reason)
 {
-	Callback.ExecuteIfBound(ETaskState::Failed, Reason);
+	Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed, Reason));
 	OnFinished.ExecuteIfBound(TaskId);
 	Cleanup();
 }

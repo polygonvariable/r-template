@@ -8,187 +8,246 @@
 #include "Kismet/GameplayStatics.h"
 
 // Project Headers
-#include "RCoreLibrary/Public/LogMacro.h"
-#include "RCoreDelegate/Public/LatentDelegates.h"
+#include "Interface/StorageProviderInterface.h"
+#include "LatentDelegates.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
+#include "SaveGame/Storage.h"
 
-#include "RenStorage/Public/Storage.h"
 
 
-
-bool UStorageSubsystem::ReadStorage(FName SlotId, int UserIndex)
+UStorage* UStorageSubsystem::GetStorage(const FGuid& StorageId)
 {
-	if (IsValid(CurrentStorage) && CurrentSlotId.IsValid())
+	TObjectPtr<UStorage>* FoundStorage = StorageCollection.Find(StorageId);
+	if (!FoundStorage)
 	{
-		UpdateStorage(CurrentSlotId, CurrentUserIndex);
-	}
-
-	FString SlotName = SlotId.ToString();
-
-	if (DoesStorageExist(SlotId))
-	{
-		if (USaveGame* LoadedSaveGame = UGameplayStatics::LoadGameFromSlot(SlotName, UserIndex))
-		{
-			CurrentStorage = Cast<UStorage>(LoadedSaveGame);
-			CurrentSlotId = SlotId;
-			CurrentUserIndex = UserIndex;
-
-			LOG_INFO(LogTemp, TEXT("Storage loaded from slot: %s"), *SlotName);
-			return true;
-		}
-
-		LOG_ERROR(LogTemp, TEXT("Failed to load storage from slot: %s"), *SlotName);
-		return false;
-	}
-
-	if (!CreateNewStorage(SlotId, UserIndex))
-	{
-		LOG_ERROR(LogTemp, TEXT("Failed to create new storage for slot: %s"), *SlotName);
-		return false;
-	}
-
-	CurrentSlotId = SlotId;
-	CurrentUserIndex = UserIndex;
-
-	return true;
-}
-
-bool UStorageSubsystem::UpdateStorage(FName SlotId, int UserIndex)
-{
-	if (!IsValid(CurrentStorage))
-	{
-		LOG_ERROR(LogTemp, TEXT("Storage is not valid"));
-		return false;
-	}
-
-	FString SlotName = SlotId.ToString();
-
-	if (!UGameplayStatics::SaveGameToSlot(CurrentStorage, SlotName, UserIndex))
-	{
-		LOG_ERROR(LogTemp, TEXT("Failed to save storage to slot: %s"), *SlotName);
-		return false;
-	}
-
-	LOG_INFO(LogTemp, TEXT("Storage updated and saved to slot: %s"), *SlotName);
-	return true;
-}
-
-bool UStorageSubsystem::DoesStorageExist(FName SlotId, int UserIndex)
-{
-	return UGameplayStatics::DoesSaveGameExist(SlotId.ToString(), UserIndex);
-}
-
-
-
-
-
-USaveGame* UStorageSubsystem::GetStorage(TSubclassOf<USaveGame> StorageClass, FName Path)
-{
-	if (!IsValid(StorageClass))
-	{
-		LOG_ERROR(LogTemp, TEXT("Storage class is not valid or does not implement UStorageInterface"));
 		return nullptr;
 	}
-
-	FString StorageId;
-	bool bSuccess = MakeStorageId(StorageClass, Path, 0, StorageId);
-	if (!bSuccess)
-	{
-		LOG_ERROR(LogTemp, TEXT("Failed to make storage id"));
-		return nullptr;
-	}
-
-	bool bStorageExists = UGameplayStatics::DoesSaveGameExist(StorageId, 0);
-	if (bStorageExists)
-	{
-		return UGameplayStatics::LoadGameFromSlot(StorageId, 0);
-	}
-
-	USaveGame* NewStorage = UGameplayStatics::CreateSaveGameObject(StorageClass);
-	if (!IsValid(NewStorage))
-	{
-		LOG_ERROR(LogTemp, TEXT("Failed to create save game object"));
-		return nullptr;
-	}
-
-	UGameplayStatics::SaveGameToSlot(NewStorage, StorageId, 0);
-
-	return NewStorage;
+	return FoundStorage->Get();
 }
 
-bool UStorageSubsystem::SaveStorage(USaveGame* Storage, FName Path)
+void UStorageSubsystem::LoadStorage(FStorageHandle&& Handle)
 {
+	if (!Handle.IsValid() || StorageCollection.Contains(Handle.StorageId))
+	{
+		LOG_ERROR(LogStorage, TEXT("Invalid storage handle or storage is already loading"));
+		Handle.Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed));
+		return;
+	}
+
+	if (bNetLoad)
+	{
+		LoadStorage_Network(MoveTemp(Handle));
+		return;
+	}
+
+	UStorage* Storage = LoadStorage_Internal(Handle.StorageId, Handle.StorageClass);
+	ETaskState State = IsValid(Storage) ? ETaskState::Completed : ETaskState::Failed;
+
+	Handle.Callback.ExecuteIfBound(FTaskResult(State));
+}
+
+void UStorageSubsystem::SaveStorage(const FGuid& StorageId)
+{
+	TObjectPtr<UStorage>* FoundStorage = StorageCollection.Find(StorageId);
+	if (!FoundStorage)
+	{
+		return;
+	}
+
+	UStorage* Storage = FoundStorage->Get();
 	if (!IsValid(Storage))
 	{
-		LOG_ERROR(LogTemp, TEXT("Storage is not valid"));
-		return false;
+		return;
 	}
 
-	FString StorageId;
-	bool bSuccess = MakeStorageId(Storage->GetClass(), Path, 0, StorageId);
-	if (!bSuccess)
+	if (bNetLoad && !Storage->GetForceSave())
 	{
-		LOG_ERROR(LogTemp, TEXT("Failed to make storage id"));
-		return false;
+		return;
 	}
 
-	return UGameplayStatics::SaveGameToSlot(Storage, StorageId, 0);
+	SaveStorage_Internal(Storage, StorageId);
 }
 
 
 
-USaveGame* UStorageSubsystem::GetLocalStorage()
-{
-	return CurrentStorage;
-}
-
-
-
-bool UStorageSubsystem::CreateNewStorage(FName SlotId, int UserIndex)
-{
-	USaveGame* NewSaveGame = UGameplayStatics::CreateSaveGameObject(UStorage::StaticClass());
-	if (!IsValid(NewSaveGame))
-	{
-		LOG_ERROR(LogTemp, TEXT("Failed to create save game object"));
-		return false;
-	}
-
-	const FString SlotName = SlotId.ToString();
-
-	if (!UGameplayStatics::SaveGameToSlot(NewSaveGame, SlotName, UserIndex))
-	{
-		LOG_ERROR(LogTemp, TEXT("Failed to save new storage to slot: %s"), *SlotName);
-		return false;
-	}
-
-	CurrentStorage = Cast<UStorage>(NewSaveGame);
-
-	LOG_INFO(LogTemp, TEXT("New storage created and saved to slot: %s"), *SlotName);
-	return true;
-}
-
-void UStorageSubsystem::HandleGameInitialized()
-{
-	FLatentDelegates::OnPreGameInitialized.RemoveAll(this);
-	if (ReadStorage())
-	{
-		FLatentDelegates::OnStorageLoaded.Broadcast();
-	}
-}
-
-bool UStorageSubsystem::MakeStorageId(TSubclassOf<USaveGame> InStorageClass, FName InSlotName, int InUserIndex, FString& OutStorageId) const
+bool UStorageSubsystem::MakeStorageId(TSubclassOf<UStorage> InStorageClass, const FString& InSlotName, int InUserIndex, FString& OutStorageId) const
 {
 	if (!IsValid(InStorageClass))
 	{
-		OutStorageId = TEXT("");
+		OutStorageId = TEXT_EMPTY;
 		return false;
 	}
 
-	FString Combined = InStorageClass->GetPathName() + TEXT("::") + InSlotName.ToString() + TEXT("::") + FString::FromInt(InUserIndex);
+	FString Combined = InStorageClass->GetPathName() + TEXT("::") + InSlotName + TEXT("::") + FString::FromInt(InUserIndex);
 	uint32 Hash = GetTypeHash(Combined);
 
 	OutStorageId = FString::Printf(TEXT("Storage_%08X"), Hash);
 
 	return true;
+}
+
+void UStorageSubsystem::GetDefaultQuery(const FGuid& StorageId, TSharedPtr<FJsonObject>& QueryJson)
+{
+	QueryJson->SetStringField(TEXT("storageId"), StorageId.ToString());
+}
+
+void UStorageSubsystem::SerializeQuery(TSharedPtr<FJsonObject>& QueryJson, FString& OutString)
+{
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutString);
+	FJsonSerializer::Serialize(QueryJson.ToSharedRef(), Writer);
+}
+
+
+
+UStorage* UStorageSubsystem::CreateStorage_Internal(TSubclassOf<UStorage> StorageClass, const FGuid& StorageId)
+{
+	if (!IsValid(StorageClass))
+	{
+		LOG_ERROR(LogStorage, TEXT("Storage class is not valid"));
+		return nullptr;
+	}
+
+	FString FileId;
+	bool bSuccess = MakeStorageId(StorageClass, StorageId.ToString(), 0, FileId);
+	if (!bSuccess)
+	{
+		LOG_ERROR(LogStorage, TEXT("Failed to make storage id"));
+		return nullptr;
+	}
+
+	if (UGameplayStatics::DoesSaveGameExist(FileId, 0))
+	{
+		return Cast<UStorage>(UGameplayStatics::LoadGameFromSlot(FileId, 0));
+	}
+
+	USaveGame* NewStorage = UGameplayStatics::CreateSaveGameObject(StorageClass);
+	if (!IsValid(NewStorage))
+	{
+		LOG_ERROR(LogStorage, TEXT("Failed to create save game object"));
+		return nullptr;
+	}
+
+	UGameplayStatics::SaveGameToSlot(NewStorage, FileId, 0);
+
+	return Cast<UStorage>(NewStorage);
+}
+
+bool UStorageSubsystem::SaveStorage_Internal(UStorage* Storage, const FGuid& StorageId)
+{
+	if (!IsValid(Storage))
+	{
+		LOG_ERROR(LogStorage, TEXT("Storage is not valid"));
+		return false;
+	}
+
+	FString FileId;
+	bool bSuccess = MakeStorageId(Storage->GetClass(), StorageId.ToString(), 0, FileId);
+	if (!bSuccess)
+	{
+		LOG_ERROR(LogStorage, TEXT("Failed to make storage id"));
+		return false;
+	}
+
+	return UGameplayStatics::SaveGameToSlot(Storage, FileId, 0);
+}
+
+
+
+void UStorageSubsystem::LoadStorage_Network(FStorageHandle Handle)
+{
+	TSharedPtr<FJsonObject> StorageQuery = MakeShared<FJsonObject>();
+	GetDefaultQuery(Handle.StorageId, StorageQuery);
+
+	FString RequestBody;
+	SerializeQuery(StorageQuery, RequestBody);
+
+	FHttpModule& HttpModule = FHttpModule::Get();
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = HttpModule.CreateRequest();
+
+	Request->SetURL(Handle.Url);
+	Request->SetVerb(TEXT("POST"));
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetContentAsString(RequestBody);
+
+	Request->OnProcessRequestComplete().BindUObject(this, &UStorageSubsystem::LoadStorage_NetworkResponse, MoveTemp(Handle));
+	Request->ProcessRequest();
+}
+
+void UStorageSubsystem::LoadStorage_NetworkResponse(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSucceeded, FStorageHandle Handle)
+{
+	if (!bSucceeded || !Response.IsValid())
+	{
+		Handle.Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed));
+		return;
+	}
+
+	FString ResponseString = Response->GetContentAsString();
+
+	TSharedPtr<FJsonObject> ResponseObject;
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(ResponseString);
+
+	if (!FJsonSerializer::Deserialize(Reader, ResponseObject))
+	{
+		Handle.Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed));
+		return;
+	}
+
+	UStorage* Storage = LoadStorage_Internal(Handle.StorageId, Handle.StorageClass);
+	if (!IsValid(Storage))
+	{
+		Handle.Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed));
+		return;
+	}
+
+	if (ResponseObject.IsValid())
+	{
+		Storage->NetDeserialize(ResponseObject);
+	}
+
+	Handle.Callback.ExecuteIfBound(FTaskResult(ETaskState::Completed));
+}
+
+UStorage* UStorageSubsystem::LoadStorage_Internal(const FGuid& StorageId, TSubclassOf<UStorage> StorageClass)
+{
+	if (!StorageId.IsValid())
+	{
+		LOG_ERROR(LogInventory, TEXT("StorageId is not valid"));
+		return nullptr;
+	}
+
+	IStorageProviderInterface* StorageProvider = IStorageProviderInterface::Get(GetGameInstance());
+	if (!StorageProvider)
+	{
+		LOG_ERROR(LogInventory, TEXT("Storage provider not found"));
+		return nullptr;
+	}
+
+	UStorage* Storage = CreateStorage_Internal(StorageClass, StorageId);
+	if (!IsValid(Storage))
+	{
+		LOG_ERROR(LogInventory, TEXT("Storage is not valid"));
+		return nullptr;
+	}
+
+	StorageCollection.Add(StorageId, Storage);
+
+	return Storage;
+}
+
+
+
+void UStorageSubsystem::OnPreGameInitialized()
+{
+	FLatentDelegates::OnPreGameInitialized.RemoveAll(this);
+}
+
+void UStorageSubsystem::SaveAllStorages()
+{
+	for (const TPair<FGuid, UStorage*>& Pair : StorageCollection)
+	{
+		SaveStorage(Pair.Key);
+	}
 }
 
 bool UStorageSubsystem::ShouldCreateSubsystem(UObject* Object) const
@@ -199,18 +258,14 @@ bool UStorageSubsystem::ShouldCreateSubsystem(UObject* Object) const
 void UStorageSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-
-	if (!FLatentDelegates::OnPreGameInitialized.IsBoundToObject(this))
-	{
-		FLatentDelegates::OnPreGameInitialized.AddUObject(this, &UStorageSubsystem::HandleGameInitialized);
-	}
+	FLatentDelegates::OnPreGameInitialized.AddUObject(this, &UStorageSubsystem::OnPreGameInitialized);
 }
 
 void UStorageSubsystem::Deinitialize()
 {
-	FLatentDelegates::OnPreGameInitialized.RemoveAll(this);
+	SaveAllStorages();
 
-	UpdateStorage();
+	FLatentDelegates::OnPreGameInitialized.RemoveAll(this);
 	Super::Deinitialize();
 }
 

@@ -55,6 +55,24 @@ public:
 };
 
 
+/**
+ *
+ */
+UCLASS(MinimalAPI, DisplayName = "Filter (Guid)")
+class UFilterGuidCriterion : public UFilterLeafCriterion
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FGuid> Included;
+
+	RCOREFILTER_API virtual bool Evaluate(const FFilterContext& Context) const override;
+
+};
+
 
 /**
  *

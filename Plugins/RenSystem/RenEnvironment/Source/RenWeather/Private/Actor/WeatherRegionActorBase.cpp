@@ -6,8 +6,8 @@
 // Engine Headers
 
 // Project Header
-#include "RCoreLibrary/Public/LogMacro.h"
-#include "RCoreLibrary/Public/LogCategory.h"
+#include "Log/LogMacro.h"
+#include "Log/LogCategory.h"
 
 #include "RenWeather/Public/WeatherAsset.h"
 #include "RenWeather/Public/WeatherSubsystem.h"

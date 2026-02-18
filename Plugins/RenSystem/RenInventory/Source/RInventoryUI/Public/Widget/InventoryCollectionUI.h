@@ -3,10 +3,9 @@
 #pragma once
 
 // Engine Headers
-#include "InstancedStruct.h"
 
 // Project Headers
-#include "InventoryDefinition.h"
+#include "Definition/InventoryDefinition.h"
 #include "Widget/CatalogCollectionUI.h"
 
 // Generated Headers
@@ -28,19 +27,14 @@ class UInventoryCollectionUI : public UCatalogCollectionUI
 
 public:
 
-	void SetContainerId(FGuid Id);
-
 	// ~ UCatalogCollectionUI
-	virtual void DisplayEntries() override;
+	RINVENTORYUI_API virtual void DisplayEntries() override;
 	// ~ End of UCatalogCollectionUI
 
 protected:
 
 	UPROPERTY(EditAnywhere)
 	bool bAutoRefresh = false;
-
-	UPROPERTY(EditAnywhere)
-	FGuid ContainerId;
 
 	UPROPERTY(EditAnywhere)
 	FInventoryQueryRule QueryRule = FInventoryQueryRule();

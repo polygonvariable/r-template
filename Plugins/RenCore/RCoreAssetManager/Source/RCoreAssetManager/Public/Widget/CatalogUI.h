@@ -27,6 +27,8 @@ class UCatalogUI : public UUserWidget
 
 public:
 
+	RCOREASSETMANAGER_API virtual void SetCatalogId(const FGuid& Id);
+
 	RCOREASSETMANAGER_API virtual void InitializeDetails(const UCatalogEntry* Entry);
 	RCOREASSETMANAGER_API virtual void InitializeDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset);
 
@@ -40,6 +42,9 @@ public:
 	RCOREASSETMANAGER_API virtual void CloseWidget();
 
 protected:
+
+	UPROPERTY(EditAnywhere)
+	FGuid CatalogId;
 
 	UPROPERTY()
 	FGuid LatentId;

@@ -62,6 +62,10 @@ public:
 		return Asset;
 	}
 
+	const T* Get() const
+	{
+		return Asset;
+	}
 };
 
 /**

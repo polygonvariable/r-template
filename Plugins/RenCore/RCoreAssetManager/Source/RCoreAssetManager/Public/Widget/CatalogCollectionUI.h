@@ -31,6 +31,8 @@ class UCatalogCollectionUI : public UUserWidget
 
 public:
 
+	RCOREASSETMANAGER_API virtual void SetCatalogId(const FGuid& Id);
+
 	UFUNCTION(BlueprintCallable)
 	RCOREASSETMANAGER_API virtual void DisplayEntries();
 
@@ -56,6 +58,12 @@ public:
 
 protected:
 
+	UPROPERTY(EditAnywhere)
+	FGuid CatalogId;
+
+	UPROPERTY(EditAnywhere)
+	bool bAutoSelectAfterRefresh = false;
+
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
 	TObjectPtr<UFilterGroup> FilterRule = nullptr;
 
@@ -64,6 +72,7 @@ protected:
 
 	UPROPERTY()
 	TArray<TObjectPtr<UCatalogEntry>> EntryPool;
+
 
 	RCOREASSETMANAGER_API const UFilterCriterion* GetFilterRoot() const;
 

@@ -31,8 +31,8 @@ protected:
 
 
 	UFUNCTION(BlueprintNativeEvent)
-	RCOREASSETMANAGER_API void GetAllCatalogUI(TArray<UCatalogUI*>& OutComponent) const;
-	RCOREASSETMANAGER_API virtual void GetAllCatalogUI_Implementation(TArray<UCatalogUI*>& OutComponent) const;
+	RCOREASSETMANAGER_API void GetAllCatalogUI(TArray<UCatalogUI*>& OutCatalogUI) const;
+	RCOREASSETMANAGER_API virtual void GetAllCatalogUI_Implementation(TArray<UCatalogUI*>& OutCatalogUI) const;
 
 	// ~ UCatalogUI
 	RCOREASSETMANAGER_API virtual void SetPrimaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset) override;

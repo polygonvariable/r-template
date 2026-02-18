@@ -9,8 +9,8 @@
 // Project Headers
 #include "AvatarAsset.h"
 #include "FilterLeafCriterion.h"
-#include "LogCategory.h"
-#include "LogMacro.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
 #include "Widget/CatalogEntry.h"
 
 #include "Subsystem/AvatarAscensionSubsystem.h"
@@ -32,9 +32,9 @@ void UAvatarEnhanceUI::AddExperiencePoints(const UCatalogEntry* Entry)
 	FGuid TaskId = FGuid::NewGuid();
 	AscensionSubsystem->AddExperiencePoints(TaskId, ActiveAssetId, Entry->AssetId,
 		FTaskCallback::CreateWeakLambda(this,
-			[](ETaskState State, const FString&)
+			[](const FTaskResult& Result)
 			{
-				if (State == ETaskState::Started)
+				if (Result.State == ETaskState::Pending)
 				{
 					UE_LOG(LogAvatar, Log, TEXT("Task Started"));
 				}
@@ -76,10 +76,10 @@ void UAvatarEnhanceUI::SetPrimaryDetails(const UCatalogEntry* Entry, const UPrim
 		{
 			AssetId->Included.Empty();
 
-			UAssetCollectionGroup* CollectionGroup = AvatarAsset->ExperienceItems;
+			UAssetGroup* CollectionGroup = AvatarAsset->ExperienceItems;
 			if (IsValid(CollectionGroup))
 			{
-				const UAssetCollectionRule_Dictionary* CollectionRule = CollectionGroup->GetCollectionRule<UAssetCollectionRule_Dictionary>();
+				const UAssetCollection* CollectionRule = CollectionGroup->GetCollectionRule<UAssetCollection>();
 				if (IsValid(CollectionRule))
 				{
 					TArray<FPrimaryAssetId> AssetIds;

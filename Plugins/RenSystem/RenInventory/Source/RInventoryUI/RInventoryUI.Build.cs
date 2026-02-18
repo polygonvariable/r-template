@@ -28,8 +28,8 @@ public class RInventoryUI : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
                 "UMG",
-				"StructUtils",
                 "RCoreAssetManager",
+                "RInventory",
             }
 			);
 			
@@ -46,7 +46,6 @@ public class RInventoryUI : ModuleRules
                 "RCoreFilter",
                 "RCoreInventory",
                 "RCoreEnhance",
-                "RInventory",
             }
             );
 		

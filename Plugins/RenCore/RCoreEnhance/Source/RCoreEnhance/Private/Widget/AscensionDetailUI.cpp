@@ -7,7 +7,7 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "EnhanceRecord.h"
+#include "Definition/AscensionData.h"
 
 
 

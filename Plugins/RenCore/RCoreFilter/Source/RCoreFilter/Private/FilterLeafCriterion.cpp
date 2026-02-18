@@ -30,6 +30,16 @@ bool UFilterTextCriterion::Evaluate(const FFilterContext& Context) const
 	return Included.Contains(Value);
 }
 
+bool UFilterGuidCriterion::Evaluate(const FFilterContext& Context) const
+{
+	FName Value;
+	if (!Context.GetValue(PropertyName, Value))
+	{
+		return false;
+	}
+	return Included.Contains(FGuid(Value.ToString()));
+}
+
 bool UFilterAssetCriterion::Evaluate(const FFilterContext& Context) const
 {
 	FPrimaryAssetId Value;

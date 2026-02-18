@@ -32,8 +32,6 @@ class UInventoryDetailUI : public UCatalogDetailUI
 
 public:
 
-	void SetContainerId(FGuid Id);
-
 	// ~ UCatalogDetailUI
 	virtual void RefreshDetails() override;
 	// ~ End of UCatalogDetailUI
@@ -41,9 +39,6 @@ public:
 protected:
 
 	FGuid ActiveItemId;
-
-	UPROPERTY(EditAnywhere)
-	FGuid ContainerId;
 
 	UPROPERTY()
 	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem;

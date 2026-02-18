@@ -13,7 +13,7 @@
 
 // Forward Declarations
 struct FExchangeRule;
-class UAssetCollectionGroup;
+class UAssetGroup;
 
 
 UINTERFACE(MinimalAPI)
@@ -35,7 +35,7 @@ class RCORESHOP_API IShopProviderInterface
 public:
 
 	virtual const FExchangeRule& GetPurchaseRule() const = 0;
-	virtual const UAssetCollectionGroup* GetPurchaseGroup() const = 0;
+	virtual const UAssetGroup* GetPurchaseGroup() const = 0;
 
 };
 

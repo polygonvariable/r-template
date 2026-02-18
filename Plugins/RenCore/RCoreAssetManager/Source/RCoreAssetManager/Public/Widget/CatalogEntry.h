@@ -24,10 +24,17 @@ class UCatalogEntry : public UObject
 
 public:
 
+	FGuid EntryId = FGuid();
 	FPrimaryAssetId AssetId = FPrimaryAssetId();
+
+	void InitializeData()
+	{
+		EntryId = FGuid::NewGuid();
+	}
 
 	virtual void ResetData()
 	{
+		EntryId.Invalidate();
 		AssetId = FPrimaryAssetId();
 	}
 

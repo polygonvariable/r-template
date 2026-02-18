@@ -19,30 +19,26 @@ class UInventoryDetailUI;
 /**
  *
  */
-UCLASS(Abstract)
+UCLASS(Abstract, MinimalAPI)
 class UInventoryDashboardUI : public UCatalogDashboardUI
 {
 
 	GENERATED_BODY()
 
-public:
-
-	void SetContainerId(FGuid Id);
-
 protected:
 
-	UPROPERTY(EditAnywhere)
-	FGuid ContainerId;
-
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UInventoryCollectionUI> CatalogCollection = nullptr;
+	TObjectPtr<UInventoryCollectionUI> PrimaryCollection = nullptr;
 
 	UPROPERTY(Meta = (BindWidget))
-	TObjectPtr<UInventoryDetailUI> CatalogDetail = nullptr;
+	TObjectPtr<UInventoryDetailUI> PrimaryDetail = nullptr;
+
+	UFUNCTION(BlueprintCallable)
+	void RedirectToWidget(TSubclassOf<UCatalogDashboardUI> WidgetClass);
 
 
 	// ~ UCatalogDashboardUI
-	virtual void GetAllCatalogUI_Implementation(TArray<UCatalogUI*>& OutComponent) const;
+	virtual void GetAllCatalogUI_Implementation(TArray<UCatalogUI*>& OutCatalogUI) const;
 	// ~ End of UCatalogDashboardUI
 
 	// ~ UUserWidget

@@ -11,7 +11,8 @@
 
 
 
-void UCatalogDashboardUI::GetAllCatalogUI_Implementation(TArray<UCatalogUI*>& OutFilters) const
+
+void UCatalogDashboardUI::GetAllCatalogUI_Implementation(TArray<UCatalogUI*>& OutCatalogUI) const
 {
 
 }

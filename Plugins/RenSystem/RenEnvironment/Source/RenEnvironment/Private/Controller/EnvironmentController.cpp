@@ -4,9 +4,9 @@
 #include "Controller/EnvironmentController.h"
 
 // Project Header
-#include "RCoreLibrary/Public/LogMacro.h"
-#include "RCoreLibrary/Public/LogCategory.h"
-#include "RCoreLibrary/Public/TimerUtils.h"
+#include "Log/LogMacro.h"
+#include "Log/LogCategory.h"
+#include "Util/TimerUtil.h"
 
 #include "RCoreCommon/Public/Priority/PriorityList.h"
 #include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"

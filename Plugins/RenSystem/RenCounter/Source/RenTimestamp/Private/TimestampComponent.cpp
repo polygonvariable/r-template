@@ -4,7 +4,7 @@
 #include "TimestampComponent.h"
 
 // Project Headers
-#include "RCoreLibrary/Public/LogMacro.h"
+#include "Log/LogMacro.h"
 
 #include "RenTimestamp/Public/TimestampSubsystem.h"
 

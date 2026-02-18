@@ -92,7 +92,7 @@ void UTask_AddAvatarExperience::Step_CheckAssets()
 	}
 
 	const FAscensionData& Ascension = Record->Ascension;
-	const UAssetCollectionRule_Dictionary* ExperienceItems = AvatarAsset->GetExperienceItems(Ascension.Experience, Ascension.Level, Ascension.Rank);
+	const UAssetCollection* ExperienceItems = AvatarAsset->GetExperienceItems(Ascension.Experience, Ascension.Level, Ascension.Rank);
 	if (!IsValid(ExperienceItems) || !ExperienceItems->AssetIds.Contains(ItemId))
 	{
 		Fail(TEXT("Item not found"));
@@ -106,7 +106,7 @@ void UTask_AddAvatarExperience::Step_CheckAssets()
 		return;
 	}
 
-	const UAssetCollectionRule_Dictionary* BreakdownAssets = AssetStructure->GetBreakdownAssets(ExperienceItems->RuleTags);
+	const UAssetCollection* BreakdownAssets = AssetStructure->GetBreakdownAssets(ExperienceItems->Tags);
 	// TODO:
 	// cast BreakdownAsset[0] to ExperiencePoint
 	// get exp point from ExperiencePoint

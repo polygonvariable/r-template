@@ -8,13 +8,13 @@
 // Project Headers
 #include "ExchangeRule.h"
 #include "ShopProviderInterface.h"
-#include "InventoryAsset.h"
+#include "Asset/InventoryAsset.h"
 
 // Generated Headers
 #include "PurchasableAsset.generated.h"
 
 // Forward Declarations
-class UAssetCollectionGroup;
+class UAssetGroup;
 
 
 
@@ -29,16 +29,13 @@ class UPurchasableAsset : public UInventoryAsset, public IShopProviderInterface
 
 public:
 
-	UPROPERTY(EditDefaultsOnly, Instanced)
-	TObjectPtr<UAssetCollectionGroup> PurchaseGroup = nullptr;
-
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FExchangeRule PurchaseRule;
 
 	// ~ IShopProviderInterface
-	RINVENTORY_API virtual const UAssetCollectionGroup* GetPurchaseGroup() const override
+	RINVENTORY_API virtual const UAssetGroup* GetPurchaseGroup() const override
 	{
-		return PurchaseGroup;
+		return nullptr;
 	}
 	RINVENTORY_API virtual const FExchangeRule& GetPurchaseRule() const override;
 	// ~ End of IShopProviderInterface

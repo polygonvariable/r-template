@@ -6,9 +6,8 @@
 // Engine Headers
 
 // Project Headers
-#include "LogCategory.h"
-#include "LogMacro.h"
-
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
 #include "TaskObject.h"
 
 
@@ -134,4 +133,24 @@ void UTaskSubsystem::Deinitialize()
 
 	Super::Deinitialize();
 }
+
+
+UTaskSubsystem* UTaskSubsystem::Get(UWorld* World)
+{
+	if (!IsValid(World))
+	{
+		return nullptr;
+	}
+	return Get(World->GetGameInstance());
+}
+
+UTaskSubsystem* UTaskSubsystem::Get(UGameInstance* GameInstance)
+{
+	if (!IsValid(GameInstance))
+	{
+		return nullptr;
+	}
+	return GameInstance->GetSubsystem<UTaskSubsystem>();
+}
+
 

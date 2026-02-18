@@ -7,8 +7,8 @@
 
 // Project Headers
 #include "LatentDelegates.h"
-#include "LogCategory.h"
-#include "LogMacro.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
 #include "TaskSubsystem.h"
 
 #include "Task/Task_AddAvatarExperience.h"

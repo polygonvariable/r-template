@@ -9,10 +9,10 @@
 // Project Headers
 #include "RCoreClock/Public/ClockManagerInterface.h"
 
-#include "RCoreLibrary/Public/LogCategory.h"
-#include "RCoreLibrary/Public/LogMacro.h"
-#include "RCoreLibrary/Public/SubsystemUtils.h"
-#include "RCoreLibrary/Private/TimerUtils.inl"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
+#include "Util/SubsystemUtil.h"
+#include "RCoreLibrary/Private/Util/TimerUtil.inl"
 
 #include "RenEnvironment/Public/Component/OrbitalLightComponent.h"
 
@@ -26,7 +26,7 @@ void UEnvironmentDayNightController::StartDayTimer()
 		return;
 	}
 
-	bool bResult = TimerUtils::StartTimer(DayTimerHandle, this, &UEnvironmentDayNightController::HandleDayTimerTick, 0.1f);
+	bool bResult = TimerUtil::StartTimer(DayTimerHandle, this, &UEnvironmentDayNightController::HandleDayTimerTick, 0.1f);
 	if (!bResult)
 	{
 		LOG_ERROR(LogEnvironment, TEXT("Failed to create timer or timer is already running"));
@@ -35,7 +35,7 @@ void UEnvironmentDayNightController::StartDayTimer()
 
 void UEnvironmentDayNightController::StopDayTimer()
 {
-	if (!TimerUtils::PauseTimer(DayTimerHandle, this))
+	if (!TimerUtil::PauseTimer(DayTimerHandle, this))
 	{
 		LOG_ERROR(LogEnvironment, TEXT("Failed to pause timer"));
 	}
@@ -60,7 +60,7 @@ void UEnvironmentDayNightController::Initialize(AActor* Actor)
 		return;
 	}
 
-	IClockManagerInterface* ClockManager = SubsystemUtils::GetSubsystemInterface<UWorld, UWorldSubsystem, IClockManagerInterface>(GetWorld());
+	IClockManagerInterface* ClockManager = SubsystemUtil::GetSubsystemInterface<UWorld, UWorldSubsystem, IClockManagerInterface>(GetWorld());
 
 	SunComponent = Actor->GetComponentByClass<UOrbitalLightComponent>();
 	MoonComponent = Actor->GetComponentByClass<UOrbitalLightComponent>();
@@ -94,7 +94,7 @@ void UEnvironmentDayNightController::Deinitialize()
 	}
 	ClockManagerInterface.Reset();
 
-	TimerUtils::ClearTimer(DayTimerHandle, this);
+	TimerUtil::ClearTimer(DayTimerHandle, this);
 
 	SunComponent.Reset();
 	MoonComponent.Reset();

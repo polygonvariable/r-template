@@ -4,24 +4,14 @@
 #include "Widget/InventoryEntryUI.h"
 
 // Engine Headers
-#include "Engine/AssetManager.h"
 
 #include "Components/Image.h"
-#include "Components/ListView.h"
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "RCoreInventory/Public/InventoryAsset.h"
-#include "RCoreInventory/Public/InventoryRecord.h"
-
-#include "RCoreLibrary/Public/AssetManagerUtils.h"
-#include "RCoreLibrary/Public/LogCategory.h"
-#include "RCoreLibrary/Public/LogMacro.h"
-
-#include "InventoryDefinition.h"
+#include "Asset/InventoryAsset.h"
+#include "Definition/InventoryPrimaryAsset.h"
 #include "InventoryEntry.h"
-
-#include "InventoryPrimaryAsset.h"
 
 
 

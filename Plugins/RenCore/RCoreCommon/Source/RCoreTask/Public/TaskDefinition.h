@@ -14,12 +14,22 @@
 
 enum class ETaskState : uint8
 {
-	Started,
-	Stopped,
-	Finished,
-	Failed,
+    None,
+    Pending,
+    Completed,
+    Failed,
+    Cancelled,
+};
+
+struct FTaskResult
+{
+    FTaskResult(ETaskState InState) : State(InState) {}
+    FTaskResult(ETaskState InState, const FString& InMessage) : State(InState), Message(InMessage) {}
+
+    ETaskState State = ETaskState::None;
+    FString Message = TEXT_EMPTY;
 };
 
 DECLARE_DELEGATE_OneParam(FOnTaskFinished, FGuid);
-DECLARE_DELEGATE_TwoParams(FTaskCallback, ETaskState, const FString&);
+DECLARE_DELEGATE_OneParam(FTaskCallback, const FTaskResult&);
 

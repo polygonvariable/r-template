@@ -11,7 +11,7 @@
 #include "AssetDecomposeInterface.generated.h"
 
 // Forward Declarations
-class UAssetCollectionRule_Dictionary;
+class UAssetCollection;
 
 struct FGameplayTagContainer;
 
@@ -35,8 +35,8 @@ class RCOREASSETMANAGER_API IAssetStructureInterface
 
 public:
 
-	virtual const UAssetCollectionRule_Dictionary* GetBreakdownAssets(const FGameplayTagContainer& InTags) const = 0;
-	virtual const UAssetCollectionRule_Dictionary* GetRebuildAssets(const FGameplayTagContainer& InTags) const = 0;
+	virtual const UAssetCollection* GetBreakdownAssets(const FGameplayTagContainer& InTags) const = 0;
+	virtual const UAssetCollection* GetRebuildAssets(const FGameplayTagContainer& InTags) const = 0;
 
 };
 

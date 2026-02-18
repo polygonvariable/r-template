@@ -15,10 +15,10 @@
 #include "RCoreMaterial/Public/MaterialSurfaceProperty.h"
 
 #include "RCoreClock/Public/ClockManagerInterface.h"
-#include "RCoreLibrary/Public/AssetManagerUtils.h"
-#include "RCoreLibrary/Public/LogCategory.h"
-#include "RCoreLibrary/Public/LogMacro.h"
-#include "RCoreLibrary/Public/SubsystemUtils.h"
+#include "Util/AssetManagerUtil.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
+#include "Util/SubsystemUtil.h"
 #include "RCoreSettings/Public/WorldConfigSettings.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
@@ -175,7 +175,7 @@ void USeasonSubsystem::HandleSeasonsLoaded(const TArray<USeasonAsset*>& Assets)
 {
 	LoadedSeasons.Append(Assets);
 
-	IClockManagerInterface* ClockManager = SubsystemUtils::GetSubsystemInterface<UWorld, UWorldSubsystem, IClockManagerInterface>(GetWorld());
+	IClockManagerInterface* ClockManager = SubsystemUtil::GetSubsystemInterface<UWorld, UWorldSubsystem, IClockManagerInterface>(GetWorld());
 	if (!ClockManager)
 	{
 		LOG_ERROR(LogSeason, TEXT("ClockManager is invalid"));

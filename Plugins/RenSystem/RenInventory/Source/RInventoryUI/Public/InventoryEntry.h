@@ -3,7 +3,6 @@
 #pragma once
 
 // Engine Headers
-#include "InstancedStruct.h"
 
 // Project Headers
 #include "Widget/CatalogEntry.h"

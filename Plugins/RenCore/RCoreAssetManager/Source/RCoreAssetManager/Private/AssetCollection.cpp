@@ -9,21 +9,22 @@
 
 
 
-const UAssetCollectionRule* UAssetCollectionGroup::GetCollectionRule() const
-{
-	return nullptr;
-}
-const UAssetCollectionRule* UAssetCollectionGroup::GetCollectionRule(const FAssetRuleContext& Context) const
+const UAssetCollection* UAssetGroup::GetCollectionRule() const
 {
 	return nullptr;
 }
 
-const UAssetCollectionRule* UAssetCollectionGroup_Single::GetCollectionRule() const
+const UAssetCollection* UAssetGroup::GetCollectionRule(const FAssetRuleContext& Context) const
+{
+	return nullptr;
+}
+
+const UAssetCollection* UAssetGroup_Single::GetCollectionRule() const
 {
 	return RuleCollection;
 }
 
-const UAssetCollectionRule* UAssetCollectionGroup_Sequence::GetCollectionRule() const
+const UAssetCollection* UAssetGroup_List::GetCollectionRule() const
 {
 	if (RuleCollections.Num() > 0)
 	{
@@ -32,14 +33,14 @@ const UAssetCollectionRule* UAssetCollectionGroup_Sequence::GetCollectionRule() 
 	return nullptr;
 }
 
-const UAssetCollectionRule* UAssetCollectionGroup_Sequence::GetCollectionRule(const FAssetRuleContext& Context) const
+const UAssetCollection* UAssetGroup_List::GetCollectionRule(const FAssetRuleContext& Context) const
 {
-	FAssetRuleContext_Sequence Sequence = static_cast<FAssetRuleContext_Sequence>(Context);
-	
-	const FGameplayTagContainer& RuleTags = Sequence.RuleTags;
+	const FGameplayTagContainer& RuleTags = Context.Tags;
 
 	if (RuleTags.IsEmpty())
 	{
+		FAssetRuleContext_List Sequence = static_cast<FAssetRuleContext_List>(Context);
+
 		int Index = Sequence.Index;
 		if (!RuleCollections.IsValidIndex(Index))
 		{
@@ -49,11 +50,25 @@ const UAssetCollectionRule* UAssetCollectionGroup_Sequence::GetCollectionRule(co
 		return RuleCollections[Index];
 	}
 
-	const TObjectPtr<UAssetCollectionRule>* RulePointer = RuleCollections.FindByPredicate([RuleTags](const UAssetCollectionRule* Rule) { return Rule->RuleTags.HasAllExact(RuleTags); });
+	const TObjectPtr<UAssetCollection>* RulePointer = RuleCollections.FindByPredicate([RuleTags](const UAssetCollection* Rule) { return Rule->Tags.HasAllExact(RuleTags); });
 	if (!RulePointer)
 	{
 		return nullptr;
 	}
 
 	return RulePointer->Get();
+}
+
+void UAssetCollection::GetAssetCollection(TMap<FPrimaryAssetId, int>& OutCollection) const
+{
+	OutCollection = AssetIds;
+}
+
+void UAssetCollection::GetAnyPair(TPair<FPrimaryAssetId, int>& OutPair) const
+{
+	for (const TPair<FPrimaryAssetId, int>& Pair : AssetIds)
+	{
+		OutPair = Pair;
+		break;
+	}
 }

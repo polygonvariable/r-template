@@ -62,5 +62,10 @@ protected:
 	virtual void Deinitialize() override;
 	// ~ End of UGameInstanceSubsystem
 
+public:
+
+	RCORETASK_API static UTaskSubsystem* Get(UWorld* World);
+	RCORETASK_API static UTaskSubsystem* Get(UGameInstance* GameInstance);
+
 };
 

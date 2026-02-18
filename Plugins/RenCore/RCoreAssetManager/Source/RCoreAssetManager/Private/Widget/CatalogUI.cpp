@@ -9,11 +9,16 @@
 #include "RCoreAssetManager/Private/RAssetManager.inl"
 #include "RCoreAssetManager/Public/Widget/CatalogEntry.h"
 
-#include "RCoreLibrary/Public/LogCategory.h"
-#include "RCoreLibrary/Public/LogMacro.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
 
 
 
+
+void UCatalogUI::SetCatalogId(const FGuid& Id)
+{
+	CatalogId = Id;
+}
 
 void UCatalogUI::InitializeDetails(const UCatalogEntry* Entry)
 {

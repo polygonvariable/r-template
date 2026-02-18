@@ -9,7 +9,7 @@
 #include "Net/UnrealNetwork.h"
 
 // Project Headers
-#include "RCoreLibrary/Public/LogMacro.h"
+#include "Log/LogMacro.h"
 
 // Declare Gameplay Tags
 UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Health_Damaged, "Attribute.Health.Damaged");

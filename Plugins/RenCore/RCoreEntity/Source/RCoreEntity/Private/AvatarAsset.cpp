@@ -9,28 +9,28 @@
 
 
 
-const UAssetCollectionRule_Dictionary* UAvatarAsset::GetExperienceItems(int InExperience, int InLevel, int InRank) const
+const UAssetCollection* UAvatarAsset::GetExperienceItems(int InExperience, int InLevel, int InRank) const
 {
 	if (!IsValid(ExperienceItems))
 	{
 		return nullptr;
 	}
 
-	return ExperienceItems->GetCollectionRule<UAssetCollectionRule_Dictionary>();
+	return ExperienceItems->GetCollectionRule<UAssetCollection>();
 }
 
 
-const UAssetCollectionRule_Dictionary* UAvatarAsset::GetRankItems(int InExperience, int InLevel, int InRank) const
+const UAssetCollection* UAvatarAsset::GetRankItems(int InExperience, int InLevel, int InRank) const
 {
 	if (!IsValid(RankItems))
 	{
 		return nullptr;
 	}
 
-	FAssetRuleContext_Sequence Context;
+	FAssetRuleContext_List Context;
 	Context.Index = InRank;
 
-	return RankItems->GetCollectionRule<UAssetCollectionRule_Dictionary>(Context);
+	return RankItems->GetCollectionRule<UAssetCollection>(Context);
 }
 
 FPrimaryAssetId UAvatarAsset::GetPrimaryAssetId() const

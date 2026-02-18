@@ -11,12 +11,17 @@
 #include "RCoreFilter/Public/FilterLeafCriterion.h"
 #include "RCoreFilter/Public/FilterGroup.h"
 
-#include "RCoreLibrary/Public/LogCategory.h"
-#include "RCoreLibrary/Public/LogMacro.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
 
 #include "Widget/CatalogEntry.h"
 
 
+
+void UCatalogCollectionUI::SetCatalogId(const FGuid& Id)
+{
+	CatalogId = Id;
+}
 
 const UFilterCriterion* UCatalogCollectionUI::GetFilterRoot() const
 {

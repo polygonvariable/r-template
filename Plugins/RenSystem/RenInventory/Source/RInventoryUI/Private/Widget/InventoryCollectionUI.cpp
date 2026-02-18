@@ -4,23 +4,14 @@
 #include "Widget/InventoryCollectionUI.h"
 
 // Engine Headers
-#include "Components/ListView.h"
 
 // Project Headers
-#include "FilterGroup.h"
-#include "FilterLeafCriterion.h"
 #include "InventoryEntry.h"
-#include "InventoryRecord.h"
-#include "InventorySubsystem.h"
-#include "LogCategory.h"
-#include "LogMacro.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
+#include "Subsystem/InventorySubsystem.h"
 
 
-
-void UInventoryCollectionUI::SetContainerId(FGuid Id)
-{
-	ContainerId = Id;
-}
 
 void UInventoryCollectionUI::DisplayEntries()
 {
@@ -33,7 +24,7 @@ void UInventoryCollectionUI::DisplayEntries()
 
 	const UFilterCriterion* FilterRoot = GetFilterRoot();
 
-	Inventory->QueryItems(ContainerId, FilterRoot, QueryRule,
+	Inventory->QueryItems(CatalogId, FilterRoot, QueryRule,
 		[this](const FInventorySortEntry& SortEntry)
 		{
 			UInventoryEntry* Entry = GetEntryFromPool<UInventoryEntry>();
@@ -51,20 +42,14 @@ void UInventoryCollectionUI::DisplayEntries()
 
 void UInventoryCollectionUI::NativeConstruct()
 {
-	UGameInstance* GameInstance = GetGameInstance();
-	if (IsValid(GameInstance))
+	UInventorySubsystem* Inventory = UInventorySubsystem::Get(GetGameInstance());
+	if (IsValid(Inventory))
 	{
-		UInventorySubsystem* Inventory = GameInstance->GetSubsystem<UInventorySubsystem>();
-		if (IsValid(Inventory))
+		if (bAutoRefresh)
 		{
-			if (bAutoRefresh)
-			{
-				Inventory->OnItemAdded.AddWeakLambda(this, [this](FGuid InContainerId, const FPrimaryAssetId&, FGuid) { if (ContainerId == InContainerId) RefreshEntries(); });
-				Inventory->OnItemRemoved.AddWeakLambda(this, [this](FGuid InContainerId, const FPrimaryAssetId&, FGuid) { if (ContainerId == InContainerId) RefreshEntries(); });
-				Inventory->OnItemUpdated.AddWeakLambda(this, [this](FGuid InContainerId, const FPrimaryAssetId&, FGuid) { if (ContainerId == InContainerId) RefreshEntries(); });
-			}
-			InventorySubsystem = TWeakObjectPtr<UInventorySubsystem>(Inventory);
+			Inventory->OnInventoryRefreshed.AddWeakLambda(this, [this](const FGuid& InventoryId) { if (CatalogId == InventoryId) RefreshEntries(); });
 		}
+		InventorySubsystem = TWeakObjectPtr<UInventorySubsystem>(Inventory);
 	}
 
 	Super::NativeConstruct();
@@ -75,9 +60,7 @@ void UInventoryCollectionUI::NativeDestruct()
 	UInventorySubsystem* Inventory = InventorySubsystem.Get();
 	if (IsValid(Inventory))
 	{
-		Inventory->OnItemAdded.RemoveAll(this);
-		Inventory->OnItemRemoved.RemoveAll(this);
-		Inventory->OnItemUpdated.RemoveAll(this);
+		Inventory->OnInventoryRefreshed.RemoveAll(this);
 	}
 	InventorySubsystem.Reset();
 

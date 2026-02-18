@@ -9,8 +9,8 @@
 // Project Headers
 #include "RCoreAssetManager/Private/RAssetManager.inl"
 
-#include "RCoreLibrary/Public/LogCategory.h"
-#include "RCoreLibrary/Public/LogMacro.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
 #include "RCoreSettings/Public/WorldConfigSettings.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"

@@ -6,8 +6,8 @@
 // Engine Headers
 
 // Project Header
-#include "RCoreLibrary/Public/LogMacro.h"
-#include "RCoreLibrary/Public/SubsystemUtils.h"
+#include "Log/LogMacro.h"
+#include "Util/SubsystemUtil.h"
 
 #include "RenEnvironment/Public/Interface/SeasonProviderInterface.h"
 
@@ -34,7 +34,7 @@ void AWeatherSeasonRegionActor::HandleWeatherRefreshed()
 
 void AWeatherSeasonRegionActor::BeginPlay()
 {
-    ISeasonProviderInterface* SeasonInterfacePtr = SubsystemUtils::GetSubsystemInterface<UWorld, UWorldSubsystem, ISeasonProviderInterface>(GetWorld());
+    ISeasonProviderInterface* SeasonInterfacePtr = SubsystemUtil::GetSubsystemInterface<UWorld, UWorldSubsystem, ISeasonProviderInterface>(GetWorld());
     if (SeasonInterfacePtr)
     {
         SeasonInterface = TWeakInterfacePtr<ISeasonProviderInterface>(SeasonInterfacePtr);

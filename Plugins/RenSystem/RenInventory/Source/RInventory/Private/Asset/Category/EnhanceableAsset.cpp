@@ -6,24 +6,19 @@
 // Engine Headers
 
 // Project Headers
+#include "Definition/AscensionData.h"
+#include "AssetCollection.h"
 
 
-
-int UEnhanceableAsset::GetCurveValue(const FCurveTableRowHandle& Curve, int Default, int Time) const
-{
-	FString Context = Curve.RowName.ToString();
-	int Value = Curve.IsValid(Context) ? Curve.GetCurve(Context)->Eval(Time) : Default;
-	return FMath::Max(1, Value);
-}
 
 int UEnhanceableAsset::GetExperienceInterval(int Level) const
 {
-	return GetCurveValue(ExperienceCurve, ExperienceInterval, Level);
+	return ExperienceInterval;
 }
 
 int UEnhanceableAsset::GetLevelInterval(int Rank) const
 {
-	return GetCurveValue(LevelCurve, LevelInterval, Rank);
+	return LevelInterval;
 }
 
 int UEnhanceableAsset::GetMaxLevel() const
@@ -36,23 +31,25 @@ int UEnhanceableAsset::GetMaxRank() const
 	return MaxRank;
 }
 
-const FExchangeRule& UEnhanceableAsset::GetEnhanceRules() const
+const UAssetCollection* UEnhanceableAsset::GetExperienceItems(const FAscensionData& Ascension) const
 {
-	return EnhanceRules;
+	if (!IsValid(ExperienceItems))
+	{
+		return nullptr;
+	}
+	return ExperienceItems->GetCollectionRule<UAssetCollection>();
 }
 
-const TArray<FExchangeRule>& UEnhanceableAsset::GetRankingRules() const
+const UAssetCollection* UEnhanceableAsset::GetRankItems(const FAscensionData& Ascension) const
 {
-	return RankingRules;
-}
+	if (!IsValid(RankItems))
+	{
+		return nullptr;
+	}
 
-RINVENTORY_API const UAssetCollectionRule_Dictionary* UEnhanceableAsset::GetExperienceItems(int InExperience, int InLevel, int InRank) const
-{
-	return nullptr;
-}
+	FAssetRuleContext_List Context;
+	Context.Index = Ascension.Rank;
 
-RINVENTORY_API const UAssetCollectionRule_Dictionary* UEnhanceableAsset::GetRankItems(int InExperience, int InLevel, int InRank) const
-{
-	return nullptr;
+	return RankItems->GetCollectionRule<UAssetCollection>(Context);
 }
 

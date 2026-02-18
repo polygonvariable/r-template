@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "InventoryAsset.h"
+#include "Asset/InventoryAsset.h"
 
 // Generated Headers
 #include "NonPurchasableAsset.generated.h"

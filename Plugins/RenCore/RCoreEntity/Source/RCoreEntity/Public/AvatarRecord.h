@@ -5,7 +5,7 @@
 // Engine Headers
 
 // Project Headers
-#include "RCoreEnhance/Public/EnhanceRecord.h"
+#include "Definition/AscensionData.h"
 
 // Generated Headers
 #include "AvatarRecord.generated.h"

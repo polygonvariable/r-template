@@ -34,7 +34,7 @@ public:
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UNamedSlot> Content = nullptr;
 
 	// ~ UCatalogUI
