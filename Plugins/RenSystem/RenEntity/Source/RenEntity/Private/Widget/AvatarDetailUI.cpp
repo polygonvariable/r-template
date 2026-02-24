@@ -46,7 +46,7 @@ bool UAvatarDetailUI::IsPrimaryAssetIdValid(const FPrimaryAssetId& AssetId) cons
 	return EntityPrimaryAsset::IsValid(AssetId);
 }
 
-void UAvatarDetailUI::SetPrimaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset)
+void UAvatarDetailUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	const UAvatarAsset* AvatarAsset = Cast<UAvatarAsset>(Asset);
 	if (!IsValid(AvatarAsset))
@@ -59,7 +59,7 @@ void UAvatarDetailUI::SetPrimaryDetails(const UCatalogEntry* Entry, const UPrima
 	if (EntryIcon) EntryIcon->SetBrushFromSoftTexture(AvatarAsset->Icon);
 }
 
-void UAvatarDetailUI::SetSecondaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset)
+void UAvatarDetailUI::SetSecondaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	const UAvatarEntry* AvatarEntry = Cast<UAvatarEntry>(Entry);
 	if (!IsValid(AvatarEntry))
@@ -71,7 +71,7 @@ void UAvatarDetailUI::SetSecondaryDetails(const UCatalogEntry* Entry, const UPri
 	SetSecondaryDetails(Record, Asset);
 }
 
-void UAvatarDetailUI::SetSecondaryDetails(const FAvatarData& Record, const UPrimaryDataAsset* Asset)
+void UAvatarDetailUI::SetSecondaryDetails(const FAvatarData& Record, const URPrimaryDataAsset* Asset)
 {
 	const FAscensionData& Ascension = Record.Ascension;
 

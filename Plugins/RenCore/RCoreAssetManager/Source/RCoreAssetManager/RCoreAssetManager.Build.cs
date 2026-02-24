@@ -28,7 +28,9 @@ public class RCoreAssetManager : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
                 "UMG",
+                "StructUtils",
                 "GameplayTags",
+				"RCoreCommon",
             }
 			);
 			

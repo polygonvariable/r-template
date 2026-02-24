@@ -27,10 +27,6 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreDelegate",
-			"Enabled": true
-		},
-		{
 			"Name": "RCoreCommon",
 			"Enabled": true
 		}

@@ -5,12 +5,13 @@
 // Engine Headers
 
 // Project Headers
-#include "Widget/CatalogEntryUI.h"
+#include "Widget/AssetEntryUI.h"
 
 // Generated Headers
 #include "AvatarEntryUI.generated.h"
 
 // Forward Declarations
+class URPrimaryDataAsset;
 
 
 
@@ -18,17 +19,17 @@
  *
  */
 UCLASS(Abstract)
-class UAvatarEntryUI : public UCatalogEntryUI
+class UAvatarEntryUI : public UAssetEntryUI
 {
 
 	GENERATED_BODY()
 
 protected:
 
-	// ~ UCatalogEntryUI
+	// ~ UAssetEntryUI
 	virtual bool IsPrimaryAssetIdValid(const FPrimaryAssetId& AssetId) const override;
-	virtual void SetPrimaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset) override;
-	// ~ End of UCatalogEntryUI
+	virtual void SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	// ~ End of UAssetEntryUI
 
 };
 

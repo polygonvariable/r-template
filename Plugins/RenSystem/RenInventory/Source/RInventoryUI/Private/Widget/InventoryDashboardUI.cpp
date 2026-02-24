@@ -6,21 +6,21 @@
 // Engine Headers
 
 // Project Headers
-#include "Widget/CatalogEntry.h"
+#include "Widget/AssetEntry.h"
 #include "Widget/InventoryCollectionUI.h"
 #include "Widget/InventoryDetailUI.h"
 
 
 
-void UInventoryDashboardUI::RedirectToWidget(TSubclassOf<UCatalogDashboardUI> WidgetClass)
+void UInventoryDashboardUI::RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetClass)
 {
-	const UCatalogEntry* SelectedEntry = PrimaryCollection->GetSelectedEntry();
+	const UAssetEntry* SelectedEntry = PrimaryCollection->GetSelectedEntry();
 	if (!IsValid(WidgetClass) || !IsValid(SelectedEntry))
 	{
 		return;
 	}
 
-	UCatalogDashboardUI* Widget = CreateWidget<UCatalogDashboardUI>(this, WidgetClass);
+	UAssetDashboardUI* Widget = CreateWidget<UAssetDashboardUI>(this, WidgetClass);
 	if (!IsValid(Widget))
 	{
 		return;
@@ -31,29 +31,30 @@ void UInventoryDashboardUI::RedirectToWidget(TSubclassOf<UCatalogDashboardUI> Wi
 	Widget->InitializeDetails(SelectedEntry);
 }
 
-void UInventoryDashboardUI::GetAllCatalogUI_Implementation(TArray<UCatalogUI*>& OutCatalogUI) const
+void UInventoryDashboardUI::GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutAssetUI) const
 {
-	OutCatalogUI.Add(PrimaryDetail);
+	OutAssetUI.Add(PrimaryDetail);
 }
 
 void UInventoryDashboardUI::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 
-	if (IsValid(PrimaryCollection)) PrimaryCollection->SetCatalogId(CatalogId);
-	if (IsValid(PrimaryDetail)) PrimaryDetail->SetCatalogId(CatalogId);
+	PrimaryCollection->SetCatalogId(CatalogId);
+	PrimaryDetail->SetCatalogId(CatalogId);
 }
 
 void UInventoryDashboardUI::NativeConstruct()
 {
-	if (IsValid(PrimaryCollection)) PrimaryCollection->OnEntrySelected.BindUObject(this, &UInventoryDashboardUI::InitializeDetails);
+	PrimaryCollection->OnEntrySelected.BindUObject(this, &UInventoryDashboardUI::InitializeDetails);
+	PrimaryCollection->DisplayEntries();
 	
 	Super::NativeConstruct();
 }
 
 void UInventoryDashboardUI::NativeDestruct()
 {
-	if (IsValid(PrimaryCollection)) PrimaryCollection->OnEntrySelected.Unbind();
+	PrimaryCollection->OnEntrySelected.Unbind();
 
 	Super::NativeDestruct();
 }

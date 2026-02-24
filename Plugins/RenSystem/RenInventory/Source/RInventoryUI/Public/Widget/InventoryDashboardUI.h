@@ -5,7 +5,7 @@
 // Engine Headers
 
 // Project Headers
-#include "Widget/CatalogDashboardUI.h"
+#include "Widget/AssetDashboardUI.h"
 
 // Generated Headers
 #include "InventoryDashboardUI.generated.h"
@@ -20,26 +20,26 @@ class UInventoryDetailUI;
  *
  */
 UCLASS(Abstract, MinimalAPI)
-class UInventoryDashboardUI : public UCatalogDashboardUI
+class UInventoryDashboardUI : public UAssetDashboardUI
 {
 
 	GENERATED_BODY()
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UInventoryCollectionUI> PrimaryCollection = nullptr;
 
 	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UInventoryDetailUI> PrimaryDetail = nullptr;
 
 	UFUNCTION(BlueprintCallable)
-	void RedirectToWidget(TSubclassOf<UCatalogDashboardUI> WidgetClass);
+	void RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetClass);
 
 
-	// ~ UCatalogDashboardUI
-	virtual void GetAllCatalogUI_Implementation(TArray<UCatalogUI*>& OutCatalogUI) const;
-	// ~ End of UCatalogDashboardUI
+	// ~ UAssetDashboardUI
+	virtual void GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutAssetUI) const;
+	// ~ End of UAssetDashboardUI
 
 	// ~ UUserWidget
 	virtual void NativePreConstruct() override;

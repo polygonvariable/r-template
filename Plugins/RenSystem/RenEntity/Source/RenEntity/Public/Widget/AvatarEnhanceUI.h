@@ -5,18 +5,18 @@
 // Engine Headers
 
 // Project Headers
-#include "Widget/CatalogUI.h"
+#include "Widget/AssetUI.h"
 
 // Generated Headers
 #include "AvatarEnhanceUI.generated.h"
 
 // Forward Declarations
 class UButton;
-
 class UAvatarDetailUI;
-class UCatalogEntry;
-class UCatalogCollectionUI;
+class UAssetEntry;
+class UAssetCollectionUI;
 class UAvatarAscensionSubsystem;
+class URPrimaryDataAsset;
 
 
 
@@ -24,7 +24,7 @@ class UAvatarAscensionSubsystem;
  *
  */
 UCLASS(Abstract)
-class UAvatarEnhanceUI : public UCatalogUI
+class UAvatarEnhanceUI : public UAssetUI
 {
 
 	GENERATED_BODY()
@@ -32,7 +32,7 @@ class UAvatarEnhanceUI : public UCatalogUI
 protected:
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UCatalogCollectionUI> ItemCollection = nullptr;
+	TObjectPtr<UAssetCollectionUI> ItemCollection = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UAvatarDetailUI> AvatarDetail = nullptr;
@@ -46,17 +46,17 @@ protected:
 
 
 	UFUNCTION()
-	void AddExperiencePoints(const UCatalogEntry* Entry);
+	void AddExperiencePoints(const UAssetEntry* Entry);
 
 	UFUNCTION()
 	void AddRankPoints();
 
 	UFUNCTION()
-	virtual void HandleItemSelected(const UCatalogEntry* Entry);
+	virtual void HandleItemSelected(const UAssetEntry* Entry);
 
-	// ~ UCatalogUI
-	virtual void SetPrimaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset) override;
-	// ~ End of UCatalogUI
+	// ~ UAssetUI
+	virtual void SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	// ~ End of UAssetUI
 
 	// ~ UUserWidget
 	virtual void NativeConstruct() override;

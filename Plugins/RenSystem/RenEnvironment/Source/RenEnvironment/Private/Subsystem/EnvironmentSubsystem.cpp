@@ -7,12 +7,10 @@
 #include "EngineUtils.h"
 
 // Project Headers
-#include "RCoreAssetManager/Private/RAssetManager.inl"
-
+#include "Manager/RAssetManager.inl"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "RCoreSettings/Public/WorldConfigSettings.h"
-
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
 #include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
 #include "RenEnvironment/Public/Controller/EnvironmentController.h"

@@ -5,7 +5,7 @@
 // Engine Headers
 
 // Project Headers
-#include "TaskObject.h"
+#include "Task/TaskObject.h"
 
 // Generated Headers
 #include "Task_AddAvatarExperience.generated.h"
@@ -14,6 +14,7 @@
 class UAvatarAsset;
 class UAvatarSubsystem;
 class URAssetManager;
+class URPrimaryDataAsset;
 
 
 
@@ -39,7 +40,7 @@ protected:
 	TObjectPtr<UAvatarAsset> AvatarAsset = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<UPrimaryDataAsset> ItemAsset = nullptr;
+	TObjectPtr<URPrimaryDataAsset> ItemAsset = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<UAvatarSubsystem> AvatarSubsystem = nullptr;

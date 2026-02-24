@@ -6,7 +6,7 @@
 
 // Project Headers
 #include "AvatarRecord.h"
-#include "Widget/CatalogEntry.h"
+#include "Widget/AssetEntry.h"
 
 // Generated Headers
 #include "AvatarEntry.generated.h"
@@ -19,7 +19,7 @@
  *
  */
 UCLASS()
-class UAvatarEntry : public UCatalogEntry
+class UAvatarEntry : public UAssetEntry
 {
 
 	GENERATED_BODY()

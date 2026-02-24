@@ -62,6 +62,7 @@ public class RenEntity : ModuleRules
                 "RCoreFilter",
                 "RCorePool",
                 "RCoreAssetManager",
+                "StructUtils",
             }
 			);
 		

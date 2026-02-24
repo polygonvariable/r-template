@@ -31,7 +31,7 @@ public class RItemAscension : ModuleRules
                 "RCoreAssetManager",
                 "RCoreTask",
                 "RCoreEnhance",
-                "RInventoryUI",
+                "RCoreCommon",
             }
 			);
 			
@@ -49,6 +49,7 @@ public class RItemAscension : ModuleRules
                 "RCoreDelegate",
                 "RCoreInventory",
                 "RInventory",
+                "RInventoryUI",
             }
 			);
 		

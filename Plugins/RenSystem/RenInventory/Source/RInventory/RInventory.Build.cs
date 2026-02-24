@@ -36,6 +36,7 @@ public class RInventory : ModuleRules
                 "RCoreTask",
                 "RCoreAssetManager",
                 "RCoreStorage",
+                "RCoreCommon",
             }
 			);
 			
@@ -53,6 +54,7 @@ public class RInventory : ModuleRules
                 "RCoreFilter",
                 "RCorePool",
                 "GameplayTags",
+                "StructUtils",
             }
             );
 		

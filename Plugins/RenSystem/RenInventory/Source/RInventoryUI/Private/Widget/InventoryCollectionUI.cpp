@@ -6,10 +6,10 @@
 // Engine Headers
 
 // Project Headers
-#include "InventoryEntry.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Subsystem/InventorySubsystem.h"
+#include "Widget/InventoryEntry.h"
 
 
 
@@ -30,14 +30,20 @@ void UInventoryCollectionUI::DisplayEntries()
 			UInventoryEntry* Entry = GetEntryFromPool<UInventoryEntry>();
 			if (IsValid(Entry))
 			{
-				Entry->AssetId = SortEntry.AssetId;
 				Entry->Item = SortEntry.Item;
 				Entry->Quantity = SortEntry.Quantity;
-
-				AddEntry(Entry);
+				AddEntry(SortEntry.AssetId, Entry);
 			}
 		}
 	);
+}
+
+void UInventoryCollectionUI::OnInventoryRefreshed(const FGuid& InventoryId)
+{
+	if (CatalogId == InventoryId)
+	{
+		RefreshEntries();
+	}
 }
 
 void UInventoryCollectionUI::NativeConstruct()
@@ -47,7 +53,7 @@ void UInventoryCollectionUI::NativeConstruct()
 	{
 		if (bAutoRefresh)
 		{
-			Inventory->OnInventoryRefreshed.AddWeakLambda(this, [this](const FGuid& InventoryId) { if (CatalogId == InventoryId) RefreshEntries(); });
+			Inventory->OnInventoryRefreshed.AddUObject(this, &UInventoryCollectionUI::OnInventoryRefreshed);
 		}
 		InventorySubsystem = TWeakObjectPtr<UInventorySubsystem>(Inventory);
 	}

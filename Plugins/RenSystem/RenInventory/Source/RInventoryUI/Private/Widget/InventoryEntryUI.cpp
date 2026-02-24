@@ -4,24 +4,17 @@
 #include "Widget/InventoryEntryUI.h"
 
 // Engine Headers
-
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 
 // Project Headers
 #include "Asset/InventoryAsset.h"
-#include "Definition/InventoryPrimaryAsset.h"
-#include "InventoryEntry.h"
+#include "Asset/RPrimaryDataAsset.h"
+#include "Widget/InventoryEntry.h"
 
 
 
-
-bool UInventoryEntryUI::IsPrimaryAssetIdValid(const FPrimaryAssetId& AssetId) const
-{
-	return InventoryPrimaryAsset::IsValid(AssetId);
-}
-
-void UInventoryEntryUI::SetPrimaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset)
+void UInventoryEntryUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	const UInventoryAsset* InventoryAsset = Cast<UInventoryAsset>(Asset);
 	const UInventoryEntry* InventoryEntry = Cast<UInventoryEntry>(Entry);
@@ -30,8 +23,8 @@ void UInventoryEntryUI::SetPrimaryDetails(const UCatalogEntry* Entry, const UPri
 		return;
 	}
 
-	if (IsValid(EntryName)) EntryName->SetText(InventoryAsset->DisplayName);
-	if (IsValid(EntryIcon)) EntryIcon->SetBrushFromSoftTexture(InventoryAsset->Icon);
-	if (IsValid(EntryQuantity)) EntryQuantity->SetText(FText::AsNumber(InventoryEntry->Quantity));
+	EntryName->SetText(InventoryAsset->DisplayName);
+	EntryIcon->SetBrushFromSoftTexture(InventoryAsset->Icon);
+	EntryQuantity->SetText(FText::AsNumber(InventoryEntry->Quantity));
 }
 

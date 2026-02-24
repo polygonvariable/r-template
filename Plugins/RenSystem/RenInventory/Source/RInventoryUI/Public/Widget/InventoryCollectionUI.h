@@ -5,11 +5,13 @@
 // Engine Headers
 
 // Project Headers
-#include "Definition/InventoryDefinition.h"
-#include "Widget/CatalogCollectionUI.h"
+#include "Definition/InventoryQueryType.h"
+#include "Widget/AssetCollectionUI.h"
 
 // Generated Headers
 #include "InventoryCollectionUI.generated.h"
+
+// Module Macros
 
 // Forward Declarations
 class UInventorySubsystem;
@@ -20,16 +22,16 @@ class UInventorySubsystem;
  *
  */
 UCLASS(Abstract)
-class UInventoryCollectionUI : public UCatalogCollectionUI
+class UInventoryCollectionUI : public UAssetCollectionUI
 {
 
 	GENERATED_BODY()
 
 public:
 
-	// ~ UCatalogCollectionUI
-	RINVENTORYUI_API virtual void DisplayEntries() override;
-	// ~ End of UCatalogCollectionUI
+	// ~ UAssetCollectionUI
+	virtual void DisplayEntries() override;
+	// ~ End of UAssetCollectionUI
 
 protected:
 
@@ -37,11 +39,13 @@ protected:
 	bool bAutoRefresh = false;
 
 	UPROPERTY(EditAnywhere)
-	FInventoryQueryRule QueryRule = FInventoryQueryRule();
+	FInventoryQueryRule QueryRule;
 
 	UPROPERTY()
-	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem;
+	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem = nullptr;
 
+
+	void OnInventoryRefreshed(const FGuid& InventoryId);
 
 	// ~ UUserWidget
 	virtual void NativeConstruct() override;
@@ -49,4 +53,8 @@ protected:
 	// ~ End of UUserWidget
 
 };
+
+
+
+// Module Macros
 

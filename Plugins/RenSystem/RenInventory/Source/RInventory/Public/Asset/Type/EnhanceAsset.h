@@ -12,6 +12,7 @@
 #include "EnhanceAsset.generated.h"
 
 // Forward Declarations
+class UAssetGroup;
 
 
 

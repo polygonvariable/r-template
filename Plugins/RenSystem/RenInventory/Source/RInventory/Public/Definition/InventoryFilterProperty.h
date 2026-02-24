@@ -11,9 +11,6 @@
 // Forward Declarations
 
 // Module Macros
-#ifdef RSYSTEM_API
-#undef RSYSTEM_API
-#endif
 #define RSYSTEM_API RINVENTORY_API
 
 
@@ -26,11 +23,9 @@ class RSYSTEM_API InventoryFilterProperty
 
 public:
 
-	static const FName AssetId;
-	static const FName AssetType;
-	static const FName AssetRarity;
-
 	static const FName ItemId;
+	static const FName ItemType;
+	static const FName ItemRarity;
 	static const FName ItemQuantity;
 	static const FName ItemExperience;
 	static const FName ItemLevel;

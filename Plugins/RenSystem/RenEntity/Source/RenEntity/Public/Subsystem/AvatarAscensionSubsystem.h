@@ -6,7 +6,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 
 // Project Headers
-#include "TaskDefinition.h"
+#include "Definition/TaskType.h"
 
 // Generated Headers
 #include "AvatarAscensionSubsystem.generated.h"

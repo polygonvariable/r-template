@@ -7,7 +7,7 @@
 
 // Project Headers
 #include "AvatarRecord.h"
-#include "TaskDefinition.h"
+#include "Definition/TaskType.h"
 
 // Generated Headers
 #include "AvatarSubsystem.generated.h"

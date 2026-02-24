@@ -27,9 +27,6 @@ public class RCoreStorage : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-				"HTTP",
-				"Json",
-                "JsonUtilities",
                 "RCoreTask",
             }
 			);
@@ -44,7 +41,6 @@ public class RCoreStorage : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "RCoreLibrary",
-				"RCoreDelegate",
             }
             );
 		

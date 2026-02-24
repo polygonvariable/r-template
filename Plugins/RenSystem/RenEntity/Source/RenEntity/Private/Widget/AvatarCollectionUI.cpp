@@ -7,17 +7,15 @@
 #include "Components/ListView.h"
 
 // Project Headers
-#include "FilterGroup.h"
-#include "FilterLeafCriterion.h"
-#include "FilterContext.h"
-#include "FilterCriterion.h"
-
+#include "Definition/FilterContext.h"
+#include "EntityPrimaryAsset.h"
+#include "Filter/FilterCriterion.h"
+#include "Filter/FilterGroup.h"
+#include "Filter/FilterLeafCriterion.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-
-#include "Widget/AvatarEntry.h"
 #include "Subsystem/AvatarSubsystem.h"
-#include "EntityPrimaryAsset.h"
+#include "Widget/AvatarEntry.h"
 
 
 
@@ -57,10 +55,9 @@ void UAvatarCollectionUI::DisplayEntries()
 		{
 			continue;
 		}
-		Entry->AssetId = Pair.Key;
 		Entry->AvatarData = Pair.Value;
 
-		AddEntry(Entry);
+		AddEntry(Pair.Key, Entry);
 	}
 }
 

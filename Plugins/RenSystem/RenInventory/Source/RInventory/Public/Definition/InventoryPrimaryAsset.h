@@ -13,9 +13,6 @@
 // Forward Declarations
 
 // Module Macros
-#ifdef RSYSTEM_API
-#undef RSYSTEM_API
-#endif
 #define RSYSTEM_API RINVENTORY_API
 
 

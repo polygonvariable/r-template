@@ -10,6 +10,9 @@
 // Generated Headers
 #include "Storage.generated.h"
 
+// Module Macros
+#define RCORE_API RCORESTORAGE_API
+
 // Forward Declarations
 
 
@@ -25,8 +28,8 @@ class UStorage : public USaveGame
 
 public:
 
-	RCORESTORAGE_API virtual void NetDeserialize(TSharedPtr<FJsonObject>& JsonObject);
-	RCORESTORAGE_API bool GetForceSave() const;
+	RCORE_API virtual void NetDeserialize(TSharedPtr<FJsonObject>& JsonObject);
+	RCORE_API bool GetForceSave() const;
 
 protected:
 
@@ -34,4 +37,9 @@ protected:
 	bool bForceSave = true;
 
 };
+
+
+
+// Module Macros
+#undef RCORE_API
 

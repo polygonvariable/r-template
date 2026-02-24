@@ -8,12 +8,11 @@
 
 // Project Headers
 #include "AvatarAsset.h"
-#include "FilterLeafCriterion.h"
+#include "EntityPrimaryAsset.h"
+#include "Filter/FilterLeafCriterion.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Widget/CatalogEntry.h"
-
-#include "EntityPrimaryAsset.h"
+#include "Widget/AssetEntry.h"
 #include "Widget/AvatarCollectionUI.h"
 #include "Widget/AvatarDetailUI.h"
 
@@ -21,15 +20,15 @@
 
 void UAvatarViewUI::HandleEnhanceClicked()
 {
-	const UCatalogEntry* Entry = ActiveEntry.Get();
-	const UPrimaryDataAsset* Asset = ActiveAsset.Get();
+	const UAssetEntry* Entry = ActiveEntry.Get();
+	const URPrimaryDataAsset* Asset = ActiveAsset.Get();
 	if (!IsValid(Entry) || !IsValid(Asset))
 	{
 		LOG_ERROR(LogAvatar, TEXT("Entry, Asset is invalid"));
 		return;
 	}
 
-	UCatalogUI* Widget = CreateWidget<UCatalogUI>(this, EnhanceWidgetClass);
+	UAssetUI* Widget = CreateWidget<UAssetUI>(this, EnhanceWidgetClass);
 	if (!IsValid(Widget))
 	{
 		LOG_ERROR(LogAvatar, TEXT("EnhanceWidgetUI is invalid"));
@@ -40,15 +39,15 @@ void UAvatarViewUI::HandleEnhanceClicked()
 	Widget->InitializeDetails(Entry, Asset);
 }
 
-void UAvatarViewUI::SetPrimaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset)
+void UAvatarViewUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	if (IsValid(AvatarDetail))
 	{
 		AvatarDetail->InitializeDetails(Entry, Asset);
 	}
 
-	ActiveEntry = TWeakObjectPtr<const UCatalogEntry>(Entry);
-	ActiveAsset = TWeakObjectPtr<const UPrimaryDataAsset>(Asset);
+	ActiveEntry = TWeakObjectPtr<const UAssetEntry>(Entry);
+	ActiveAsset = TWeakObjectPtr<const URPrimaryDataAsset>(Asset);
 }
 
 void UAvatarViewUI::NativePreConstruct()

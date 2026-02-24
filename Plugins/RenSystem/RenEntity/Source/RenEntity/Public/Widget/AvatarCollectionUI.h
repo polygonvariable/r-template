@@ -5,7 +5,7 @@
 // Engine Headers
 
 // Project Headers
-#include "Widget/CatalogCollectionUI.h"
+#include "Widget/AssetCollectionUI.h"
 
 // Generated Headers
 #include "AvatarCollectionUI.generated.h"
@@ -19,16 +19,16 @@ class UAvatarSubsystem;
  *
  */
 UCLASS(Abstract)
-class UAvatarCollectionUI : public UCatalogCollectionUI
+class UAvatarCollectionUI : public UAssetCollectionUI
 {
 
 	GENERATED_BODY()
 
 public:
 
-	// ~ UCatalogCollectionUI
+	// ~ UAssetCollectionUI
 	virtual void DisplayEntries() override;
-	// ~ End of UCatalogCollectionUI
+	// ~ End of UAssetCollectionUI
 
 protected:
 

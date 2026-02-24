@@ -6,11 +6,11 @@
 // Engine Headers
 
 // Project Headers
-#include "AssetCollection.h"
+#include "Management/AssetCollection.h"
+#include "Management/AssetGroup.h"
 #include "AvatarAsset.h"
-#include "RCoreAssetManager/Private/RAssetManager.inl"
-
-#include "Interface/AssetDecomposeInterface.h"
+#include "Manager/RAssetManager.inl"
+#include "Interface/AssetStructureInterface.h"
 #include "Subsystem/AvatarSubsystem.h"
 
 
@@ -56,7 +56,7 @@ void UTask_AddAvatarExperience::Step_LoadAssets()
 	Assets.Add(AvatarId);
 	Assets.Add(ItemId);
 
-	TFuture<FLatentResultAssets<UPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAssets<UPrimaryDataAsset>(TaskId, Assets);
+	TFuture<FLatentResultAssets<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAssets<URPrimaryDataAsset>(TaskId, Assets);
 	if (!Future.IsValid())
 	{
 		Fail(TEXT("Failed to create Future"));
@@ -64,7 +64,7 @@ void UTask_AddAvatarExperience::Step_LoadAssets()
 	}
 
 	TWeakObjectPtr<UTask_AddAvatarExperience> WeakThis(this);
-	Future.Next([WeakThis](const FLatentResultAssets<UPrimaryDataAsset>& Result)
+	Future.Next([WeakThis](const FLatentResultAssets<URPrimaryDataAsset>& Result)
 		{
 			UTask_AddAvatarExperience* This = WeakThis.Get();
 			if (!IsValid(This) || !Result.IsValid())
@@ -73,7 +73,7 @@ void UTask_AddAvatarExperience::Step_LoadAssets()
 				return;
 			}
 
-			const TArray<UPrimaryDataAsset*>& Assets = Result.Get();
+			const TArray<URPrimaryDataAsset*>& Assets = Result.Get();
 			This->AvatarAsset = Cast<UAvatarAsset>(Assets[0]);
 			This->ItemAsset = Assets[1];
 
@@ -83,7 +83,7 @@ void UTask_AddAvatarExperience::Step_LoadAssets()
 }
 
 void UTask_AddAvatarExperience::Step_CheckAssets()
-{
+{/*
 	const FAvatarData* Record = AvatarSubsystem->GetAvatarData(AvatarId);
 	if (!Record || !IsValid(AvatarAsset) || !IsValid(ItemAsset))
 	{
@@ -104,9 +104,9 @@ void UTask_AddAvatarExperience::Step_CheckAssets()
 	{
 		Fail(TEXT("AssetStructure is invalid"));
 		return;
-	}
+	}*/
 
-	const UAssetCollection* BreakdownAssets = AssetStructure->GetBreakdownAssets(ExperienceItems->Tags);
+	//const UAssetCollection* BreakdownAssets = AssetStructure->GetBreakdownAssets(ExperienceItems->Tags);
 	// TODO:
 	// cast BreakdownAsset[0] to ExperiencePoint
 	// get exp point from ExperiencePoint

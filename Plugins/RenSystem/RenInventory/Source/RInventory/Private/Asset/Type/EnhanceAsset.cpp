@@ -5,20 +5,30 @@
 
 // Engine Headers
 
+#include "InstancedStruct.h"
+
 // Project Headers
-#include "Asset/AssetRuleDefinition.h"
-#include "AssetCollection.h"
-#include "Definition/AscensionData.h"
+#include "Definition/AssetRuleDefinition.h"
+#include "Management/AssetCollection.h"
+#include "Management/AssetGroup.h"
 
 
 
 const UAssetCollection* UEnhanceAsset::GetBreakdownAssets(const FGameplayTagContainer& InTags) const
 {
-	return BreakdownItems->GetCollectionRule<UAssetCollection>(FAssetRuleContext(InTags));
+	if (!IsValid(BreakdownItems))
+	{
+		return nullptr;
+	}
+	return BreakdownItems->GetCollectionRule(FInstancedStruct::Make(FAssetRuleContext(InTags)));
 }
 
 const UAssetCollection* UEnhanceAsset::GetRebuildAssets(const FGameplayTagContainer& InTags) const
 {
-	return RebuildItems->GetCollectionRule<UAssetCollection>(FAssetRuleContext(InTags));
+	if (!IsValid(RebuildItems))
+	{
+		return nullptr;
+	}
+	return RebuildItems->GetCollectionRule(FInstancedStruct::Make(FAssetRuleContext(InTags)));
 }
 

@@ -6,12 +6,9 @@
 // Engine Headers
 
 // Project Header
-#include "RCoreAssetManager/Public/RAssetManager.h"
-#include "RCoreAssetManager/Private/RAssetManager.inl"
-
+#include "Manager/RAssetManager.inl"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-
 #include "RenWeather/Public/Actor/WeatherEffectActor.h"
 #include "RenWeather/Public/WeatherAsset.h"
 #include "RenWeather/Public/WeatherSubsystem.h"

@@ -6,7 +6,7 @@
 
 // Project Headers
 #include "Definition/AscensionData.h"
-#include "TaskObject.h"
+#include "Task/TaskObject.h"
 
 // Generated Headers
 #include "GrantItemExperience.generated.h"
@@ -15,7 +15,7 @@
 class UInventoryAsset;
 class UInventorySubsystem;
 class URAssetManager;
-
+class URPrimaryDataAsset;
 struct FGameplayTagContainer;
 
 
@@ -25,7 +25,7 @@ struct FGameplayTagContainer;
  *
  *
  */
-UCLASS(MinimalAPI, NotBlueprintType)
+UCLASS(NotBlueprintType)
 class UGrantItemExperience : public UTaskObject
 {
 
@@ -47,7 +47,7 @@ protected:
 	TObjectPtr<const UInventoryAsset> TargetAsset = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<const UPrimaryDataAsset> MaterialAsset = nullptr;
+	TObjectPtr<const URPrimaryDataAsset> MaterialAsset = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<UInventorySubsystem> InventorySubsystem = nullptr;

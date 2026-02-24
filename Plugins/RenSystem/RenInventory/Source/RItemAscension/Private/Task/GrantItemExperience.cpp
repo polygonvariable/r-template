@@ -8,13 +8,14 @@
 // Project Headers
 #include "Asset/AscensionAsset.h"
 #include "Asset/InventoryAsset.h"
-#include "AssetCollection.h"
 #include "Definition/InventoryItem.h"
 #include "Interface/AscensionProviderInterface.h"
-#include "Interface/AssetDecomposeInterface.h"
+#include "Interface/AssetStructureInterface.h"
 #include "Library/AscensionLibrary.h"
-#include "RCoreAssetManager/Private/RAssetManager.inl"
+#include "Management/AssetCollection.h"
+#include "Manager/RAssetManager.inl"
 #include "Subsystem/InventorySubsystem.h"
+#include "Asset/RPrimaryDataAsset.h"
 
 
 
@@ -66,7 +67,7 @@ void UGrantItemExperience::Step_LoadAssets()
 	Assets.Add(TargetAssetId);
 	Assets.Add(MaterialAssetId);
 
-	TFuture<FLatentResultAssets<UPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAssets<UPrimaryDataAsset>(TaskId, Assets);
+	TFuture<FLatentResultAssets<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAssets<URPrimaryDataAsset>(TaskId, Assets);
 	if (!Future.IsValid())
 	{
 		Fail(TEXT("Failed to create Future"));
@@ -74,7 +75,7 @@ void UGrantItemExperience::Step_LoadAssets()
 	}
 
 	TWeakObjectPtr<UGrantItemExperience> WeakThis(this);
-	Future.Next([WeakThis](const FLatentResultAssets<UPrimaryDataAsset>& Result)
+	Future.Next([WeakThis](const FLatentResultAssets<URPrimaryDataAsset>& Result)
 		{
 			UGrantItemExperience* This = WeakThis.Get();
 			if (!IsValid(This) || !Result.IsValid())
@@ -83,7 +84,7 @@ void UGrantItemExperience::Step_LoadAssets()
 				return;
 			}
 
-			const TArray<UPrimaryDataAsset*>& Assets = Result.Get();
+			const TArray<URPrimaryDataAsset*>& Assets = Result.Get();
 			This->TargetAsset = Cast<UInventoryAsset>(Assets[0]);
 			This->MaterialAsset = Assets[1];
 
@@ -115,22 +116,22 @@ void UGrantItemExperience::Step_CheckItemAsset()
 	MaxLevel = AscensionProvider->GetMaxLevel();
 	MaxRank = AscensionProvider->GetMaxRank();
 
-	const UAssetCollection* ExperienceItems = AscensionProvider->GetExperienceItems(AscensionData);
+	const UAssetCollection_Simple* ExperienceItems = Cast<UAssetCollection_Simple>(AscensionProvider->GetExperienceItems(AscensionData));
 	if (!IsValid(ExperienceItems))
 	{
 		Fail(TEXT("The material cannot be used to upgrade the item"));
 		return;
 	}
 
-	const int* Quantity = ExperienceItems->AssetIds.Find(MaterialAssetId);
-	if (!Quantity)
+	const FGameplayTagContainer& CollectionTags = ExperienceItems->GetCollectionTags();
+	bool bFound = ExperienceItems->GetAsset(MaterialAssetId, MaterialQuantity);
+	if (!bFound)
 	{
-		Fail(TEXT("The material cannot be used to upgrade the item"));
+		Fail(TEXT("Failed to fetch collection item"));
 		return;
 	}
 
-	MaterialQuantity = *Quantity;
-	Step_CheckMaterialAsset(ExperienceItems->Tags);
+	Step_CheckMaterialAsset(CollectionTags);
 }
 
 void UGrantItemExperience::Step_CheckMaterialAsset(const FGameplayTagContainer& RuleTags)
@@ -150,20 +151,23 @@ void UGrantItemExperience::Step_CheckMaterialAsset(const FGameplayTagContainer& 
 
 	// Possible items that material can break into
 	// in this case the Material item will break into Exp item
-	const UAssetCollection* BreakdownAssets = AssetStructure->GetBreakdownAssets(RuleTags);
+	const UAssetCollection_Simple* BreakdownAssets = Cast<UAssetCollection_Simple>(AssetStructure->GetBreakdownAssets(RuleTags));
 	if (!IsValid(BreakdownAssets))
 	{
 		Fail(TEXT("Invalid BreakdownAssets"));
 		return;
 	}
 
-	TPair<FPrimaryAssetId, int> AssetPair;
-	BreakdownAssets->GetAnyPair(AssetPair);
+	TPair<FPrimaryAssetId, int> Collection;
+	bool bFound = BreakdownAssets->GetAnyAsset(Collection);
+	if (!bFound)
+	{
+		Fail(TEXT("Failed to get asset pair"));
+		return;
+	}
 
-	FPrimaryAssetId BreakdownAssetId = AssetPair.Key;
-	int Quantity = AssetPair.Value;
-
-	Step_LoadBreakdownAsset(BreakdownAssetId, Quantity);
+	const FPrimaryAssetId& BreakdownAssetId = Collection.Key;
+	Step_LoadBreakdownAsset(BreakdownAssetId, Collection.Value);
 }
 
 void UGrantItemExperience::Step_LoadBreakdownAsset(const FPrimaryAssetId& AssetId, int Quantity)
@@ -205,7 +209,7 @@ void UGrantItemExperience::Step_RemoveItem()
 	Step_AddExperience();
 }
 
-UE_DISABLE_OPTIMIZATION
+// UE_DISABLE_OPTIMIZATION
 void UGrantItemExperience::Step_AddExperience()
 {
 	const FInventoryItem* Item = InventorySubsystem->GetItemById(InventoryId, TargetAssetId, TargetId);
@@ -245,5 +249,5 @@ void UGrantItemExperience::Step_AddExperience()
 	}
 	Succeed();
 }
-UE_ENABLE_OPTIMIZATION
+// UE_ENABLE_OPTIMIZATION
 

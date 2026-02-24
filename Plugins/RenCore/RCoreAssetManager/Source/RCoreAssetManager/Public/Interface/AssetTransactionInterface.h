@@ -1,0 +1,53 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+// Engine Headers
+#include "UObject/Interface.h"
+
+// Project Headers
+
+// Generated Headers
+#include "AssetTransactionInterface.generated.h"
+
+// Module Macros
+#define RCORE_API RCOREASSETMANAGER_API
+
+// Forward Declarations
+
+
+
+UINTERFACE(MinimalAPI)
+class UAssetTransactionInterface : public UInterface
+{
+
+	GENERATED_BODY()
+
+};
+
+/**
+ *
+ */
+class RCORE_API IAssetTransactionInterface
+{
+
+	GENERATED_BODY()
+
+public:
+
+	virtual bool AddItem(const FGuid& SlotId, const FPrimaryAssetId& AssetId, int Quantity) = 0;
+	virtual bool AddItems(const FGuid& SlotId, const TMap<FPrimaryAssetId, int>& Items, int Multiplier) = 0;
+
+	virtual bool RemoveItem(const FGuid& SlotId, const FPrimaryAssetId& AssetId, int Quantity) = 0;
+	virtual bool RemoveItems(const FGuid& SlotId, const TMap<FPrimaryAssetId, int>& Items, int Multiplier) = 0;
+
+	virtual FPrimaryAssetType GetHandledAssetType() const = 0;
+	virtual FGuid GetDefaultSlotId() const = 0;
+
+};
+
+
+
+// Module Macros
+#undef RCORE_API
+

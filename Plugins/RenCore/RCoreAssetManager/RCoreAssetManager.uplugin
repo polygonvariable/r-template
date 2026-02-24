@@ -33,6 +33,14 @@
 		{
 			"Name": "RCoreFilter",
 			"Enabled": true
+		},
+		{
+			"Name": "RCoreCommon",
+			"Enabled": true
+		},
+		{
+			"Name": "StructUtils",
+			"Enabled": true
 		}
 	]
 }

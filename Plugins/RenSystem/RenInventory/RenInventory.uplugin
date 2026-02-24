@@ -34,6 +34,11 @@
 			"Name": "RItemAscension",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RItemInstance",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
@@ -87,6 +92,10 @@
 		},
 		{
 			"Name": "RenCounter",
+			"Enabled": true
+		},
+		{
+			"Name": "StructUtils",
 			"Enabled": true
 		}
 	]

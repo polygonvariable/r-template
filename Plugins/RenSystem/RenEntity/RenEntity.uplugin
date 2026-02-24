@@ -61,6 +61,10 @@
 		{
 			"Name": "RCoreEnhance",
 			"Enabled": true
+		},
+		{
+			"Name": "StructUtils",
+			"Enabled": true
 		}
 	]
 }

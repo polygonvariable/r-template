@@ -5,13 +5,14 @@
 // Engine Headers
 
 // Project Headers
-#include "Widget/CatalogEntryUI.h"
+#include "Widget/AssetEntryUI.h"
 
 // Generated Headers
 #include "InventoryEntryUI.generated.h"
 
 // Forward Declarations
 class UTextBlock;
+class URPrimaryDataAsset;
 
 
 
@@ -21,7 +22,7 @@ class UTextBlock;
  * 
  */
 UCLASS(Abstract)
-class UInventoryEntryUI : public UCatalogEntryUI
+class UInventoryEntryUI : public UAssetEntryUI
 {
 
 	GENERATED_BODY()
@@ -32,8 +33,7 @@ protected:
 	TObjectPtr<UTextBlock> EntryQuantity = nullptr;
 
 	// ~ UInventoryUI
-	virtual bool IsPrimaryAssetIdValid(const FPrimaryAssetId& AssetId) const override;
-	virtual void SetPrimaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset) override;
+	virtual void SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
 	// ~ End of UInventoryUI
 
 };

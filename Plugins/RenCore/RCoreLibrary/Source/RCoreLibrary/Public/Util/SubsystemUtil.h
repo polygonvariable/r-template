@@ -3,6 +3,11 @@
 #pragma once
 
 // Engine Headers
+class UWorld;
+class UObject;
+class USubsystem;
+class UGameInstance;
+class UClass;
 
 
 
@@ -10,6 +15,11 @@ class SubsystemUtil
 {
 
 public:
+
+
+	static USubsystem* GetSubsystemByInterface(UWorld* Context, UClass* InterfaceClass);
+	static USubsystem* GetSubsystemByInterface(UGameInstance* Context, UClass* InterfaceClass);
+
 
 	template <typename TContext, typename TSubsystem, typename TInterface>
 	static TSubsystem* GetSubsystemByInterface(TContext* Context)

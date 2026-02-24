@@ -7,12 +7,14 @@
 
 // Project Headers
 #include "Asset/InventoryAsset.h"
-#include "AssetCollection.h"
+#include "Management/AssetCollection.h"
+#include "Management/AssetGroup.h"
 #include "Definition/InventoryItem.h"
 #include "Interface/AscensionProviderInterface.h"
 #include "Library/AscensionLibrary.h"
-#include "RCoreAssetManager/Private/RAssetManager.inl"
+#include "Manager/RAssetManager.inl"
 #include "Subsystem/InventorySubsystem.h"
+#include "Asset/RPrimaryDataAsset.h"
 
 
 
@@ -51,7 +53,7 @@ void UGrantItemRank::OnCleanup()
 
 void UGrantItemRank::Step_LoadAsset()
 {
-	TFuture<FLatentResultAsset<UPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAsset<UPrimaryDataAsset>(TargetAssetId);
+	TFuture<FLatentResultAsset<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAsset<URPrimaryDataAsset>(TargetAssetId);
 	if (!Future.IsValid())
 	{
 		Fail(TEXT("Failed to create Future"));
@@ -59,7 +61,7 @@ void UGrantItemRank::Step_LoadAsset()
 	}
 
 	TWeakObjectPtr<UGrantItemRank> WeakThis(this);
-	Future.Next([WeakThis](const FLatentResultAsset<UPrimaryDataAsset>& Result)
+	Future.Next([WeakThis](const FLatentResultAsset<URPrimaryDataAsset>& Result)
 		{
 			UGrantItemRank* This = WeakThis.Get();
 			if (!IsValid(This) || !Result.IsValid())
@@ -104,16 +106,14 @@ void UGrantItemRank::Step_CheckTarget()
 		return;
 	}
 
-	const UAssetCollection* RankItems = AscensionProvider->GetRankItems(AscensionData);
+	const UAssetCollection_Simple* RankItems = Cast<UAssetCollection_Simple>(AscensionProvider->GetRankItems(AscensionData));
 	if (!IsValid(RankItems))
 	{
 		Fail(TEXT("The material cannot be used to upgrade the item"));
 		return;
 	}
 
-
-	const TMap<FPrimaryAssetId, int>& AssetIds = RankItems->AssetIds;
-
+	const TMap<FPrimaryAssetId, int>& AssetIds = RankItems->GetAssetList();
 	bool bRemoved = InventorySubsystem->RemoveItems(InventoryId, AssetIds, 1);
 	if (!bRemoved)
 	{

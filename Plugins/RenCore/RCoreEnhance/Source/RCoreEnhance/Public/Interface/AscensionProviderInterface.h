@@ -11,9 +11,8 @@
 #include "AscensionProviderInterface.generated.h"
 
 // Forward Declarations
-class UAssetGroup;
 class UAssetCollection;
-struct FExchangeRule;
+
 struct FAscensionData;
 
 
@@ -25,6 +24,7 @@ class UAscensionProviderInterface : public UInterface
 	GENERATED_BODY()
 
 };
+
 /**
  *
  */

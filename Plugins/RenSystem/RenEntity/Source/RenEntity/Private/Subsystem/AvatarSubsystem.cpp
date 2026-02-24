@@ -6,15 +6,15 @@
 // Engine Headers
 
 // Project Headers
-#include "AssetCollection.h"
+#include "Management/AssetCollection.h"
+#include "Management/AssetGroup.h"
 #include "AvatarAsset.h"
 #include "LatentDelegates.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "RCoreAssetManager/Private/RAssetManager.inl"
+#include "Manager/RAssetManager.inl"
 #include "Interface/StorageProviderInterface.h"
 #include "Util/SubsystemUtil.h"
-
 #include "EntityPrimaryAsset.h"
 #include "Storage/EntityStorage.h"
 

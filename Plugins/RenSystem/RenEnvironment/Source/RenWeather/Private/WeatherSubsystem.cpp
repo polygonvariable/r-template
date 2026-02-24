@@ -8,16 +8,12 @@
 
 // Project Headers
 #include "RCoreCommon/Public/Priority/PriorityList.h"
-#include "RCoreAssetManager/Public/RAssetManager.h"
-#include "RCoreAssetManager/Private/RAssetManager.inl"
-
+#include "Manager/RAssetManager.inl"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "RCoreLibrary/Private/Util/TimerUtil.inl"
 #include "RCoreSettings/Public/WorldConfigSettings.h"
-
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
-
 #include "RenWeather/Public/WeatherAsset.h"
 #include "RenWeather/Public/WeatherController.h"
 #include "RenWeather/Public/WeatherControllerInterface.h"

@@ -9,7 +9,7 @@
 #include "LatentDelegates.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "TaskSubsystem.h"
+#include "Subsystem/TaskSubsystem.h"
 
 #include "Task/Task_AddAvatarExperience.h"
 

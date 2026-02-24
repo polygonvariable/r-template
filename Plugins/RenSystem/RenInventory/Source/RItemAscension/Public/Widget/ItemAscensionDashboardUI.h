@@ -5,18 +5,19 @@
 // Engine Headers
 
 // Project Headers
-#include "Widget/CatalogDashboardUI.h"
+#include "Widget/AssetDashboardUI.h"
 
 // Generated Headers
 #include "ItemAscensionDashboardUI.generated.h"
 
 // Forward Declarations
-class UCatalogEntry;
+class UAssetEntry;
 class UInventoryCollectionUI;
 class UInventoryDetailUI;
 class IAscensionProviderInterface;
 class UInventorySubsystem;
 class UItemAscensionSubsystem;
+class URPrimaryDataAsset;
 
 struct FInventoryItem;
 
@@ -26,17 +27,17 @@ struct FInventoryItem;
  *
  */
 UCLASS(Abstract)
-class UItemAscensionDashboardUI : public UCatalogDashboardUI
+class UItemAscensionDashboardUI : public UAssetDashboardUI
 {
 
 	GENERATED_BODY()
 
 public:
 
-	// ~ UCatalogDashboardUI
+	// ~ UAssetDashboardUI
 	virtual void SetCatalogId(const FGuid& Id) override;
 	virtual void RefreshDetails() override;
-	// ~ End of UCatalogDashboardUI
+	// ~ End of UAssetDashboardUI
 
 protected:
 
@@ -78,10 +79,10 @@ protected:
 
 	void HandleOnItemUpdated(const FGuid& InventoryId);
 
-	// ~ UCatalogDashboardUI
-	virtual void SetSecondaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset) override;
-	virtual void GetAllCatalogUI_Implementation(TArray<UCatalogUI*>& OutCatalogUI) const;
-	// ~ End of UCatalogDashboardUI
+	// ~ UAssetDashboardUI
+	virtual void SetSecondaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	virtual void GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutAssetUI) const;
+	// ~ End of UAssetDashboardUI
 
 	// ~ UUserWidget
 	virtual void NativeConstruct() override;

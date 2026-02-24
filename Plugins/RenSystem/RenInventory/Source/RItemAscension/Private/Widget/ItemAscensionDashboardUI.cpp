@@ -7,20 +7,23 @@
 #include "Components/Button.h"
 
 // Project Headers
-#include "AssetCollection.h"
+#include "Asset/RPrimaryDataAsset.h"
+#include "Definition/AssetFilterProperty.h"
 #include "Definition/InventoryFilterProperty.h"
 #include "Definition/InventoryItem.h"
-#include "FilterLeafCriterion.h"
+#include "Filter/FilterLeafCriterion.h"
 #include "Interface/AscensionProviderInterface.h"
-#include "InventoryEntry.h"
 #include "Library/AscensionLibrary.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
+#include "Management/AssetCollection.h"
 #include "Subsystem/InventorySubsystem.h"
 #include "Subsystem/ItemAscensionSubsystem.h"
-#include "Widget/CatalogEntry.h"
+#include "Widget/AssetEntry.h"
 #include "Widget/InventoryCollectionUI.h"
 #include "Widget/InventoryDetailUI.h"
+#include "Widget/InventoryEntry.h"
+
 
 
 
@@ -28,8 +31,8 @@ void UItemAscensionDashboardUI::SetCatalogId(const FGuid& Id)
 {
 	Super::SetCatalogId(Id);
 
-	if (IsValid(PrimaryCollection)) PrimaryCollection->SetCatalogId(Id);
-	if (IsValid(PrimaryDetail)) PrimaryDetail->SetCatalogId(Id);
+	PrimaryCollection->SetCatalogId(Id);
+	PrimaryDetail->SetCatalogId(Id);
 }
 
 void UItemAscensionDashboardUI::RefreshDetails()
@@ -68,21 +71,21 @@ void UItemAscensionDashboardUI::ToggleAscension(const FInventoryItem* Item)
 
 void UItemAscensionDashboardUI::ToggleLevelUp()
 {
-	LevelUpButton->SetVisibility(ESlateVisibility::Visible);
-	RankUpButton->SetVisibility(ESlateVisibility::Collapsed);
+	if (IsValid(LevelUpButton)) LevelUpButton->SetVisibility(ESlateVisibility::Visible);
+	if (IsValid(RankUpButton)) RankUpButton->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void UItemAscensionDashboardUI::ToggleRankUp()
 {
-	LevelUpButton->SetVisibility(ESlateVisibility::Collapsed);
-	RankUpButton->SetVisibility(ESlateVisibility::Visible);
+	if (IsValid(LevelUpButton)) LevelUpButton->SetVisibility(ESlateVisibility::Collapsed);
+	if (IsValid(RankUpButton)) RankUpButton->SetVisibility(ESlateVisibility::Visible);
 }
 
 
 
 void UItemAscensionDashboardUI::HandleLevelUp()
 {
-	const UCatalogEntry* Entry = PrimaryCollection->GetSelectedEntry();
+	const UAssetEntry* Entry = PrimaryCollection->GetSelectedEntry();
 	const UInventoryEntry* InventoryEntry = Cast<UInventoryEntry>(Entry);
 	if (!IsValid(AscensionSubsystem) || !IsValid(InventoryEntry))
 	{
@@ -154,7 +157,7 @@ void UItemAscensionDashboardUI::HandleOnItemUpdated(const FGuid& InventoryId)
 
 
 
-void UItemAscensionDashboardUI::SetSecondaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset)
+void UItemAscensionDashboardUI::SetSecondaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	const UInventoryEntry* InventoryEntry = Cast<UInventoryEntry>(Entry);
 	const IAscensionProviderInterface* AscensionProvider = Cast<IAscensionProviderInterface>(Asset);
@@ -172,17 +175,17 @@ void UItemAscensionDashboardUI::SetSecondaryDetails(const UCatalogEntry* Entry, 
 	ActiveItemId = Item->ItemId;
 	ActiveItemAscension = AscensionProvider;
 
-	UFilterAssetCriterion* AssetCriterion = PrimaryCollection->GetCriterionByName<UFilterAssetCriterion>(InventoryFilterProperty::AssetId);
+	UFilterAssetCriterion* AssetCriterion = PrimaryCollection->GetCriterionByName<UFilterAssetCriterion>(AssetFilterProperty::AssetId);
 	if (IsValid(AssetCriterion))
 	{
 		AssetCriterion->Included.Empty();
 
 		const FAscensionData& Ascension = Item->Ascension;
-		const UAssetCollection* CollectionRule = AscensionProvider->GetExperienceItems(Ascension);
+		const UAssetCollection_Simple* CollectionRule = Cast<UAssetCollection_Simple>(AscensionProvider->GetExperienceItems(Ascension));
 		if (IsValid(CollectionRule))
 		{
 			TArray<FPrimaryAssetId> AssetIds;
-			CollectionRule->AssetIds.GetKeys(AssetIds);
+			CollectionRule->GetAssetList().GetKeys(AssetIds);
 
 			AssetCriterion->Included.Append(AssetIds);
 		}
@@ -193,9 +196,9 @@ void UItemAscensionDashboardUI::SetSecondaryDetails(const UCatalogEntry* Entry, 
 	ToggleAscension(Item);
 }
 
-void UItemAscensionDashboardUI::GetAllCatalogUI_Implementation(TArray<UCatalogUI*>& OutCatalogUI) const
+void UItemAscensionDashboardUI::GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutAssetUI) const
 {
-	OutCatalogUI.Add(PrimaryDetail);
+	OutAssetUI.Add(PrimaryDetail);
 }
 
 

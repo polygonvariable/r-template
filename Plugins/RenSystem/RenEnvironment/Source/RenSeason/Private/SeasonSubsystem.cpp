@@ -10,19 +10,15 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 
 // Project Headers
-#include "RCoreAssetManager/Public/RAssetManager.h"
-#include "RCoreAssetManager/Private/RAssetManager.inl"
+#include "Manager/RAssetManager.inl"
 #include "RCoreMaterial/Public/MaterialSurfaceProperty.h"
-
 #include "RCoreClock/Public/ClockManagerInterface.h"
 #include "Util/AssetManagerUtil.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Util/SubsystemUtil.h"
 #include "RCoreSettings/Public/WorldConfigSettings.h"
-
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
-
 #include "RenSeason/Public/SeasonAsset.h"
 
 

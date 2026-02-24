@@ -6,10 +6,17 @@
 // Engine Headers
 
 // Project Headers
+#include "Management/AssetCollection.h"
+#include "Management/AssetGroup.h"
 
 
-const FExchangeRule& UPurchasableAsset::GetPurchaseRule() const
+
+const UAssetCollection* UPurchasableAsset::GetPurchaseCost() const
 {
-	return PurchaseRule;
+	if (!IsValid(PurchaseCost))
+	{
+		return nullptr;
+	}
+	return PurchaseCost->GetCollectionRule<UAssetCollection>();
 }
 

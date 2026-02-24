@@ -9,11 +9,9 @@
 
 
 
-const FName InventoryFilterProperty::AssetId(TEXT("AssetId"));
-const FName InventoryFilterProperty::AssetType(TEXT("AssetType"));
-const FName InventoryFilterProperty::AssetRarity(TEXT("AssetRarity"));
-
 const FName InventoryFilterProperty::ItemId(TEXT("ItemId"));
+const FName InventoryFilterProperty::ItemType(TEXT("ItemType"));
+const FName InventoryFilterProperty::ItemRarity(TEXT("ItemRarity"));
 const FName InventoryFilterProperty::ItemQuantity(TEXT("ItemQuantity"));
 const FName InventoryFilterProperty::ItemExperience(TEXT("ItemExperience"));
 const FName InventoryFilterProperty::ItemLevel(TEXT("ItemLevel"));

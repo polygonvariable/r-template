@@ -6,21 +6,18 @@
 // Engine Headers
 
 // Project Headers
-#include "Definition/InventoryPrimaryAsset.h"
+#include "Asset/RPrimaryDataAsset.h"
+#include "Definition/FilterContext.h"
+#include "Definition/AssetFilterProperty.h"
 #include "Definition/InventoryFilterProperty.h"
-#include "FilterContext.h"
-#include "FilterCriterion.h"
-#include "FilterGroup.h"
-#include "RAssetManager.h"
+#include "Definition/InventoryPrimaryAsset.h"
+#include "Filter/FilterCriterion.h"
+#include "Filter/FilterGroup.h"
+#include "Manager/RAssetManager.h"
 
 
 
-bool UInventoryFilterUI::IsPrimaryAssetIdValid(const FPrimaryAssetId& AssetId) const
-{
-	return InventoryPrimaryAsset::IsValid(AssetId);
-}
-
-void UInventoryFilterUI::SetPrimaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset)
+void UInventoryFilterUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	if (!IsValid(AssetManager) || !IsValid(FilterRule))
 	{
@@ -42,9 +39,9 @@ void UInventoryFilterUI::SetPrimaryDetails(const UCatalogEntry* Entry, const UPr
 	InventoryPrimaryAsset::GetRarity(AssetData, ItemRarity);
 
 	FFilterContext Context;
-	Context.SetValue(InventoryFilterProperty::AssetId, ActiveAssetId);
-	Context.SetValue(InventoryFilterProperty::AssetType, ItemType);
-	Context.SetValue(InventoryFilterProperty::AssetRarity, ItemRarity);
+	Context.SetValue(AssetFilterProperty::AssetId, ActiveAssetId);
+	Context.SetValue(InventoryFilterProperty::ItemType, ItemType);
+	Context.SetValue(InventoryFilterProperty::ItemRarity, ItemRarity);
 
 	UFilterCriterion* FilterRoot = FilterRule->CriterionRoot;
 	if (IsValid(FilterRoot))

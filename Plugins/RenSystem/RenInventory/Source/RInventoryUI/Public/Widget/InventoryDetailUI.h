@@ -5,7 +5,7 @@
 // Engine Headers
 
 // Project Headers
-#include "Widget/CatalogDetailUI.h"
+#include "Widget/AssetDetailUI.h"
 
 // Generated Headers
 #include "InventoryDetailUI.generated.h"
@@ -14,7 +14,7 @@
 class UTextBlock;
 class UAscensionDetailUI;
 class UInventorySubsystem;
-
+class URPrimaryDataAsset;
 struct FInventoryItem;
 
 
@@ -25,16 +25,16 @@ struct FInventoryItem;
  * 
  */
 UCLASS(Abstract, MinimalAPI)
-class UInventoryDetailUI : public UCatalogDetailUI
+class UInventoryDetailUI : public UAssetDetailUI
 {
 
 	GENERATED_BODY()
 
 public:
 
-	// ~ UCatalogDetailUI
+	// ~ UAssetDetailUI
 	virtual void RefreshDetails() override;
-	// ~ End of UCatalogDetailUI
+	// ~ End of UAssetDetailUI
 
 protected:
 
@@ -48,15 +48,14 @@ protected:
 
 	UPROPERTY(Meta = (BindWidgetOptional))
 	TObjectPtr<UAscensionDetailUI> AscensionDetail = nullptr;
-	
 
-	// ~ UCatalogDetailUI
-	virtual bool IsPrimaryAssetIdValid(const FPrimaryAssetId& AssetId) const override;
-	virtual void SetPrimaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset) override;
-	virtual void SetSecondaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset) override;
-	// ~ End of UCatalogDetailUI
 
 	virtual void SetCustomDetails(const FInventoryItem* Item, int Quantity);
+
+	// ~ UAssetDetailUI
+	virtual void SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	virtual void SetSecondaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	// ~ End of UAssetDetailUI
 
 	// ~ End of UUserWidget
 	virtual void NativeConstruct() override;

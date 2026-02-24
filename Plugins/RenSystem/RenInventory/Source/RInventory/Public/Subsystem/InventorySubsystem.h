@@ -6,14 +6,12 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 
 // Project Headers
+#include "Interface/AssetTransactionInterface.h"
 
 // Generated Headers
 #include "InventorySubsystem.generated.h"
 
 // Module Macros
-#ifdef RSYSTEM_API
-#undef RSYSTEM_API
-#endif
 #define RSYSTEM_API RINVENTORY_API
 
 // Forward Declarations
@@ -43,7 +41,7 @@ struct FInventorySortEntry;
  *
  */
 UCLASS(MinimalAPI)
-class UInventorySubsystem : public UGameInstanceSubsystem
+class UInventorySubsystem : public UGameInstanceSubsystem, public IAssetTransactionInterface
 {
 
 	GENERATED_BODY()
@@ -75,21 +73,26 @@ public:
 	 * and for non-stackable items, the number of item will be removed from the stack.
 	 * Useful when the exact itemId is not required.
 	 */
-	RSYSTEM_API bool RemoveAnyItems(const FGuid& InContainerId, const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity);
+	RSYSTEM_API bool RemoveAnyItems(const FGuid& InInventoryId, const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity);
 	RSYSTEM_API bool RemoveItemById(const FGuid& InventoryId, const FPrimaryAssetId& AssetId, const FGuid& ItemId, int Quantity);
 
 	RSYSTEM_API bool UpdateItem(const FGuid& InventoryId, const FPrimaryAssetId& AssetId, TFunctionRef<void(FInventoryItem*)> Callback);
 	RSYSTEM_API bool UpdateItemById(const FGuid& InventoryId, const FPrimaryAssetId& AssetId, const FGuid& ItemId, TFunctionRef<void(FInventoryItem*)> Callback);
 
 	RSYSTEM_API bool ContainItems(const FGuid& InventoryId, const TMap<FPrimaryAssetId, int>& Items, int Multiplier) const;
-	RSYSTEM_API bool ContainAnyItems(const FGuid& InContainerId, const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const;
+	RSYSTEM_API bool ContainAnyItems(const FGuid& InInventoryId, const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const;
 
 
 	RSYSTEM_API int GetTotalQuantity(const FGuid& InventoryId, const FPrimaryAssetId& AssetId) const;
+	RSYSTEM_API const FInventoryItem* GetItem(const FGuid& InventoryId, const FPrimaryAssetId& AssetId) const;
 	RSYSTEM_API const FInventoryItem* GetItemById(const FGuid& InventoryId, const FPrimaryAssetId& AssetId, const FGuid& ItemId) const;
 
 	RSYSTEM_API void QueryItems(const FGuid& InventoryId, const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback);
 
+	// ~ IAssetTransactionInterface
+	virtual FPrimaryAssetType GetHandledAssetType() const override;
+	virtual FGuid GetDefaultSlotId() const override;
+	// ~ End of IAssetTransactionInterface
 
 protected:
 

@@ -7,18 +7,21 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
-#include "Definition/InventoryDefinition.h"
+#include "Definition/FilterContext.h"
+#include "Definition/AssetFilterProperty.h"
 #include "Definition/InventoryFilterProperty.h"
 #include "Definition/InventoryItem.h"
 #include "Definition/InventoryPrimaryAsset.h"
+#include "Definition/InventoryQueryType.h"
+#include "Definition/InventorySortType.h"
 #include "Definition/InventoryStack.h"
-#include "FilterContext.h"
-#include "FilterCriterion.h"
+#include "Asset/InventoryAsset.h"
+#include "Filter/FilterCriterion.h"
 #include "Interface/StorageProviderInterface.h"
 #include "LatentDelegates.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "RAssetManager.h"
+#include "Manager/RAssetManager.h"
 #include "Storage/InventoryStorage.h"
 
 
@@ -86,18 +89,18 @@ bool UInventorySubsystem::RemoveItems(const FGuid& InventoryId, const TMap<FPrim
 	return true;
 }
 
-bool UInventorySubsystem::RemoveAnyItems(const FGuid& InContainerId, const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity)
+bool UInventorySubsystem::RemoveAnyItems(const FGuid& InInventoryId, const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity)
 {
 	FPrimaryAssetId SelectedAssetId;
 	int SelectedQuantity = 0;
 
-	if (!ContainAnyItems(InContainerId, InItems, InMultiplier, SelectedAssetId, SelectedQuantity))
+	if (!ContainAnyItems(InInventoryId, InItems, InMultiplier, SelectedAssetId, SelectedQuantity))
 	{
 		LOG_ERROR(LogInventory, TEXT("Items not contain"));
 		return false;
 	}
 
-	bool bRemoved = RemoveItem(InContainerId, SelectedAssetId, SelectedQuantity);
+	bool bRemoved = RemoveItem(InInventoryId, SelectedAssetId, SelectedQuantity);
 	if (!bRemoved)
 	{
 		LOG_ERROR(LogInventory, TEXT("Items not contain"));
@@ -204,10 +207,10 @@ bool UInventorySubsystem::ContainItems(const FGuid& InventoryId, const TMap<FPri
 	return bResult;
 }
 
-bool UInventorySubsystem::ContainAnyItems(const FGuid& InContainerId, const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const
+bool UInventorySubsystem::ContainAnyItems(const FGuid& InInventoryId, const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const
 {
 	bool bResult = false;
-	UInventoryStorage* Storage = GetStorage(InContainerId);
+	UInventoryStorage* Storage = GetStorage(InInventoryId);
 
 	for (const TPair<FPrimaryAssetId, int>& Kv : InItems)
 	{
@@ -262,6 +265,24 @@ int UInventorySubsystem::GetTotalQuantity(const FGuid& InventoryId, const FPrima
 {
 	UInventoryStorage* Storage = GetStorage(InventoryId);
 	return GetItemQuantity_Internal(InventoryId, AssetId, Storage);
+}
+
+const FInventoryItem* UInventorySubsystem::GetItem(const FGuid& InventoryId, const FPrimaryAssetId& AssetId) const
+{
+	UInventoryStorage* Storage = GetStorage(InventoryId);
+	const FInventoryStack* Stack = GetStack(AssetId, Storage);
+	if (!Stack)
+	{
+		return nullptr;
+	}
+
+	const TArray<FInventoryItem>& RecordList = Stack->ItemList;
+	if (RecordList.Num() <= 0)
+	{
+		return nullptr;
+	}
+
+	return &RecordList[0];
 }
 
 const FInventoryItem* UInventorySubsystem::GetItemById(const FGuid& InventoryId, const FPrimaryAssetId& AssetId, const FGuid& ItemId) const
@@ -413,9 +434,9 @@ void UInventorySubsystem::HandleGlossaryItems(const FGuid& InventoryId, const UF
 		if (IsValid(FilterCriterion))
 		{
 			FFilterContext Context;
-			Context.SetValue(InventoryFilterProperty::AssetId, AssetId);
-			Context.SetValue(InventoryFilterProperty::AssetType, ItemType);
-			Context.SetValue(InventoryFilterProperty::AssetRarity, ItemRarity);
+			Context.SetValue(AssetFilterProperty::AssetId, AssetId);
+			Context.SetValue(InventoryFilterProperty::ItemType, ItemType);
+			Context.SetValue(InventoryFilterProperty::ItemRarity, ItemRarity);
 
 			if (!FilterCriterion->Evaluate(Context))
 			{
@@ -480,9 +501,9 @@ void UInventorySubsystem::HandleInventoryItems(const FGuid& InventoryId, const U
 			if (IsValid(FilterCriterion))
 			{
 				FFilterContext Context;
-				Context.SetValue(InventoryFilterProperty::AssetId, AssetId);
-				Context.SetValue(InventoryFilterProperty::AssetType, ItemType);
-				Context.SetValue(InventoryFilterProperty::AssetRarity, ItemRarity);
+				Context.SetValue(AssetFilterProperty::AssetId, AssetId);
+				Context.SetValue(InventoryFilterProperty::ItemType, ItemType);
+				Context.SetValue(InventoryFilterProperty::ItemRarity, ItemRarity);
 				Context.SetValue(InventoryFilterProperty::ItemId, FName(*Item.ItemId.ToString()));
 				Context.SetValue(InventoryFilterProperty::ItemQuantity, ItemQuantity);
 
@@ -854,5 +875,16 @@ FString UInventorySubsystem::GetStorageUrl()
 TSubclassOf<UStorage> UInventorySubsystem::GetStorageClass()
 {
 	return UInventoryStorage::StaticClass();
+}
+
+
+FPrimaryAssetType UInventorySubsystem::GetHandledAssetType() const
+{
+	return UInventoryAsset::GetPrimaryAssetType();
+}
+
+FGuid UInventorySubsystem::GetDefaultSlotId() const
+{
+	return UInventorySubsystem::GetStorageId();
 }
 

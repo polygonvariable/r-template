@@ -3,18 +3,21 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 
 // Project Headers
-#include "Interface/AscensionProviderInterface.h"
-#include "ExchangeRule.h"
-
 #include "Asset/Category/CraftableAsset.h"
+#include "Interface/AscensionProviderInterface.h"
 
 // Generated Headers
 #include "EnhanceableAsset.generated.h"
 
+// Module Macros
+#define RSYSTEM_API RINVENTORY_API
+
 // Forward Declarations
+class UAssetGroup;
+class UAssetCollection;
+
 struct FAscensionData;
 
 
@@ -31,12 +34,12 @@ class UEnhanceableAsset : public UCraftableAsset, public IAscensionProviderInter
 public:
 
 	// ~ IAscensionProviderInterface
-	RINVENTORY_API virtual int GetExperienceInterval(int Level) const override;
-	RINVENTORY_API virtual int GetLevelInterval(int Rank) const override;
-	RINVENTORY_API virtual int GetMaxLevel() const override;
-	RINVENTORY_API virtual int GetMaxRank() const override;
-	RINVENTORY_API virtual const UAssetCollection* GetExperienceItems(const FAscensionData& Ascension) const override;
-	RINVENTORY_API virtual const UAssetCollection* GetRankItems(const FAscensionData& Ascension) const override;
+	RSYSTEM_API virtual int GetExperienceInterval(int Level) const override;
+	RSYSTEM_API virtual int GetLevelInterval(int Rank) const override;
+	RSYSTEM_API virtual int GetMaxLevel() const override;
+	RSYSTEM_API virtual int GetMaxRank() const override;
+	RSYSTEM_API virtual const UAssetCollection* GetExperienceItems(const FAscensionData& Ascension) const override;
+	RSYSTEM_API virtual const UAssetCollection* GetRankItems(const FAscensionData& Ascension) const override;
 	// ~ End of IAscensionProviderInterface
 
 protected:
@@ -60,4 +63,9 @@ protected:
 	TObjectPtr<UAssetGroup> RankItems = nullptr;
 
 };
+
+
+
+// Module Macros
+#undef RSYSTEM_API
 

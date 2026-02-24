@@ -3,9 +3,9 @@
 #pragma once
 
 // Engine Headers
-#include "Engine/DataAsset.h"
 
 // Project Headers
+#include "Asset/RPrimaryDataAsset.h"
 
 // Generated Headers
 #include "AscensionAsset.generated.h"
@@ -19,7 +19,7 @@
  *
  */
 UCLASS(MinimalAPI)
-class UMetadataAsset : public UPrimaryDataAsset
+class UMetadataAsset : public URPrimaryDataAsset
 {
 
 	GENERATED_BODY()
@@ -39,26 +39,6 @@ public:
  */
 UCLASS(MinimalAPI)
 class UExperiencePointAsset : public UMetadataAsset
-{
-
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditDefaultsOnly)
-	int Points = 0;
-
-	RCOREENHANCE_API virtual int GetPoints(int Quality) const;
-
-};
-
-/**
- * 
- * 
- * 
- */
-UCLASS(MinimalAPI)
-class URankPointAsset : public UMetadataAsset
 {
 
 	GENERATED_BODY()

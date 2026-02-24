@@ -5,13 +5,14 @@
 // Engine Headers
 
 // Project Headers
-#include "Widget/CatalogDetailUI.h"
+#include "Widget/AssetDetailUI.h"
 
 // Generated Headers
 #include "AvatarDetailUI.generated.h"
 
 // Forward Declarations
 class UTextBlock;
+class URPrimaryDataAsset;
 
 struct FAvatarData;
 
@@ -20,7 +21,7 @@ struct FAvatarData;
  *
  */
 UCLASS(Abstract)
-class UAvatarDetailUI : public UCatalogDetailUI
+class UAvatarDetailUI : public UAssetDetailUI
 {
 
 	GENERATED_BODY()
@@ -40,14 +41,14 @@ protected:
 	UFUNCTION()
 	virtual void HandleAvatarDataChanged(const FPrimaryAssetId& AssetId);
 
-	// ~ UCatalogDetailUI
+	// ~ UAssetDetailUI
 	virtual void RefreshDetails() override;
 	virtual bool IsPrimaryAssetIdValid(const FPrimaryAssetId& AssetId) const override;
-	virtual void SetPrimaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset) override;
-	virtual void SetSecondaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset) override;
-	// ~ End of UCatalogDetailUI
+	virtual void SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	virtual void SetSecondaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	// ~ End of UAssetDetailUI
 
-	virtual void SetSecondaryDetails(const FAvatarData& Entry, const UPrimaryDataAsset* Asset);
+	virtual void SetSecondaryDetails(const FAvatarData& Entry, const URPrimaryDataAsset* Asset);
 
 	// ~ UUserWidget
 	virtual void NativeConstruct() override;

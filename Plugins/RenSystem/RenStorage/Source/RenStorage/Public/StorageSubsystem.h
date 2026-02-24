@@ -9,7 +9,7 @@
 // Project Headers
 #include "Interface/StorageProviderInterface.h"
 #include "Definition/StorageHandle.h"
-#include "TaskDefinition.h"
+#include "Definition/TaskType.h"
 
 // Generated Headers
 #include "StorageSubsystem.generated.h"

@@ -5,12 +5,13 @@
 // Engine Headers
 
 // Project Headers
-#include "Widget/CatalogFilterUI.h"
+#include "Widget/AssetFilterUI.h"
 
 // Generated Headers
 #include "InventoryFilterUI.generated.h"
 
 // Forward Declarations
+class URPrimaryDataAsset;
 
 
 
@@ -20,17 +21,16 @@
  *
  */
 UCLASS(Abstract)
-class UInventoryFilterUI : public UCatalogFilterUI
+class UInventoryFilterUI : public UAssetFilterUI
 {
 
 	GENERATED_BODY()
 
 protected:
 
-	// ~ UCatalogUI
-	virtual bool IsPrimaryAssetIdValid(const FPrimaryAssetId& AssetId) const override;
-	virtual void SetPrimaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset) override;
-	// ~ End of UCatalogUI
+	// ~ UAssetFilterUI
+	virtual void SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	// ~ End of UAssetFilterUI
 
 };
 

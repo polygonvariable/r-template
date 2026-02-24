@@ -34,11 +34,6 @@ bool EntityPrimaryAsset::GetHealth(const FAssetData& AssetData, int& Health)
 	return AssetData.GetTagValue<int>(GET_MEMBER_NAME_CHECKED(UAvatarAsset, Health), Health);
 }
 
-bool EntityPrimaryAsset::GetInfoType(const FAssetData& AssetData, FName& InfoType)
-{
-	return AssetData.GetTagValue<FName>(GET_MEMBER_NAME_CHECKED(UAvatarAsset, Type), InfoType);
-}
-
 
 const FName EntityFilterProperty::AssetId(TEXT("AssetId"));
 const FName EntityFilterProperty::InfoType(TEXT("InfoType"));

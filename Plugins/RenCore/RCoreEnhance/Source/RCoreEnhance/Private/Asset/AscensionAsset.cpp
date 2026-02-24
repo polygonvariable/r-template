@@ -20,9 +20,3 @@ int UExperiencePointAsset::GetPoints(int Quality) const
 	return Points * Quality;
 }
 
-int URankPointAsset::GetPoints(int Quality) const
-{
-	return Points * Quality;
-}
-
-

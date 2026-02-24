@@ -4,10 +4,13 @@
 #include "Asset/Category/EnhanceableAsset.h"
 
 // Engine Headers
+#include "InstancedStruct.h"
 
 // Project Headers
 #include "Definition/AscensionData.h"
-#include "AssetCollection.h"
+#include "Definition/AssetRuleDefinition.h"
+#include "Management/AssetCollection.h"
+#include "Management/AssetGroup.h"
 
 
 
@@ -50,6 +53,6 @@ const UAssetCollection* UEnhanceableAsset::GetRankItems(const FAscensionData& As
 	FAssetRuleContext_List Context;
 	Context.Index = Ascension.Rank;
 
-	return RankItems->GetCollectionRule<UAssetCollection>(Context);
+	return RankItems->GetCollectionRule<UAssetCollection>(FInstancedStruct::Make(Context));
 }
 

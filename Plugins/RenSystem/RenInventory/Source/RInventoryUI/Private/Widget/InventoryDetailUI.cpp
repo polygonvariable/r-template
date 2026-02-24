@@ -9,13 +9,14 @@
 
 // Project Headers
 #include "Asset/InventoryAsset.h"
+#include "Asset/RPrimaryDataAsset.h"
 #include "Definition/InventoryItem.h"
 #include "Definition/InventoryPrimaryAsset.h"
-#include "InventoryEntry.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Subsystem/InventorySubsystem.h"
 #include "Widget/AscensionDetailUI.h"
+#include "Widget/InventoryEntry.h"
 
 
 
@@ -39,25 +40,18 @@ void UInventoryDetailUI::RefreshDetails()
 	SetCustomDetails(Item, Quantity);
 }
 
-bool UInventoryDetailUI::IsPrimaryAssetIdValid(const FPrimaryAssetId& AssetId) const
+void UInventoryDetailUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
-	return InventoryPrimaryAsset::IsValid(AssetId);
-}
-
-void UInventoryDetailUI::SetPrimaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset)
-{
-	const UInventoryAsset* InventoryAsset = Cast<UInventoryAsset>(Asset);
-	if (!IsValid(InventoryAsset))
+	if (!IsValid(Asset))
 	{
 		return;
 	}
-
-	if (IsValid(EntryName)) EntryName->SetText(InventoryAsset->DisplayName);
-	if (IsValid(EntryDescription)) EntryDescription->SetText(InventoryAsset->Description);
-	if (IsValid(EntryIcon)) EntryIcon->SetBrushFromSoftTexture(InventoryAsset->Icon);
+	EntryName->SetText(Asset->DisplayName);
+	EntryDescription->SetText(Asset->Description);
+	EntryIcon->SetBrushFromSoftTexture(Asset->Icon);
 }
 
-void UInventoryDetailUI::SetSecondaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset)
+void UInventoryDetailUI::SetSecondaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	const UInventoryEntry* InventoryEntry = Cast<UInventoryEntry>(Entry);
 	if (!IsValid(InventoryEntry))
@@ -78,7 +72,9 @@ void UInventoryDetailUI::SetCustomDetails(const FInventoryItem* Item, int Quanti
 	}
 
 	ActiveItemId = Item->ItemId;
-	if (IsValid(EntryQuantity)) EntryQuantity->SetText(FText::AsNumber(Quantity));
+
+	EntryQuantity->SetText(FText::AsNumber(Quantity));
+
 	if (IsValid(AscensionDetail)) AscensionDetail->InitializeDetails(Item->Ascension);
 }
 

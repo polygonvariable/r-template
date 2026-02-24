@@ -11,6 +11,7 @@
 // ~ Task Categories
 DEFINE_LOG_CATEGORY(LogTask);
 DEFINE_LOG_CATEGORY(LogStorage);
+DEFINE_LOG_CATEGORY(LogAsset);
 // ~ End of Library Task
 // 
 // ~ Library Categories
@@ -40,8 +41,9 @@ DEFINE_LOG_CATEGORY(LogTimestamp);
 DEFINE_LOG_CATEGORY(LogInventory);
 DEFINE_LOG_CATEGORY(LogCraftItem);
 DEFINE_LOG_CATEGORY(LogItemAscension);
+DEFINE_LOG_CATEGORY(LogItemInstance);
 DEFINE_LOG_CATEGORY(LogExchangeItem);
-DEFINE_LOG_CATEGORY(LogPurchaseItem);
+DEFINE_LOG_CATEGORY(LogItemShop);
 // ~ End of Inventory Categories
 
 // ~ Avatar Categories

@@ -1,0 +1,82 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "Ren Shop",
+	"Description": "",
+	"Category": "Ren System",
+	"CreatedBy": "polygonvariable",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "RShop",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "StructUtils",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreAssetManager",
+			"Enabled": true
+		},
+		{
+			"Name": "RCorePool",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreFilter",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreInventory",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreStorage",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreLibrary",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreDelegate",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreSettings",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreEnhance",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreExchange",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreCommon",
+			"Enabled": true
+		},
+		{
+			"Name": "RenCounter",
+			"Enabled": true
+		},
+		{
+			"Name": "StructUtils",
+			"Enabled": true
+		}
+	]
+}

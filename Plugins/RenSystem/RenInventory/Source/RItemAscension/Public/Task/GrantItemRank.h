@@ -6,7 +6,7 @@
 
 // Project Headers
 #include "Definition/AscensionData.h"
-#include "TaskObject.h"
+#include "Task/TaskObject.h"
 
 // Generated Headers
 #include "GrantItemRank.generated.h"
@@ -15,9 +15,6 @@
 class UInventoryAsset;
 class UInventorySubsystem;
 class URAssetManager;
-class IAscensionProviderInterface;
-
-struct FGameplayTagContainer;
 
 
 
@@ -26,7 +23,7 @@ struct FGameplayTagContainer;
  *
  *
  */
-UCLASS(MinimalAPI, NotBlueprintType)
+UCLASS(NotBlueprintType)
 class UGrantItemRank : public UTaskObject
 {
 

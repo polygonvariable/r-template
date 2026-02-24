@@ -8,20 +8,20 @@
 
 // Project Headers
 #include "AvatarAsset.h"
-#include "FilterLeafCriterion.h"
+#include "Definition/TaskType.h"
+#include "Filter/FilterLeafCriterion.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Widget/CatalogEntry.h"
-
+#include "Management/AssetCollection.h"
+#include "Management/AssetGroup.h"
 #include "Subsystem/AvatarAscensionSubsystem.h"
-#include "TaskDefinition.h"
-
+#include "Widget/AssetEntry.h"
 #include "Widget/AvatarCollectionUI.h"
 #include "Widget/AvatarDetailUI.h"
 
 
 
-void UAvatarEnhanceUI::AddExperiencePoints(const UCatalogEntry* Entry)
+void UAvatarEnhanceUI::AddExperiencePoints(const UAssetEntry* Entry)
 {
 	if (!IsValid(AscensionSubsystem) || !IsValid(Entry))
 	{
@@ -56,13 +56,13 @@ void UAvatarEnhanceUI::AddRankPoints()
 	}
 }
 
-void UAvatarEnhanceUI::HandleItemSelected(const UCatalogEntry* Entry)
+void UAvatarEnhanceUI::HandleItemSelected(const UAssetEntry* Entry)
 {
 	AddExperiencePoints(Entry);
 }
 
-void UAvatarEnhanceUI::SetPrimaryDetails(const UCatalogEntry* Entry, const UPrimaryDataAsset* Asset)
-{
+void UAvatarEnhanceUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+{/*
 	if (IsValid(AvatarDetail))
 	{
 		AvatarDetail->InitializeDetails(Entry, Asset);
@@ -79,18 +79,18 @@ void UAvatarEnhanceUI::SetPrimaryDetails(const UCatalogEntry* Entry, const UPrim
 			UAssetGroup* CollectionGroup = AvatarAsset->ExperienceItems;
 			if (IsValid(CollectionGroup))
 			{
-				const UAssetCollection* CollectionRule = CollectionGroup->GetCollectionRule<UAssetCollection>();
+				const UAssetCollection_Simple* CollectionRule = CollectionGroup->GetCollectionRule<UAssetCollection_Simple>();
 				if (IsValid(CollectionRule))
 				{
 					TArray<FPrimaryAssetId> AssetIds;
-					CollectionRule->AssetIds.GetKeys(AssetIds);
+					CollectionRule->GetAssetList().GetKeys(AssetIds);
 
 					AssetId->Included.Append(AssetIds);
 				}
 			}
 		}
 		ItemCollection->DisplayEntries();
-	}
+	}*/
 }
 
 void UAvatarEnhanceUI::NativeConstruct()
