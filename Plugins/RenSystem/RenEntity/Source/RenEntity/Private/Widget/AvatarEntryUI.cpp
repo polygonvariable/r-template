@@ -14,7 +14,7 @@
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 
-#include "AvatarAsset.h"
+#include "Asset/AvatarAsset.h"
 #include "Widget/AvatarEntry.h"
 #include "EntityPrimaryAsset.h"
 

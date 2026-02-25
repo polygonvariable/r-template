@@ -8,8 +8,8 @@
 // Project Headers
 #include "Management/AssetCollection.h"
 #include "Management/AssetGroup.h"
-#include "AvatarAsset.h"
-#include "LatentDelegates.h"
+#include "Asset/AvatarAsset.h"
+#include "Delegate/LatentDelegate.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Manager/RAssetManager.inl"
@@ -130,7 +130,7 @@ bool UAvatarSubsystem::UpdateAvatar(const FPrimaryAssetId& AvatarId, TFunctionRe
 
 void UAvatarSubsystem::LoadAvatarStorage()
 {/*
-	FLatentDelegates::OnStorageLoaded.RemoveAll(this);
+	FLatentDelegate::OnStorageLoaded.RemoveAll(this);
 
 	IStorageProviderInterface* StorageProvider = SubsystemUtil::GetSubsystemInterface<IStorageProviderInterface>(GetGameInstance());
 	if (!StorageProvider)
@@ -174,7 +174,7 @@ void UAvatarSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
-	FLatentDelegates::OnStorageLoaded.AddUObject(this, &UAvatarSubsystem::LoadAvatarStorage);
+	FLatentDelegate::OnStorageLoaded.AddUObject(this, &UAvatarSubsystem::LoadAvatarStorage);
 
 	LOG_WARNING(LogAvatar, TEXT("AvatarSubsystem initialized"));
 }

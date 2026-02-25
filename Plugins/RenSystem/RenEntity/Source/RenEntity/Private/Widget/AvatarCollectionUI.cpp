@@ -24,7 +24,7 @@ void UAvatarCollectionUI::DisplayEntries()
 	UAvatarSubsystem* Avatar = AvatarSubsystem.Get();
 	if (!IsValid(Avatar))
 	{
-		LOG_ERROR(LogAvatar, TEXT("PoolSubsystem, AvatarSubsystem is invalid"));
+		LOG_ERROR(LogAvatar, TEXT("AvatarSubsystem is invalid"));
 		return;
 	}
 

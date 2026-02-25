@@ -45,6 +45,7 @@ public class RenWeather : ModuleRules
                 "RCoreClock",
                 "RCoreSettings",
                 "RCoreLibrary",
+                "RCoreAsset",
                 "RCoreAssetManager",
             }
 			);

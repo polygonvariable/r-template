@@ -7,7 +7,7 @@
 #include "Components/Button.h"
 
 // Project Headers
-#include "AvatarAsset.h"
+#include "Asset/AvatarAsset.h"
 #include "EntityPrimaryAsset.h"
 #include "Filter/FilterLeafCriterion.h"
 #include "Log/LogCategory.h"

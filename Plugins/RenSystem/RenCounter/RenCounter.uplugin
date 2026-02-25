@@ -32,11 +32,7 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreLibrary",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreDelegate",
+			"Name": "RCoreFramework",
 			"Enabled": true
 		},
 		{

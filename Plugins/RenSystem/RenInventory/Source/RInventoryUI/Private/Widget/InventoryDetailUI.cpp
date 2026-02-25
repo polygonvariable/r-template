@@ -10,8 +10,8 @@
 // Project Headers
 #include "Asset/InventoryAsset.h"
 #include "Asset/RPrimaryDataAsset.h"
-#include "Definition/InventoryItem.h"
-#include "Definition/InventoryPrimaryAsset.h"
+#include "Definition/Runtime/InventoryItem.h"
+#include "Library/InventoryPrimaryAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Subsystem/InventorySubsystem.h"

@@ -6,7 +6,7 @@
 // Engine Headers
 
 // Project Headers
-#include "LatentDelegates.h"
+#include "Delegate/LatentDelegate.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Subsystem/TaskSubsystem.h"
@@ -43,7 +43,7 @@ void UAvatarAscensionSubsystem::AddRankPoints(FGuid TaskId, const FPrimaryAssetI
 
 void UAvatarAscensionSubsystem::OnGameLoaded()
 {
-	FLatentDelegates::OnPreGameInitialized.RemoveAll(this);
+	FLatentDelegate::OnPreGameInitialized.RemoveAll(this);
 
 	UGameInstance* GameInstance = GetGameInstance();
 	if (IsValid(GameInstance))
@@ -61,7 +61,7 @@ void UAvatarAscensionSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
-	FLatentDelegates::OnPreGameInitialized.AddUObject(this, &UAvatarAscensionSubsystem::OnGameLoaded);
+	FLatentDelegate::OnPreGameInitialized.AddUObject(this, &UAvatarAscensionSubsystem::OnGameLoaded);
 
 	LOG_WARNING(LogAvatar, TEXT("AvatarAscensionSubsystem initialized"));
 }

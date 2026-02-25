@@ -27,27 +27,11 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreAssetManager",
+			"Name": "RCoreAsset",
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreCommon",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreLibrary",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreFilter",
-			"Enabled": true
-		},
-		{
-			"Name": "RCorePool",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreEntity",
+			"Name": "RCoreFramework",
 			"Enabled": true
 		},
 		{
@@ -59,7 +43,7 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreEnhance",
+			"Name": "RCoreAscension",
 			"Enabled": true
 		},
 		{

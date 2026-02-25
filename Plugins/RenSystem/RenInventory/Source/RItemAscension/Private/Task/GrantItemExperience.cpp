@@ -8,14 +8,14 @@
 // Project Headers
 #include "Asset/AscensionAsset.h"
 #include "Asset/InventoryAsset.h"
-#include "Definition/InventoryItem.h"
+#include "Asset/RPrimaryDataAsset.h"
+#include "Definition/Runtime/InventoryItem.h"
 #include "Interface/AscensionProviderInterface.h"
 #include "Interface/AssetStructureInterface.h"
 #include "Library/AscensionLibrary.h"
-#include "Management/AssetCollection.h"
+#include "Management/Collection/AssetCollectionSimple.h"
 #include "Manager/RAssetManager.inl"
 #include "Subsystem/InventorySubsystem.h"
-#include "Asset/RPrimaryDataAsset.h"
 
 
 

@@ -10,15 +10,15 @@
 #include "Definition/FilterContext.h"
 #include "Definition/AssetFilterProperty.h"
 #include "Definition/InventoryFilterProperty.h"
-#include "Definition/InventoryItem.h"
-#include "Definition/InventoryPrimaryAsset.h"
+#include "Definition/Runtime/InventoryItem.h"
+#include "Library/InventoryPrimaryAsset.h"
 #include "Definition/InventoryQueryType.h"
 #include "Definition/InventorySortType.h"
-#include "Definition/InventoryStack.h"
+#include "Definition/Runtime/InventoryStack.h"
 #include "Asset/InventoryAsset.h"
 #include "Filter/FilterCriterion.h"
 #include "Interface/StorageProviderInterface.h"
-#include "LatentDelegates.h"
+#include "Delegate/LatentDelegate.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Manager/RAssetManager.h"
@@ -831,12 +831,12 @@ void UInventorySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogInventory, TEXT("InventorySubsystem initialized"));
 
-	FLatentDelegates::OnPreGameInitialized.AddUObject(this, &UInventorySubsystem::OnPreGameInitialized);
+	FLatentDelegate::OnPreGameInitialized.AddUObject(this, &UInventorySubsystem::OnPreGameInitialized);
 }
 
 void UInventorySubsystem::Deinitialize()
 {
-	FLatentDelegates::OnPreGameInitialized.RemoveAll(this);
+	FLatentDelegate::OnPreGameInitialized.RemoveAll(this);
 
 	LOG_WARNING(LogInventory, TEXT("InventorySubsystem deinitialized"));
 	Super::Deinitialize();

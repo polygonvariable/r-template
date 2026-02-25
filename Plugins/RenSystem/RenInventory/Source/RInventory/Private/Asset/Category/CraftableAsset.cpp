@@ -6,10 +6,17 @@
 // Engine Headers
 
 // Project Headers
+#include "Management/AssetCollection.h"
+#include "Management/AssetGroup.h"
 
 
-const FExchangeRule& UCraftableAsset::GetCraftingRule() const
+
+const UAssetCollection* UCraftableAsset::GetCraftingItems() const
 {
-	return CraftingRule;
+	if (!IsValid(CraftingItems))
+	{
+		return nullptr;
+	}
+	return CraftingItems->GetCollectionRule<UAssetCollection>();
 }
 

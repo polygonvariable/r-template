@@ -6,7 +6,7 @@
 // Engine Headers
 
 // Project Headers
-#include "AvatarAsset.h"
+#include "Asset/AvatarAsset.h"
 
 
 FPrimaryAssetType EntityPrimaryAsset::GetAssetType()

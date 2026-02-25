@@ -6,7 +6,7 @@
 #include "GameFramework/SaveGame.h"
 
 // Project Headers
-#include "AvatarRecord.h"
+#include "Definition/Runtime/AvatarData.h"
 
 // Generated Headers
 #include "EntityStorage.generated.h"

@@ -28,15 +28,14 @@ public class RInventory : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
                 "UMG",
-                "RCoreInventory",
-                "RCoreEnhance",
-                "RCoreExchange",
-                "RCoreCraft",
-                "RCoreShop",
+                "RCoreAscension",
                 "RCoreTask",
-                "RCoreAssetManager",
+                "RCoreAsset",
+				"RCoreAssetManager",
                 "RCoreStorage",
                 "RCoreCommon",
+                "RCoreShop",
+                "RCoreCraft",
             }
 			);
 			
@@ -52,7 +51,6 @@ public class RInventory : ModuleRules
                 "RCoreDelegate",
                 "RCoreLibrary",
                 "RCoreFilter",
-                "RCorePool",
                 "GameplayTags",
                 "StructUtils",
             }

@@ -5,7 +5,7 @@
 // Engine Headers
 
 // Project Headers
-#include "Definition/InventoryItem.h"
+#include "Definition/Runtime/InventoryItem.h"
 
 // Generated Headers
 #include "ItemInstance.generated.h"

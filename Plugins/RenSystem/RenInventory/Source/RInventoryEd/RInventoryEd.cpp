@@ -3,7 +3,7 @@
 #include "RInventoryEd.h"
 #include "HAL/IConsoleManager.h"
 #include "Subsystem/InventorySubsystem.h"
-#include "Definition/InventoryPrimaryAsset.h"
+#include "Library/InventoryPrimaryAsset.h"
 
 #define LOCTEXT_NAMESPACE "FRInventoryEdModule"
 

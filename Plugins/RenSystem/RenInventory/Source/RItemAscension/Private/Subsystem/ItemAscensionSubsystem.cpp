@@ -6,7 +6,7 @@
 // Engine Headers
 
 // Project Headers
-#include "LatentDelegates.h"
+#include "Delegate/LatentDelegate.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Task/GrantItemExperience.h"
@@ -63,7 +63,7 @@ void UItemAscensionSubsystem::AddRankPoints(FGuid TaskId, const FGuid& Inventory
 
 void UItemAscensionSubsystem::OnPreGameInitialized()
 {
-	FLatentDelegates::OnPreGameInitialized.RemoveAll(this);
+	FLatentDelegate::OnPreGameInitialized.RemoveAll(this);
 
 	TaskSubsystem = UTaskSubsystem::Get(GetGameInstance());
 }
@@ -77,14 +77,14 @@ void UItemAscensionSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
-	FLatentDelegates::OnPreGameInitialized.AddUObject(this, &UItemAscensionSubsystem::OnPreGameInitialized);
+	FLatentDelegate::OnPreGameInitialized.AddUObject(this, &UItemAscensionSubsystem::OnPreGameInitialized);
 
 	LOG_WARNING(LogItemAscension, TEXT("ItemAscensionSubsystem initialized"));
 }
 
 void UItemAscensionSubsystem::Deinitialize()
 {
-	FLatentDelegates::OnPreGameInitialized.RemoveAll(this);
+	FLatentDelegate::OnPreGameInitialized.RemoveAll(this);
 
 	TaskSubsystem = nullptr;
 

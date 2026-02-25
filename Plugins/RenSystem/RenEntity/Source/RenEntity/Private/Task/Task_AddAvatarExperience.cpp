@@ -8,7 +8,7 @@
 // Project Headers
 #include "Management/AssetCollection.h"
 #include "Management/AssetGroup.h"
-#include "AvatarAsset.h"
+#include "Asset/AvatarAsset.h"
 #include "Manager/RAssetManager.inl"
 #include "Interface/AssetStructureInterface.h"
 #include "Subsystem/AvatarSubsystem.h"

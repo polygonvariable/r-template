@@ -9,7 +9,7 @@
 
 // Project Headers
 #include "Interface/StorageProviderInterface.h"
-#include "LatentDelegates.h"
+#include "Delegate/LatentDelegate.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "SaveGame/Storage.h"
@@ -239,7 +239,7 @@ UStorage* UStorageSubsystem::LoadStorage_Internal(const FGuid& StorageId, TSubcl
 
 void UStorageSubsystem::OnPreGameInitialized()
 {
-	FLatentDelegates::OnPreGameInitialized.RemoveAll(this);
+	FLatentDelegate::OnPreGameInitialized.RemoveAll(this);
 }
 
 void UStorageSubsystem::SaveAllStorages()
@@ -258,14 +258,14 @@ bool UStorageSubsystem::ShouldCreateSubsystem(UObject* Object) const
 void UStorageSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-	FLatentDelegates::OnPreGameInitialized.AddUObject(this, &UStorageSubsystem::OnPreGameInitialized);
+	FLatentDelegate::OnPreGameInitialized.AddUObject(this, &UStorageSubsystem::OnPreGameInitialized);
 }
 
 void UStorageSubsystem::Deinitialize()
 {
 	SaveAllStorages();
 
-	FLatentDelegates::OnPreGameInitialized.RemoveAll(this);
+	FLatentDelegate::OnPreGameInitialized.RemoveAll(this);
 	Super::Deinitialize();
 }
 

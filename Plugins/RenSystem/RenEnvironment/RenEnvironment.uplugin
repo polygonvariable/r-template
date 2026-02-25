@@ -64,11 +64,7 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreCommon",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreLibrary",
+			"Name": "RCoreFramework",
 			"Enabled": true
 		},
 		{
@@ -76,15 +72,7 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreSettings",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreAssetManager",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreMaterial",
+			"Name": "RCoreAsset",
 			"Enabled": true
 		}
 	]

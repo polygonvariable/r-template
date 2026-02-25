@@ -27,15 +27,7 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreCommon",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreLibrary",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreTag",
+			"Name": "RCoreFramework",
 			"Enabled": true
 		},
 		{

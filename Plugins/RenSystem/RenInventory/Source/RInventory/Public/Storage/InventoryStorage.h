@@ -5,7 +5,7 @@
 // Engine Headers
 
 // Project Headers
-#include "Definition/InventoryStack.h"
+#include "Definition/Runtime/InventoryStack.h"
 #include "SaveGame/Storage.h"
 
 // Generated Headers

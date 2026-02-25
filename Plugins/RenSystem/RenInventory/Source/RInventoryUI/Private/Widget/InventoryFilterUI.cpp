@@ -10,7 +10,7 @@
 #include "Definition/FilterContext.h"
 #include "Definition/AssetFilterProperty.h"
 #include "Definition/InventoryFilterProperty.h"
-#include "Definition/InventoryPrimaryAsset.h"
+#include "Library/InventoryPrimaryAsset.h"
 #include "Filter/FilterCriterion.h"
 #include "Filter/FilterGroup.h"
 #include "Manager/RAssetManager.h"

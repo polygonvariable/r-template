@@ -31,14 +31,12 @@ public class RenEntity : ModuleRules
                 "CoreUObject",
 				"Engine",
 				"StructUtils",
-
-                "RCoreEntity",
                 "RCoreCommon",
                 "RCoreTask",
                 "RenStorage",
                 "RenAbility",
                 "GameplayAbilities",
-                "RCoreEnhance",
+                "RCoreAscension",
                 "HTTP",
 				"Json",
 				"JsonUtilities"
@@ -60,8 +58,9 @@ public class RenEntity : ModuleRules
                 "RCoreDelegate",
                 "RCoreStorage",
                 "RCoreFilter",
-                "RCorePool",
-                "RCoreAssetManager",
+				"RCoreAssetManager",
+                "RCoreAsset",
+				"RCoreAssetUI",
                 "StructUtils",
             }
 			);

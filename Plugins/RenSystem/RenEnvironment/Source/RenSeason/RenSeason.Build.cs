@@ -44,6 +44,7 @@ public class RenSeason : ModuleRules
                 "RCoreClock",
                 "RCoreSettings",
                 "RCoreLibrary",
+                "RCoreAsset",
                 "RCoreAssetManager",
             }
 			);

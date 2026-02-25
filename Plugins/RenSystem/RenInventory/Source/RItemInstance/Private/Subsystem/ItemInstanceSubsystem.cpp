@@ -7,9 +7,9 @@
 #include "Manager/RAssetManager.h"
 
 // Project Headers
-#include "Definition/InventoryPrimaryAsset.h"
+#include "Library/InventoryPrimaryAsset.h"
 #include "Item/ItemInstance.h"
-#include "LatentDelegates.h"
+#include "Delegate/LatentDelegate.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Subsystem/InventorySubsystem.h"
@@ -155,7 +155,7 @@ bool UItemInstanceSubsystem::CommitItem_Internal(UItemInstance* Item, UInventory
 
 void UItemInstanceSubsystem::OnPreGameInitialized()
 {
-	FLatentDelegates::OnPreGameInitialized.RemoveAll(this);
+	FLatentDelegate::OnPreGameInitialized.RemoveAll(this);
 
 	UInventorySubsystem* Inventory = UInventorySubsystem::Get(GetGameInstance());
 	WeakInventory = TWeakObjectPtr<UInventorySubsystem>(Inventory);
@@ -172,14 +172,14 @@ void UItemInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
-	FLatentDelegates::OnPreGameInitialized.AddUObject(this, &UItemInstanceSubsystem::OnPreGameInitialized);
+	FLatentDelegate::OnPreGameInitialized.AddUObject(this, &UItemInstanceSubsystem::OnPreGameInitialized);
 
 	LOG_WARNING(LogItemInstance, TEXT("ItemInstanceSubsystem initialized"));
 }
 
 void UItemInstanceSubsystem::Deinitialize()
 {
-	FLatentDelegates::OnPreGameInitialized.RemoveAll(this);
+	FLatentDelegate::OnPreGameInitialized.RemoveAll(this);
 
 	CommitAllItems();
 	ItemInstances.Empty();

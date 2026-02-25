@@ -6,7 +6,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 
 // Project Headers
-#include "AvatarRecord.h"
+#include "Definition/Runtime/AvatarData.h"
 #include "Definition/TaskType.h"
 
 // Generated Headers

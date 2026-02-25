@@ -31,10 +31,6 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreInventory",
-			"Enabled": true
-		},
-		{
 			"Name": "RCoreCounter",
 			"Enabled": true
 		},
@@ -43,11 +39,7 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreDelegate",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreLibrary",
+			"Name": "RCoreFramework",
 			"Enabled": true
 		},
 		{

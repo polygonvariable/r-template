@@ -5,7 +5,7 @@
 // Engine Headers
 
 // Project Headers
-#include "AvatarRecord.h"
+#include "Definition/Runtime/AvatarData.h"
 #include "Widget/AssetEntry.h"
 
 // Generated Headers

@@ -31,11 +31,7 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreLibrary",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreSettings",
+			"Name": "RCoreFramework",
 			"Enabled": true
 		}
 	]

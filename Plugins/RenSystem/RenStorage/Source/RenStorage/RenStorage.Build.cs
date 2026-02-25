@@ -31,7 +31,6 @@ public class RenStorage : ModuleRules
                 "Json",
                 "JsonUtilities",
                 "RCoreClock",
-                "RCoreInventory",
                 "RCoreQuest",
                 "RCoreCounter",
                 "RCoreStorage",

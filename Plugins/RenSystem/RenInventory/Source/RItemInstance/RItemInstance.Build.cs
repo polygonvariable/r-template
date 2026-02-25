@@ -27,11 +27,12 @@ public class RItemInstance : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-                "RCoreAssetManager",
+                "RCoreAsset",
+				"RCoreAssetUI",
+				"RCoreAssetManager",
                 "RCoreTask",
-                "RCoreEnhance",
+                "RCoreAscension",
                 "RCoreCommon",
-                "RCoreInventory",
             }
 			);
 			

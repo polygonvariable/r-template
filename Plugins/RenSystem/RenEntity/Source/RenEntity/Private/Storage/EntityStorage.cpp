@@ -10,6 +10,5 @@
 // Project Headers
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "AvatarAsset.h"
 
 

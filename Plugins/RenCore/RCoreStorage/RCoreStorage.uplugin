@@ -23,11 +23,7 @@
 	],
 	"Plugins": [
 		{
-			"Name": "RCoreLibrary",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreCommon",
+			"Name": "RCoreFramework",
 			"Enabled": true
 		}
 	]

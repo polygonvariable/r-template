@@ -3,19 +3,20 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 
 // Project Headers
-#include "ExchangeRule.h"
-#include "CraftProviderInterface.h"
-
 #include "Asset/Category/PurchasableAsset.h"
+#include "Interface/CraftProviderInterface.h"
 
 // Generated Headers
 #include "CraftableAsset.generated.h"
 
+// Module Macros
+#define RSYSTEM_API RINVENTORY_API
+
 // Forward Declarations
-class UInventoryAsset;
+class UAssetGroup;
+class UAssetCollection;
 
 
 
@@ -30,12 +31,19 @@ class UCraftableAsset : public UPurchasableAsset, public ICraftProviderInterface
 
 public:
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	FExchangeRule CraftingRule;
+	// ~ IShopProviderInterface
+	RSYSTEM_API virtual const UAssetCollection* GetCraftingItems() const override;
+	// ~ End of IShopProviderInterface
 
-	// ~ ICraftProviderInterface
-	RINVENTORY_API virtual const FExchangeRule& GetCraftingRule() const override;
-	// ~ End of ICraftProviderInterface
+protected:
+
+	UPROPERTY(EditDefaultsOnly, Instanced)
+	TObjectPtr<UAssetGroup> CraftingItems = nullptr;
 
 };
+
+
+
+// Module Macros
+#undef RSYSTEM_API
 

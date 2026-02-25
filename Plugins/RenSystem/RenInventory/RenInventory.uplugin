@@ -2,7 +2,7 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "RenInventory",
+	"FriendlyName": "Ren Inventory",
 	"Description": "",
 	"Category": "Ren System",
 	"CreatedBy": "polygonvariable",
@@ -47,19 +47,11 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreAssetManager",
+			"Name": "RCoreTrade",
 			"Enabled": true
 		},
 		{
-			"Name": "RCorePool",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreFilter",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreInventory",
+			"Name": "RCoreAsset",
 			"Enabled": true
 		},
 		{
@@ -67,27 +59,11 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreLibrary",
+			"Name": "RCoreAscension",
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreDelegate",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreSettings",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreEnhance",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreExchange",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreCommon",
+			"Name": "RCoreFramework",
 			"Enabled": true
 		},
 		{

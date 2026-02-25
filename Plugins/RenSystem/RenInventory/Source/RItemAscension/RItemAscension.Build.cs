@@ -28,9 +28,11 @@ public class RItemAscension : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
                 "UMG",
-                "RCoreAssetManager",
+                "RCoreAsset",
+				"RCoreAssetUI",
+				"RCoreAssetManager",
                 "RCoreTask",
-                "RCoreEnhance",
+                "RCoreAscension",
                 "RCoreCommon",
             }
 			);
@@ -47,7 +49,6 @@ public class RItemAscension : ModuleRules
                 "RCoreFilter",
                 "RCoreLibrary",
                 "RCoreDelegate",
-                "RCoreInventory",
                 "RInventory",
                 "RInventoryUI",
             }

@@ -6,7 +6,7 @@
 // Engine Headers
 
 // Project Headers
-#include "RCoreDelegate/Public/LatentDelegates.h"
+#include "Delegate/LatentDelegate.h"
 
 #include "RCoreCounter/Public/CounterContainer.h"
 #include "RCoreCounter/Public/CounterProviderInterface.h"
@@ -260,7 +260,7 @@ FCounterRecord* UCounterSubsystem::FindCounterRecord(FName ContainerId, FName Na
 
 void UCounterSubsystem::HandleStorageLoaded()
 {
-	FLatentDelegates::OnStorageLoaded.RemoveAll(this);
+	FLatentDelegate::OnStorageLoaded.RemoveAll(this);
 	LOG_INFO(LogCounter, TEXT("Storage loading"));
 
 	//ICounterProviderInterface* CounterProvider = StorageUtils::GetStorageInterface<ICounterProviderInterface>(GetGameInstance());
@@ -279,7 +279,7 @@ void UCounterSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogCounter, TEXT("Initialize"));
 
-	FLatentDelegates::OnStorageLoaded.AddUObject(this, &UCounterSubsystem::HandleStorageLoaded);
+	FLatentDelegate::OnStorageLoaded.AddUObject(this, &UCounterSubsystem::HandleStorageLoaded);
 }
 
 void UCounterSubsystem::Deinitialize()
