@@ -31,7 +31,7 @@ class UAssetUI : public UUserWidget
 
 public:
 
-	RCORE_API virtual void SetCatalogId(const FGuid& Id);
+	RCORE_API virtual void SetContainerId(const FGuid& Id);
 
 	RCORE_API virtual void InitializeDetails(const UAssetEntry* Entry);
 	RCORE_API virtual void InitializeDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset);
@@ -48,7 +48,7 @@ public:
 protected:
 
 	UPROPERTY(EditAnywhere)
-	FGuid CatalogId;
+	FGuid ContainerId;
 
 	UPROPERTY()
 	FGuid LatentId;

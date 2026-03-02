@@ -18,6 +18,8 @@
 class UAssetGroup;
 class UAssetCollection;
 
+struct FInstancedStruct;
+
 
 
 /**
@@ -33,6 +35,7 @@ public:
 
 	// ~ IShopProviderInterface
 	RSYSTEM_API virtual const UAssetCollection* GetPurchaseCost() const override;
+	RSYSTEM_API virtual const UAssetCollection* GetPurchaseCost(const FInstancedStruct& Context) const override;
 	// ~ End of IShopProviderInterface
 
 protected:

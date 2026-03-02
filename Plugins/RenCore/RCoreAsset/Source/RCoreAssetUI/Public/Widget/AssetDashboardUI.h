@@ -34,6 +34,9 @@ protected:
 	TObjectPtr<UButton> CloseButton = nullptr;
 
 
+	UFUNCTION(BlueprintCallable)
+	RCORE_API virtual void RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetClass);
+
 	UFUNCTION(BlueprintNativeEvent)
 	RCORE_API void GetAllAssetUI(TArray<UAssetUI*>& OutAssetUI) const;
 	RCORE_API virtual void GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutAssetUI) const;
@@ -46,7 +49,7 @@ protected:
 	RCORE_API virtual void NativeConstruct() override;
 	RCORE_API virtual void NativeDestruct() override;
 	// ~ End of UUserWidget
-    
+
 };
 
 

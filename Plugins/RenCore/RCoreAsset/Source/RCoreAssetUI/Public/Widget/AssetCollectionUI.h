@@ -37,7 +37,7 @@ public:
 	FOnEntrySelected OnEntrySelected;
 
 
-	RCORE_API virtual void SetCatalogId(const FGuid& Id);
+	RCORE_API virtual void SetContainerId(const FGuid& Id);
 	RCORE_API virtual void DisplayEntries();
 	RCORE_API virtual void ClearEntries(bool bRegenerate);
 	RCORE_API virtual void RefreshEntries();
@@ -66,7 +66,7 @@ public:
 protected:
 
 	UPROPERTY(EditAnywhere)
-	FGuid CatalogId;
+	FGuid ContainerId;
 
 	UPROPERTY()
 	TMap<FPrimaryAssetId, FInstancedStruct> SubDetails;

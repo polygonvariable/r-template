@@ -11,8 +11,8 @@
 #include "InventoryDashboardUI.generated.h"
 
 // Forward Declarations
-class UInventoryCollectionUI;
-class UInventoryDetailUI;
+class UAssetCollectionUI;
+class UAssetDetailUI;
 
 
 
@@ -28,16 +28,14 @@ class UInventoryDashboardUI : public UAssetDashboardUI
 protected:
 
 	UPROPERTY(Meta = (BindWidget))
-	TObjectPtr<UInventoryCollectionUI> PrimaryCollection = nullptr;
+	TObjectPtr<UAssetCollectionUI> PrimaryCollection = nullptr;
 
 	UPROPERTY(Meta = (BindWidget))
-	TObjectPtr<UInventoryDetailUI> PrimaryDetail = nullptr;
-
-	UFUNCTION(BlueprintCallable)
-	void RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetClass);
+	TObjectPtr<UAssetDetailUI> PrimaryDetail = nullptr;
 
 
 	// ~ UAssetDashboardUI
+	virtual void RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetClass) override;
 	virtual void GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutAssetUI) const;
 	// ~ End of UAssetDashboardUI
 

@@ -47,7 +47,7 @@ protected:
 
 
 	UFUNCTION(BlueprintCallable)
-	void GetAssetDetail(FInstancedStruct& AssetDetail) const;
+	void GetAssetSubDetail(FInstancedStruct& SubDetail) const;
 
 
 	// ~ IUserObjectListEntry

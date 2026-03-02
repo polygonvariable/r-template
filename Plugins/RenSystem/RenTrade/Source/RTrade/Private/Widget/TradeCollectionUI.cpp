@@ -76,13 +76,13 @@ void UTradeCollectionUI::OnAssetLoaded(UTradeAsset* Asset)
 		return;
 	}
 
-	const UAssetGroup* AssetGroup = Asset->TradeItems;
-	if (!IsValid(AssetGroup))
+	const UAssetGroup* TradeGroup = Asset->TradeGroup;
+	if (!IsValid(TradeGroup))
 	{
 		return;
 	}
-
-	const UAssetCollection_UniqueReferenced* AssetCollection = Cast<UAssetCollection_UniqueReferenced>(AssetGroup->GetCollectionRule());
+	
+	const UAssetCollection_UniqueReferenced* AssetCollection = TradeGroup->GetCollectionRule<UAssetCollection_UniqueReferenced>();
 	if (!IsValid(AssetCollection))
 	{
 		return;
@@ -95,25 +95,20 @@ void UTradeCollectionUI::OnAssetLoaded(UTradeAsset* Asset)
 		const URPrimaryDataAsset* ItemDataAsset = AssetKv.Key;
 		const FAssetDetail_Unique& TradeItem = AssetKv.Value;
 
-		const UAssetCollection_Unique* CostCollection = Cast<UAssetCollection_Unique>(GetAssetCollection(ItemDataAsset));
+		const UAssetCollection* CostCollection = Cast<UAssetCollection>(GetAssetCollection(ItemDataAsset));
 		if (!IsValid(CostCollection))
 		{
 			continue;
 		}
 
-		const TMap<FPrimaryAssetId, FAssetDetail_Unique>& CostItems = CostCollection->GetAssetList();
-		for (const TPair<FPrimaryAssetId, FAssetDetail_Unique>& CostKv : CostItems)
+		UTradeEntry* Entry = GetEntryFromPool<UTradeEntry>();
+		if (IsValid(Entry))
 		{
-			UTradeEntry* Entry = GetEntryFromPool<UTradeEntry>();
-			if (IsValid(Entry))
-			{
-				const FPrimaryAssetId& ItemAssetId = ItemDataAsset->GetPrimaryAssetId();
+			const FPrimaryAssetId& ItemAssetId = ItemDataAsset->GetPrimaryAssetId();
 
-				Entry->TradeItem = TradeItem;
-				Entry->CostAssetId = CostKv.Key;
-				Entry->CostItem = CostKv.Value;
-				AddEntry(ItemAssetId, Entry);
-			}
+			Entry->TradeItem = TradeItem;
+			Entry->CostCollection = TWeakObjectPtr<const UAssetCollection>(CostCollection);
+			AddEntry(ItemAssetId, Entry);
 		}
 	}
 }

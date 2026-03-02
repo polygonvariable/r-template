@@ -3,6 +3,7 @@
 #pragma once
 
 // Engine Headers
+#include "GameplayTagContainer.h"
 
 // Project Headers
 #include "Task/TaskObject.h"
@@ -14,6 +15,9 @@
 class URAssetManager;
 class UTradeAsset;
 class URPrimaryDataAsset;
+class UAssetCollection;
+
+struct FAssetDetail;
 
 
 
@@ -31,15 +35,12 @@ class UPurchaseItem : public UTaskObject
 public:
 
 	FPrimaryAssetId ShopAssetId;
-	FPrimaryAssetId ItemAssetId;
-	FPrimaryAssetId CostAssetId;
+	FPrimaryAssetId TargetAssetId;
+	FGameplayTagContainer CostTags;
 
 protected:
 
-	FGuid ItemId;
-	int ItemQuantity = 1;
-	FGuid CostId;
-	int CostQuantity = 1;
+	int TargetQuantity = 1;
 
 	UPROPERTY()
 	TObjectPtr<URAssetManager> AssetManager = nullptr;
@@ -48,18 +49,19 @@ protected:
 	TObjectPtr<const UTradeAsset> ShopAsset = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<const URPrimaryDataAsset> ItemAsset = nullptr;
+	TObjectPtr<const URPrimaryDataAsset> TargetAsset = nullptr;
+
+
+	void Step_LoadAsset();
+	void Step_CheckTarget();
+	void Step_CheckCost();
+	void Step_PerformTransaction(const TMap<FPrimaryAssetId, int>& CostAssetList, FPrimaryAssetType CostAssetType);
 
 	// ~ UTaskObject
 	void OnStarted() override;
 	void OnStopped() override;
 	void OnCleanup() override;
 	// ~ End of UTaskObject
-
-	void Step_LoadShopAsset();
-	void Step_CheckItem();
-	void Step_CheckCost();
-	void Step_PurchaseItem();
 
 };
 

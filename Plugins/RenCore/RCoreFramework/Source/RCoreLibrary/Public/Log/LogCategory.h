@@ -51,9 +51,8 @@ RCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogCraft, Log, All);
 RCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogShop, Log, All);
 
 RCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogInventory, Log, All);
-RCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogItemAscension, Log, All);
-RCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogItemInstance, Log, All);
-RCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogExchangeItem, Log, All);
+RCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogInventoryAscension, Log, All);
+RCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogInventoryInstance, Log, All);
 // ~ End of Inventory Categories
 
 // ~ Avatar Categories

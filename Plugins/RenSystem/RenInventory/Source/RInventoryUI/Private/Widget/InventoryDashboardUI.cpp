@@ -6,9 +6,10 @@
 // Engine Headers
 
 // Project Headers
+#include "Widget/AssetCollectionUI.h"
+#include "Widget/AssetDetailUI.h"
 #include "Widget/AssetEntry.h"
-#include "Widget/InventoryCollectionUI.h"
-#include "Widget/InventoryDetailUI.h"
+#include "Asset/InventoryAsset.h"
 
 
 
@@ -25,9 +26,9 @@ void UInventoryDashboardUI::RedirectToWidget(TSubclassOf<UAssetDashboardUI> Widg
 	{
 		return;
 	}
-	
+
 	Widget->AddToViewport();
-	Widget->SetCatalogId(CatalogId);
+	Widget->SetContainerId(ContainerId);
 	Widget->InitializeDetails(SelectedEntry);
 }
 
@@ -40,8 +41,8 @@ void UInventoryDashboardUI::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 
-	PrimaryCollection->SetCatalogId(CatalogId);
-	PrimaryDetail->SetCatalogId(CatalogId);
+	PrimaryCollection->SetContainerId(ContainerId);
+	PrimaryDetail->SetContainerId(ContainerId);
 }
 
 void UInventoryDashboardUI::NativeConstruct()

@@ -12,13 +12,14 @@
 #include "ShopSubsystem.generated.h"
 
 // Forward Declarations
+struct FGameplayTagContainer;
 
 
 
 /**
  *
  */
-UCLASS()
+UCLASS(NotBlueprintType)
 class UShopSubsystem : public UGameInstanceSubsystem
 {
 
@@ -26,7 +27,7 @@ class UShopSubsystem : public UGameInstanceSubsystem
 
 public:
 
-	void PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& ShopAssetId, const FPrimaryAssetId& ItemAssetId, const FPrimaryAssetId& CostAssetId, FTaskCallback Callback);
+	void PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& ShopAssetId, const FPrimaryAssetId& TargetAssetId, const FGameplayTagContainer& CostTags, FTaskCallback Callback);
 
 protected:
 

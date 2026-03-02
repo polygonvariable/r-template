@@ -9,6 +9,7 @@
 // Project Headers
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
+#include "Management/AssetCollection.h"
 #include "Subsystem/CraftSubsystem.h"
 #include "Widget/TradeCollectionUI.h"
 #include "Widget/TradeEntry.h"
@@ -17,15 +18,19 @@
 
 void UCraftDashboardUI::HandleCraft()
 {
-	const UTradeEntry* CraftEntry = PrimaryCollection->GetSelectedEntry<UTradeEntry>();
-	if (!IsValid(CraftEntry))
+	const UTradeEntry* ShopEntry = PrimaryCollection->GetSelectedEntry<UTradeEntry>();
+	if (!IsValid(ShopEntry))
 	{
-		LOG_ERROR(LogCraft, TEXT("CraftEntry is invalid"));
+		LOG_ERROR(LogCraft, TEXT("ShopEntry is invalid"));
 		return;
 	}
 
-	const FPrimaryAssetId& ItemAssetId = CraftEntry->AssetId;
-	const FPrimaryAssetId& CostAssetId = CraftEntry->CostAssetId;
+	const UAssetCollection* AssetCollection = ShopEntry->CostCollection.Get();
+	if (!IsValid(AssetCollection))
+	{
+		LOG_ERROR(LogCraft, TEXT("AssetCollection is invalid"));
+		return;
+	}
 
 	UGameInstance* GameInstance = GetGameInstance();
 	UCraftSubsystem* CraftSubsystem = GameInstance->GetSubsystem<UCraftSubsystem>();
@@ -35,9 +40,11 @@ void UCraftDashboardUI::HandleCraft()
 		return;
 	}
 
-	FGuid TaskId = FGuid::NewGuid();
+	const FPrimaryAssetId& ItemAssetId = ShopEntry->AssetId;
+	const FGameplayTagContainer& CostTags = AssetCollection->GetCollectionTags();
 
-	CraftSubsystem->CraftItem(TaskId, TradeAssetId, ItemAssetId, CostAssetId, FTaskCallback::CreateWeakLambda(this,
+	FGuid TaskId = FGuid::NewGuid();
+	CraftSubsystem->CraftItem(TaskId, TradeAssetId, ItemAssetId, CostTags, FTaskCallback::CreateWeakLambda(this,
 		[](const FTaskResult& Result)
 		{
 			if (Result.State == ETaskState::Pending)

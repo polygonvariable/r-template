@@ -23,7 +23,7 @@ class UTaskObject;
  *
  *
  */
-UCLASS(MinimalAPI)
+UCLASS(MinimalAPI, NotBlueprintType)
 class UTaskSubsystem : public UGameInstanceSubsystem
 {
 

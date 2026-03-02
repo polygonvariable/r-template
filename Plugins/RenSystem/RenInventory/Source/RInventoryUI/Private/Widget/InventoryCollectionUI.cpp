@@ -24,7 +24,7 @@ void UInventoryCollectionUI::DisplayEntries()
 
 	const UFilterCriterion* FilterRoot = GetFilterRoot();
 
-	Inventory->QueryItems(CatalogId, FilterRoot, QueryRule,
+	Inventory->QueryItems(ContainerId, FilterRoot, QueryRule,
 		[this](const FInventorySortEntry& SortEntry)
 		{
 			UInventoryEntry* Entry = GetEntryFromPool<UInventoryEntry>();
@@ -40,7 +40,7 @@ void UInventoryCollectionUI::DisplayEntries()
 
 void UInventoryCollectionUI::OnInventoryRefreshed(const FGuid& InventoryId)
 {
-	if (CatalogId == InventoryId)
+	if (ContainerId == InventoryId)
 	{
 		RefreshEntries();
 	}

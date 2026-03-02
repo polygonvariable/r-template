@@ -16,6 +16,8 @@
 // Forward Declarations
 class URPrimaryDataAsset;
 
+struct FAssetDetail;
+
 
 
 /**
@@ -31,11 +33,21 @@ class UAssetCollection : public UObject
 public:
 
 	RCORE_API const FGameplayTagContainer& GetCollectionTags() const;
+	RCORE_API const FPrimaryAssetType& GetCollectionType() const;
+
+	RCORE_API virtual bool GetRandomAsset(TPair<FPrimaryAssetId, FAssetDetail>& OutAsset) const;
+	RCORE_API virtual bool GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail& OutDetail) const;
+	RCORE_API virtual void GetAssetList(TMap<FPrimaryAssetId, FAssetDetail>& OutAssets) const;
+	RCORE_API virtual void GetAssetList(TMap<FPrimaryAssetId, int>& OutAssets) const;
+	RCORE_API virtual void GetAssetIds(TArray<FPrimaryAssetId>& OutAssets) const;
 
 protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	FGameplayTagContainer Tags;
+
+	UPROPERTY(VisibleAnywhere, Meta = (DisplayName = "Asset Type (Debug)"))
+	FPrimaryAssetType AssetType;
 
 };
 

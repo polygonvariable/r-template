@@ -31,12 +31,17 @@
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RItemAscension",
+			"Name": "RInventoryAscension",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RItemInstance",
+			"Name": "RInventoryAscensionUI",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RInventoryInstance",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}

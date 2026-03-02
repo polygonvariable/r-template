@@ -17,6 +17,7 @@
 // Forward Declarations
 class UAssetGroup;
 class UAssetCollection;
+struct FInstancedStruct;
 
 
 
@@ -31,9 +32,10 @@ class UCraftableAsset : public UPurchasableAsset, public ICraftProviderInterface
 
 public:
 
-	// ~ IShopProviderInterface
-	RSYSTEM_API virtual const UAssetCollection* GetCraftingItems() const override;
-	// ~ End of IShopProviderInterface
+	// ~ ICraftProviderInterface
+	RSYSTEM_API virtual const UAssetCollection* GetCraftingMaterial() const override;
+	RSYSTEM_API virtual const UAssetCollection* GetCraftingMaterial(const FInstancedStruct& Context) const override;
+	// ~ End of ICraftProviderInterface
 
 protected:
 

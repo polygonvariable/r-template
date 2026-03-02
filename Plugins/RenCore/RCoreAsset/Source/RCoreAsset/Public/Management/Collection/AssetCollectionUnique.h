@@ -34,6 +34,14 @@ public:
 
 	RCORE_API virtual const TMap<URPrimaryDataAsset*, FAssetDetail_Unique>& GetAssetList() const;
 
+	// ~ UAssetCollection
+	RCORE_API virtual bool GetRandomAsset(TPair<FPrimaryAssetId, FAssetDetail>& OutAsset) const override;
+	RCORE_API virtual bool GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail& OutDetail) const override;
+	RCORE_API virtual void GetAssetList(TMap<FPrimaryAssetId, FAssetDetail>& OutAssets) const override;
+	RCORE_API virtual void GetAssetList(TMap<FPrimaryAssetId, int>& OutAssets) const override;
+	RCORE_API virtual void GetAssetIds(TArray<FPrimaryAssetId>& OutAssets) const override;
+	// ~ End of UAssetCollection
+
 	// ~ UObject
 	virtual void PreSave(FObjectPreSaveContext ObjectSaveContext) override;
 	// ~ End of UObject
@@ -68,6 +76,14 @@ public:
 
 	RCORE_API virtual const TMap<FPrimaryAssetId, FAssetDetail_Unique>& GetAssetList() const;
 
+	// ~ UAssetCollection
+	RCORE_API virtual bool GetRandomAsset(TPair<FPrimaryAssetId, FAssetDetail>& OutAsset) const override;
+	RCORE_API virtual bool GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail& OutDetail) const override;
+	RCORE_API virtual void GetAssetList(TMap<FPrimaryAssetId, FAssetDetail>& OutAssets) const override;
+	RCORE_API virtual void GetAssetList(TMap<FPrimaryAssetId, int>& OutAssets) const override;
+	RCORE_API virtual void GetAssetIds(TArray<FPrimaryAssetId>& OutAssets) const override;
+	// ~ End of UAssetCollection
+	// 
 	// ~ UObject
 	virtual void PreSave(FObjectPreSaveContext ObjectSaveContext) override;
 	// ~ End of UObject

@@ -43,9 +43,8 @@ DEFINE_LOG_CATEGORY(LogCraft);
 DEFINE_LOG_CATEGORY(LogShop);
 
 DEFINE_LOG_CATEGORY(LogInventory);
-DEFINE_LOG_CATEGORY(LogItemAscension);
-DEFINE_LOG_CATEGORY(LogItemInstance);
-DEFINE_LOG_CATEGORY(LogExchangeItem);
+DEFINE_LOG_CATEGORY(LogInventoryAscension);
+DEFINE_LOG_CATEGORY(LogInventoryInstance);
 // ~ End of Inventory Categories
 
 // ~ Avatar Categories

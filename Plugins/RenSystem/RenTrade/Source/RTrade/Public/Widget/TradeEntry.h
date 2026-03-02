@@ -12,6 +12,7 @@
 #include "TradeEntry.generated.h"
 
 // Forward Declarations
+class UAssetCollection;
 
 
 
@@ -27,8 +28,16 @@ class UTradeEntry : public UAssetEntry
 public:
 
 	FAssetDetail_Unique TradeItem;
-	FPrimaryAssetId CostAssetId;
-	FAssetDetail_Unique CostItem;
+
+	UPROPERTY()
+	TWeakObjectPtr<const UAssetCollection> CostCollection;
+
+	RTRADE_API virtual void ResetData() override
+	{
+		TradeItem.Reset();
+		CostCollection.Reset();
+		Super::ResetData();
+	}
 
 };
 

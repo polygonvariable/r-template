@@ -10,6 +10,11 @@
 
 
 
+IAssetTransactionInterface* AssetUtil::GetTransactionInterface(UGameInstance* Context, const FPrimaryAssetId& HandleType)
+{
+	return GetTransactionInterface(Context, HandleType.PrimaryAssetType);
+}
+
 IAssetTransactionInterface* AssetUtil::GetTransactionInterface(UGameInstance* Context, const FPrimaryAssetType& HandleType)
 {
 	if (!IsValid(Context))

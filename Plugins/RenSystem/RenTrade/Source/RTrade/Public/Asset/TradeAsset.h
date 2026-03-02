@@ -30,7 +30,7 @@ public:
 	FGuid TradeId;
 
 	UPROPERTY(EditDefaultsOnly, Instanced)
-	TObjectPtr<UAssetGroup> TradeItems = nullptr;
+	TObjectPtr<UAssetGroup> TradeGroup = nullptr;
 
 	// ~ UObject
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;

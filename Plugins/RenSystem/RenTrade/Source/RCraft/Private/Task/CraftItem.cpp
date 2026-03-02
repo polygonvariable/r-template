@@ -4,11 +4,13 @@
 #include "Task/CraftItem.h"
 
 // Engine Headers
+#include "InstancedStruct.h"
 
 // Project Headers
 #include "Asset/RPrimaryDataAsset.h"
 #include "Asset/TradeAsset.h"
 #include "Interface/AssetTransactionInterface.h"
+#include "Definition/AssetRuleDefinition.h"
 #include "Interface/CraftProviderInterface.h"
 #include "Library/AssetUtil.h"
 #include "Management/AssetGroup.h"
@@ -21,7 +23,7 @@
 void UCraftItem::OnStarted()
 {
 	AssetManager = Cast<URAssetManager>(UAssetManager::GetIfInitialized());
-	Step_LoadShopAsset();
+	Step_LoadAsset();
 }
 
 void UCraftItem::OnStopped()
@@ -32,20 +34,16 @@ void UCraftItem::OnStopped()
 void UCraftItem::OnCleanup()
 {
 	AssetManager = nullptr;
-	ShopAsset = nullptr;
-	ItemAsset = nullptr;
+	TradeAsset = nullptr;
+	TargetAsset = nullptr;
 
 	CraftAssetId = FPrimaryAssetId();
-	ItemAssetId = FPrimaryAssetId();
-	CostAssetId = FPrimaryAssetId();
+	TargetAssetId = FPrimaryAssetId();
 
-	ItemId.Invalidate();
-	ItemQuantity = 0;
-	CostId.Invalidate();
-	CostQuantity = 0;
+	TargetQuantity = 0;
 }
 
-void UCraftItem::Step_LoadShopAsset()
+void UCraftItem::Step_LoadAsset()
 {
 	if (!IsValid(AssetManager))
 	{
@@ -55,7 +53,7 @@ void UCraftItem::Step_LoadShopAsset()
 
 	TArray<FPrimaryAssetId> Assets;
 	Assets.Add(CraftAssetId);
-	Assets.Add(ItemAssetId);
+	Assets.Add(TargetAssetId);
 
 	TFuture<FLatentResultAssets<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAssets<URPrimaryDataAsset>(TaskId, Assets);
 	if (!Future.IsValid())
@@ -76,105 +74,98 @@ void UCraftItem::Step_LoadShopAsset()
 
 			const TArray<URPrimaryDataAsset*>& Assets = Result.Get();
 
-			This->ShopAsset = Cast<UTradeAsset>(Assets[0]);
-			This->ItemAsset = Assets[1];
+			This->TradeAsset = Cast<UTradeAsset>(Assets[0]);
+			This->TargetAsset = Assets[1];
 
-			This->Step_CheckItem();
+			This->Step_CheckTarget();
 		}
 	);
 }
 
-void UCraftItem::Step_CheckItem()
+void UCraftItem::Step_CheckTarget()
 {
-	if (!IsValid(ShopAsset))
+	if (!IsValid(TradeAsset))
 	{
-		Fail(TEXT("Shop asset is invalid"));
+		Fail(TEXT("TradeAsset is invalid"));
 		return;
 	}
 
-	const UAssetGroup* ShopItems = ShopAsset->TradeItems;
-	if (!IsValid(ShopItems))
+	const UAssetGroup* TradeGroup = TradeAsset->TradeGroup;
+	if (!IsValid(TradeGroup))
 	{
 		Fail(TEXT("Shop items is invalid"));
 		return;
 	}
 
-	const UAssetCollection_UniqueReferenced* ItemCollection = ShopItems->GetCollectionRule<UAssetCollection_UniqueReferenced>();
-	if (!IsValid(ItemCollection))
+	const UAssetCollection* TradeCollection = TradeGroup->GetCollectionRule();
+	if (!IsValid(TradeCollection))
 	{
 		Fail(TEXT("Item collection is invalid"));
 		return;
 	}
 
-	const TMap<URPrimaryDataAsset*, FAssetDetail_Unique>& ItemList = ItemCollection->GetAssetList();
-
-	const FAssetDetail_Unique* ItemDetail = ItemList.Find(ItemAsset);
-	if (!ItemDetail)
+	FAssetDetail TargetDetail;
+	if (!TradeCollection->GetAssetDetail(TargetAssetId, TargetDetail))
 	{
 		Fail(TEXT("Item asset not found"));
 		return;
 	}
 
-	ItemId = ItemDetail->ItemId;
-	ItemQuantity = ItemDetail->Quantity;
+	TargetQuantity = TargetDetail.Quantity;
 
-	Step_CheckCost();
+	Step_CheckMaterial();
 }
 
-void UCraftItem::Step_CheckCost()
+void UCraftItem::Step_CheckMaterial()
 {
-	const ICraftProviderInterface* CraftProvider = Cast<ICraftProviderInterface>(ItemAsset);
+	const ICraftProviderInterface* CraftProvider = Cast<ICraftProviderInterface>(TargetAsset);
 	if (!CraftProvider)
 	{
 		Fail(TEXT("Item asset does not implement ICraftProviderInterface"));
 		return;
 	}
 
-	const UAssetCollection_Unique* CraftCost = Cast<UAssetCollection_Unique>(CraftProvider->GetCraftingItems());
-	if (!IsValid(CraftCost))
+	FInstancedStruct Context = FInstancedStruct::Make(FAssetRuleContext(MaterialTags));
+
+	const UAssetCollection* MaterialCollection = CraftProvider->GetCraftingMaterial(Context);
+	if (!IsValid(MaterialCollection))
 	{
-		Fail(TEXT("Craft cost is invalid"));
+		Fail(TEXT("Crafting material is invalid"));
 		return;
 	}
 
-	const TMap<FPrimaryAssetId, FAssetDetail_Unique>& CostItems = CraftCost->GetAssetList();
-	const FAssetDetail_Unique* CostDetail = CostItems.Find(CostAssetId);
-	if (!CostDetail)
-	{
-		Fail(TEXT("Item asset not found"));
-		return;
-	}
+	TMap<FPrimaryAssetId, int> MaterialAssetList;
+	MaterialCollection->GetAssetList(MaterialAssetList);
 
-	CostId = CostDetail->ItemId;
-	CostQuantity = CostDetail->Quantity;
+	FPrimaryAssetType MaterialAssetType = MaterialCollection->GetCollectionType();
 
-	Step_CraftItem();
+	Step_PerformTransaction(MaterialAssetList, MaterialAssetType);
 }
 
-void UCraftItem::Step_CraftItem()
+void UCraftItem::Step_PerformTransaction(const TMap<FPrimaryAssetId, int>& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
 {
 	UWorld* World = GetWorld();
 	UGameInstance* GameInstance = World->GetGameInstance();
 
-	IAssetTransactionInterface* SourceTransaction = AssetUtil::GetTransactionInterface(GameInstance, ItemAssetId.PrimaryAssetType);
-	IAssetTransactionInterface* TargetTransaction = AssetUtil::GetTransactionInterface(GameInstance, CostAssetId.PrimaryAssetType);
+	IAssetTransactionInterface* TargetTransaction = AssetUtil::GetTransactionInterface(GameInstance, TargetAssetId);
+	IAssetTransactionInterface* MaterialTransaction = AssetUtil::GetTransactionInterface(GameInstance, MaterialAssetType);
 
-	if (!SourceTransaction || !TargetTransaction)
+	if (!TargetTransaction || !MaterialTransaction)
 	{
 		Fail(TEXT("Failed to get transaction interface"));
 		return;
 	}
 
-	FGuid SourceSlotId = SourceTransaction->GetDefaultSlotId();
 	FGuid TargetSlotId = TargetTransaction->GetDefaultSlotId();
+	FGuid MaterialSlotId = MaterialTransaction->GetDefaultSlotId();
 
-	if (!SourceTransaction->RemoveItem(SourceSlotId, CostAssetId, CostQuantity))
+	if (!MaterialTransaction->RemoveItems(MaterialSlotId, MaterialAssetList, 1))
 	{
 		Fail(TEXT("Failed to remove item"));
 		return;
 	}
 	
-	if (!TargetTransaction->AddItem(TargetSlotId, ItemAssetId, ItemQuantity))
+	if (!TargetTransaction->AddItem(TargetSlotId, TargetAssetId, TargetQuantity))
 	{
 		Fail(TEXT("Failed to add item"));
 		return;

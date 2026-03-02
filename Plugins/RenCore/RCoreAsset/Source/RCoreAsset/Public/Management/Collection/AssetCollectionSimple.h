@@ -31,9 +31,15 @@ class UAssetCollection_Simple : public UAssetCollection
 
 public:
 
-	RCORE_API virtual const TMap<FPrimaryAssetId, int>& GetAssetList() const;
-	RCORE_API virtual bool GetAsset(const FPrimaryAssetId& AssetId, int& OutQuantity) const;
-	RCORE_API virtual bool GetAnyAsset(TPair<FPrimaryAssetId, int>& OutPair) const;
+	RCORE_API virtual const TMap<FPrimaryAssetId, FAssetDetail>& GetAssetList() const;
+
+	// ~ UAssetCollection
+	RCORE_API virtual bool GetRandomAsset(TPair<FPrimaryAssetId, FAssetDetail>& OutAsset) const override;
+	RCORE_API virtual bool GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail& OutDetail) const override;
+	RCORE_API virtual void GetAssetList(TMap<FPrimaryAssetId, FAssetDetail>& OutAssets) const override;
+	RCORE_API virtual void GetAssetList(TMap<FPrimaryAssetId, int>& OutAssets) const override;
+	RCORE_API virtual void GetAssetIds(TArray<FPrimaryAssetId>& OutAssets) const override;
+	// ~ End of UAssetCollection
 
 	// ~ UObject
 	virtual void PreSave(FObjectPreSaveContext ObjectSaveContext) override;
@@ -49,7 +55,7 @@ protected:
 #endif
 
 	UPROPERTY(VisibleAnywhere, Meta = (DisplayName = "Asset List (Debug)"))
-	TMap<FPrimaryAssetId, int> AssetList;
+	TMap<FPrimaryAssetId, FAssetDetail> AssetList;
 
 };
 

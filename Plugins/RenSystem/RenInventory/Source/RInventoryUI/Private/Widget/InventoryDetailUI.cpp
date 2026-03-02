@@ -29,7 +29,7 @@ void UInventoryDetailUI::RefreshDetails()
 		return;
 	}
 
-	const FInventoryItem* Item = Inventory->GetItemById(CatalogId, ActiveAssetId, ActiveItemId);
+	const FInventoryItem* Item = Inventory->GetItemById(ContainerId, ActiveAssetId, ActiveItemId);
 	if (!Item)
 	{
 		LOG_ERROR(LogInventory, TEXT("Item is invalid"));
@@ -85,7 +85,7 @@ void UInventoryDetailUI::NativeConstruct()
 	{
 		if (bAutoRefresh)
 		{
-			Inventory->OnInventoryRefreshed.AddWeakLambda(this, [this](const FGuid& InventoryId) { if (CatalogId == InventoryId) RefreshDetails(); });
+			Inventory->OnInventoryRefreshed.AddWeakLambda(this, [this](const FGuid& InventoryId) { if (ContainerId == InventoryId) RefreshDetails(); });
 		}
 		InventorySubsystem = TWeakObjectPtr<UInventorySubsystem>(Inventory);
 	}

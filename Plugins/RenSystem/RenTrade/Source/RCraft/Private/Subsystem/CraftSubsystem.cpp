@@ -13,26 +13,26 @@
 
 
 
-void UCraftSubsystem::CraftItem(const FGuid& TaskId, const FPrimaryAssetId& CraftAssetId, const FPrimaryAssetId& ItemAssetId, const FPrimaryAssetId& CostAssetId, FTaskCallback Callback)
+void UCraftSubsystem::CraftItem(const FGuid& TaskId, const FPrimaryAssetId& CraftAssetId, const FPrimaryAssetId& TargetAssetId, const FGameplayTagContainer& MaterialTags, FTaskCallback Callback)
 {
 	UTaskSubsystem* TaskSubsystem = UTaskSubsystem::Get(GetGameInstance());
 	if (!IsValid(TaskSubsystem))
 	{
-		LOG_ERROR(LogItemAscension, TEXT("Task subsystem is invalid"));
+		LOG_ERROR(LogCraft, TEXT("Task subsystem is invalid"));
 		return;
 	}
 
 	UCraftItem* Task = TaskSubsystem->CreateTask<UCraftItem>(TaskId);
 	if (!IsValid(Task))
 	{
-		LOG_ERROR(LogItemAscension, TEXT("Failed to create task"));
+		LOG_ERROR(LogCraft, TEXT("Failed to create task"));
 		return;
 	}
 
 	Task->Callback = MoveTemp(Callback);
 	Task->CraftAssetId = CraftAssetId;
-	Task->ItemAssetId = ItemAssetId;
-	Task->CostAssetId = CostAssetId;
+	Task->TargetAssetId = TargetAssetId;
+	Task->MaterialTags = MaterialTags;
 	Task->StartTask();
 }
 

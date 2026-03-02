@@ -32,6 +32,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int Quantity = 0;
 
+	void Reset()
+	{
+		Quantity = 0;
+	}
+
 };
 
 
@@ -48,6 +53,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSoftObjectPtr<URPrimaryDataAsset> DataAsset;
+
+	void Reset()
+	{
+		DataAsset.Reset();
+		FAssetDetail::Reset();
+	}
 
 };
 
@@ -71,6 +82,12 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	FGuid ItemId;
 
+	void Reset()
+	{
+		ItemId.Invalidate();
+		FAssetDetail::Reset();
+	}
+
 };
 
 #if WITH_EDITORONLY_DATA
@@ -85,6 +102,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSoftObjectPtr<URPrimaryDataAsset> DataAsset;
+
+	void Reset()
+	{
+		DataAsset.Reset();
+		FAssetDetail::Reset();
+	}
 
 };
 

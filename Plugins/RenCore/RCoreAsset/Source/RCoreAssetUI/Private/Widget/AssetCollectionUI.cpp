@@ -12,9 +12,9 @@
 
 
 
-void UAssetCollectionUI::SetCatalogId(const FGuid& Id)
+void UAssetCollectionUI::SetContainerId(const FGuid& Id)
 {
-	CatalogId = Id;
+	ContainerId = Id;
 }
 
 void UAssetCollectionUI::DisplayEntries()
@@ -113,7 +113,7 @@ void UAssetCollectionUI::AddEntry(const FPrimaryAssetId& AssetId, UAssetEntry* E
 	FInstancedStruct* Detail = SubDetails.Find(AssetId);
 	if (Detail != nullptr)
 	{
-		Entry->AssetDetail = *Detail;
+		Entry->AssetSubDetail = *Detail;
 	}
 	Entry->AssetId = AssetId;
 

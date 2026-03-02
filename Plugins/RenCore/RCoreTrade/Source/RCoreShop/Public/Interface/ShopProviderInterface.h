@@ -16,6 +16,8 @@
 // Forward Declarations
 class UAssetCollection;
 
+struct FInstancedStruct;
+
 
 
 UINTERFACE(MinimalAPI)
@@ -37,6 +39,7 @@ class RCORE_API IShopProviderInterface
 public:
 
 	virtual const UAssetCollection* GetPurchaseCost() const = 0;
+	virtual const UAssetCollection* GetPurchaseCost(const FInstancedStruct& Context) const = 0;
 
 };
 

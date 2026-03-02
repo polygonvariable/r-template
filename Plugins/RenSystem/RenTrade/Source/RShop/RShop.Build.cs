@@ -28,6 +28,7 @@ public class RShop : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
                 "UMG",
+                "GameplayTags",
                 "RCoreTask",
                 "RCoreStorage",
                 "RTrade",
@@ -43,6 +44,7 @@ public class RShop : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
+                "StructUtils",
                 "RCoreAsset",
 				"RCoreAssetUI",
 				"RCoreAssetManager",

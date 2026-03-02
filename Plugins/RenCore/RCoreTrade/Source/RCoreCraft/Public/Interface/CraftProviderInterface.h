@@ -15,6 +15,7 @@
 
 // Forward Declarations
 class UAssetCollection;
+struct FInstancedStruct;
 
 
 
@@ -36,7 +37,8 @@ class RCORECRAFT_API ICraftProviderInterface
 
 public:
 
-	virtual const UAssetCollection* GetCraftingItems() const = 0;
+	virtual const UAssetCollection* GetCraftingMaterial() const = 0;
+	virtual const UAssetCollection* GetCraftingMaterial(const FInstancedStruct& Context) const = 0;
 
 };
 

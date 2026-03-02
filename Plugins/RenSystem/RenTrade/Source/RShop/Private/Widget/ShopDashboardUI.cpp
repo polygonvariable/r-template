@@ -5,10 +5,12 @@
 
 // Engine Headers
 #include "Components/Button.h"
+#include "GameplayTagContainer.h"
 
 // Project Headers
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
+#include "Management/AssetCollection.h"
 #include "Subsystem/ShopSubsystem.h"
 #include "Widget/TradeCollectionUI.h"
 #include "Widget/TradeEntry.h"
@@ -20,33 +22,39 @@ void UShopDashboardUI::HandlePurchase()
 	const UTradeEntry* ShopEntry = PrimaryCollection->GetSelectedEntry<UTradeEntry>();
 	if (!IsValid(ShopEntry))
 	{
-		LOG_ERROR(LogInventory, TEXT("ShopEntry is invalid"));
+		LOG_ERROR(LogShop, TEXT("ShopEntry is invalid"));
 		return;
 	}
 
-	const FPrimaryAssetId& ItemAssetId = ShopEntry->AssetId;
-	const FPrimaryAssetId& CostAssetId = ShopEntry->CostAssetId;
+	const UAssetCollection* AssetCollection = ShopEntry->CostCollection.Get();
+	if (!IsValid(AssetCollection))
+	{
+		LOG_ERROR(LogShop, TEXT("AssetCollection is invalid"));
+		return;
+	}
 
 	UGameInstance* GameInstance = GetGameInstance();
 	UShopSubsystem* ShopSubsystem = GameInstance->GetSubsystem<UShopSubsystem>();
 	if (!IsValid(ShopSubsystem))
 	{
-		LOG_ERROR(LogInventory, TEXT("ShopSubsystem is invalid"));
+		LOG_ERROR(LogShop, TEXT("ShopSubsystem is invalid"));
 		return;
 	}
 
-	FGuid TaskId = FGuid::NewGuid();
+	const FPrimaryAssetId& ItemAssetId = ShopEntry->AssetId;
+	const FGameplayTagContainer& CostTags = AssetCollection->GetCollectionTags();
 
-	ShopSubsystem->PurchaseItem(TaskId, TradeAssetId, ItemAssetId, CostAssetId, FTaskCallback::CreateWeakLambda(this,
+	FGuid TaskId = FGuid::NewGuid();
+	ShopSubsystem->PurchaseItem(TaskId, TradeAssetId, ItemAssetId, CostTags, FTaskCallback::CreateWeakLambda(this,
 		[](const FTaskResult& Result)
 		{
 			if (Result.State == ETaskState::Pending)
 			{
-				UE_LOG(LogAvatar, Log, TEXT("Task Started"));
+				UE_LOG(LogShop, Log, TEXT("Task Started"));
 			}
 			else
 			{
-				UE_LOG(LogAvatar, Log, TEXT("Task Finished, Message: %s"), *Result.Message);
+				UE_LOG(LogShop, Log, TEXT("Task Finished, Message: %s"), *Result.Message);
 			}
 		}
 	));

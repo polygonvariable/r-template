@@ -10,6 +10,7 @@
 #include "Definition/AssetDetail.h"
 #include "Definition/AssetFilterProperty.h"
 #include "Filter/FilterLeafCriterion.h"
+#include "Management/Collection/AssetCollectionUnique.h"
 #include "Widget/AssetCollectionUI.h"
 #include "Widget/TradeCollectionUI.h"
 #include "Widget/TradeDetailUI.h"
@@ -19,24 +20,37 @@
 
 void UTradeDashboardUI::SetSecondaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
-	const UTradeEntry* ShopEntry = Cast<UTradeEntry>(Entry);
-	if (!IsValid(Entry))
+	const UTradeEntry* TradeEntry = Cast<UTradeEntry>(Entry);
+	if (!IsValid(TradeEntry))
 	{
 		return;
 	}
 
-	const FPrimaryAssetId& CostAssetId = ShopEntry->CostAssetId;
-	const FAssetDetail& CostItem = ShopEntry->CostItem;
+	const UAssetCollection* CostCollection = TradeEntry->CostCollection.Get();
+	if (!IsValid(CostCollection))
+	{
+		return;
+	}
+
+	SecondaryCollection->ClearSubDetails();
 
 	UFilterAssetCriterion* AssetCriterion = SecondaryCollection->GetCriterionByName<UFilterAssetCriterion>(AssetFilterProperty::AssetId);
 	if (IsValid(AssetCriterion))
 	{
 		AssetCriterion->Included.Empty();
-		AssetCriterion->Included.Add(CostAssetId);
+	
+		TMap<FPrimaryAssetId, FAssetDetail> CostList;
+		CostCollection->GetAssetList(CostList);
+
+		for (const TPair<FPrimaryAssetId, FAssetDetail>& AssetKv : CostList)
+		{
+			const FPrimaryAssetId& AssetId = AssetKv.Key;
+
+			AssetCriterion->Included.Add(AssetId);
+			SecondaryCollection->AddSubDetails(AssetId, FInstancedStruct::Make(AssetKv.Value));
+		}
 	}
 
-	SecondaryCollection->ClearSubDetails();
-	SecondaryCollection->AddSubDetails(CostAssetId, FInstancedStruct::Make(CostItem));
 	SecondaryCollection->RefreshEntries();
 }
 

@@ -30,13 +30,8 @@ public:
 	const FInventoryItem* Item = nullptr;
 
 	// ~ UAssetEntry
-	virtual void ResetData() override
-	{
-		Super::ResetData();
-
-		Quantity = 0;
-		Item = nullptr;
-	}
+	virtual FGuid GetAssetInstanceId() const override;
+	virtual void ResetData() override;
 	// ~ End of UAssetEntry
 
 };

@@ -4,10 +4,12 @@
 #include "Task/PurchaseItem.h"
 
 // Engine Headers
+#include "InstancedStruct.h"
 
 // Project Headers
 #include "Asset/RPrimaryDataAsset.h"
 #include "Asset/TradeAsset.h"
+#include "Definition/AssetRuleDefinition.h"
 #include "Interface/AssetTransactionInterface.h"
 #include "Interface/ShopProviderInterface.h"
 #include "Library/AssetUtil.h"
@@ -21,7 +23,7 @@
 void UPurchaseItem::OnStarted()
 {
 	AssetManager = Cast<URAssetManager>(UAssetManager::GetIfInitialized());
-	Step_LoadShopAsset();
+	Step_LoadAsset();
 }
 
 void UPurchaseItem::OnStopped()
@@ -33,19 +35,17 @@ void UPurchaseItem::OnCleanup()
 {
 	AssetManager = nullptr;
 	ShopAsset = nullptr;
-	ItemAsset = nullptr;
+	TargetAsset = nullptr;
 
 	ShopAssetId = FPrimaryAssetId();
-	ItemAssetId = FPrimaryAssetId();
-	CostAssetId = FPrimaryAssetId();
+	TargetAssetId = FPrimaryAssetId();
 
-	ItemId.Invalidate();
-	ItemQuantity = 0;
-	CostId.Invalidate();
-	CostQuantity = 0;
+	CostTags.Reset();
+
+	TargetQuantity = 0;
 }
 
-void UPurchaseItem::Step_LoadShopAsset()
+void UPurchaseItem::Step_LoadAsset()
 {
 	if (!IsValid(AssetManager))
 	{
@@ -55,7 +55,7 @@ void UPurchaseItem::Step_LoadShopAsset()
 
 	TArray<FPrimaryAssetId> Assets;
 	Assets.Add(ShopAssetId);
-	Assets.Add(ItemAssetId);
+	Assets.Add(TargetAssetId);
 
 	TFuture<FLatentResultAssets<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAssets<URPrimaryDataAsset>(TaskId, Assets);
 	if (!Future.IsValid())
@@ -77,14 +77,14 @@ void UPurchaseItem::Step_LoadShopAsset()
 			const TArray<URPrimaryDataAsset*>& Assets = Result.Get();
 
 			This->ShopAsset = Cast<UTradeAsset>(Assets[0]);
-			This->ItemAsset = Assets[1];
+			This->TargetAsset = Assets[1];
 
-			This->Step_CheckItem();
+			This->Step_CheckTarget();
 		}
 	);
 }
 
-void UPurchaseItem::Step_CheckItem()
+void UPurchaseItem::Step_CheckTarget()
 {
 	if (!IsValid(ShopAsset))
 	{
@@ -92,89 +92,82 @@ void UPurchaseItem::Step_CheckItem()
 		return;
 	}
 
-	const UAssetGroup* ShopItems = ShopAsset->TradeItems;
-	if (!IsValid(ShopItems))
+	const UAssetGroup* TradeGroup = ShopAsset->TradeGroup;
+	if (!IsValid(TradeGroup))
 	{
-		Fail(TEXT("Shop items is invalid"));
+		Fail(TEXT("Trade group is invalid"));
 		return;
 	}
 
-	const UAssetCollection_UniqueReferenced* ItemCollection = ShopItems->GetCollectionRule<UAssetCollection_UniqueReferenced>();
-	if (!IsValid(ItemCollection))
+	const UAssetCollection* TradeCollection = TradeGroup->GetCollectionRule();
+	if (!IsValid(TradeCollection))
 	{
 		Fail(TEXT("Item collection is invalid"));
 		return;
 	}
 
-	const TMap<URPrimaryDataAsset*, FAssetDetail_Unique>& ItemList = ItemCollection->GetAssetList();
-
-	const FAssetDetail_Unique* ItemDetail = ItemList.Find(ItemAsset);
-	if (!ItemDetail)
+	FAssetDetail TargetDetail;
+	if (!TradeCollection->GetAssetDetail(TargetAssetId, TargetDetail))
 	{
 		Fail(TEXT("Item asset not found"));
 		return;
 	}
 
-	ItemId = ItemDetail->ItemId;
-	ItemQuantity = ItemDetail->Quantity;
+	TargetQuantity = TargetDetail.Quantity;
 
 	Step_CheckCost();
 }
 
 void UPurchaseItem::Step_CheckCost()
 {
-	const IShopProviderInterface* ShopProvider = Cast<IShopProviderInterface>(ItemAsset);
+	const IShopProviderInterface* ShopProvider = Cast<IShopProviderInterface>(TargetAsset);
 	if (!ShopProvider)
 	{
 		Fail(TEXT("Item asset does not implement IShopProviderInterface"));
 		return;
 	}
 
-	const UAssetCollection_Unique* PurchaseCost = Cast<UAssetCollection_Unique>(ShopProvider->GetPurchaseCost());
-	if (!IsValid(PurchaseCost))
+	FInstancedStruct Context = FInstancedStruct::Make(FAssetRuleContext(CostTags));
+
+	const UAssetCollection* CostCollection = ShopProvider->GetPurchaseCost(Context);
+	if (!IsValid(CostCollection))
 	{
 		Fail(TEXT("Purchase cost is invalid"));
 		return;
 	}
 
-	const TMap<FPrimaryAssetId, FAssetDetail_Unique>& CostItems = PurchaseCost->GetAssetList();
-	const FAssetDetail_Unique* CostDetail = CostItems.Find(CostAssetId);
-	if (!CostDetail)
-	{
-		Fail(TEXT("Item asset not found"));
-		return;
-	}
+	TMap<FPrimaryAssetId, int> CostAssetList;
+	CostCollection->GetAssetList(CostAssetList);
 
-	CostId = CostDetail->ItemId;
-	CostQuantity = CostDetail->Quantity;
+	FPrimaryAssetType CostAssetType = CostCollection->GetCollectionType();
 
-	Step_PurchaseItem();
+	Step_PerformTransaction(CostAssetList, CostAssetType);
 }
 
-void UPurchaseItem::Step_PurchaseItem()
+void UPurchaseItem::Step_PerformTransaction(const TMap<FPrimaryAssetId, int>& CostAssetList, FPrimaryAssetType CostAssetType)
 {
 	UWorld* World = GetWorld();
 	UGameInstance* GameInstance = World->GetGameInstance();
 
-	IAssetTransactionInterface* SourceTransaction = AssetUtil::GetTransactionInterface(GameInstance, ItemAssetId.PrimaryAssetType);
-	IAssetTransactionInterface* TargetTransaction = AssetUtil::GetTransactionInterface(GameInstance, CostAssetId.PrimaryAssetType);
+	IAssetTransactionInterface* TargetTransaction = AssetUtil::GetTransactionInterface(GameInstance, TargetAssetId);
+	IAssetTransactionInterface* CostTransaction = AssetUtil::GetTransactionInterface(GameInstance, CostAssetType);
 
-	if (!SourceTransaction || !TargetTransaction)
+	if (!TargetTransaction || !CostTransaction)
 	{
 		Fail(TEXT("Failed to get transaction interface"));
 		return;
 	}
 
-	FGuid SourceSlotId = SourceTransaction->GetDefaultSlotId();
 	FGuid TargetSlotId = TargetTransaction->GetDefaultSlotId();
+	FGuid CostSlotId = CostTransaction->GetDefaultSlotId();
 
-	if (!SourceTransaction->RemoveItem(SourceSlotId, CostAssetId, CostQuantity))
+	if (!CostTransaction->RemoveItems(CostSlotId, CostAssetList, 1))
 	{
 		Fail(TEXT("Failed to remove item"));
 		return;
 	}
 	
-	if (!TargetTransaction->AddItem(TargetSlotId, ItemAssetId, ItemQuantity))
+	if (!TargetTransaction->AddItem(TargetSlotId, TargetAssetId, TargetQuantity))
 	{
 		Fail(TEXT("Failed to add item"));
 		return;

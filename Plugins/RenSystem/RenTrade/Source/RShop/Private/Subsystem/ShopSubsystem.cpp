@@ -4,6 +4,7 @@
 #include "Subsystem/ShopSubsystem.h"
 
 // Engine Headers
+#include "GameplayTagContainer.h"
 
 // Project Headers
 #include "Log/LogCategory.h"
@@ -13,7 +14,7 @@
 
 
 
-void UShopSubsystem::PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& ShopAssetId, const FPrimaryAssetId& ItemAssetId, const FPrimaryAssetId& CostAssetId, FTaskCallback Callback)
+void UShopSubsystem::PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& ShopAssetId, const FPrimaryAssetId& TargetAssetId, const FGameplayTagContainer& CostTags, FTaskCallback Callback)
 {
 	UTaskSubsystem* TaskSubsystem = UTaskSubsystem::Get(GetGameInstance());
 	if (!IsValid(TaskSubsystem))
@@ -31,8 +32,8 @@ void UShopSubsystem::PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& Sh
 
 	Task->Callback = MoveTemp(Callback);
 	Task->ShopAssetId = ShopAssetId;
-	Task->ItemAssetId = ItemAssetId;
-	Task->CostAssetId = CostAssetId;
+	Task->TargetAssetId = TargetAssetId;
+	Task->CostTags = CostTags;
 	Task->StartTask();
 }
 

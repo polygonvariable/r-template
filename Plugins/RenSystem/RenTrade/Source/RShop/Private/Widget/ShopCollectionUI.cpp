@@ -4,6 +4,7 @@
 #include "Widget/ShopCollectionUI.h"
 
 // Engine Headers
+#include "InstancedStruct.h"
 
 // Project Headers
 #include "Asset/RPrimaryDataAsset.h"

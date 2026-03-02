@@ -16,6 +16,7 @@ class AssetUtil
 
 public:
 
+	RCORE_API static IAssetTransactionInterface* GetTransactionInterface(UGameInstance* Context, const FPrimaryAssetId& HandleType);
 	RCORE_API static IAssetTransactionInterface* GetTransactionInterface(UGameInstance* Context, const FPrimaryAssetType& HandleType);
 
 };

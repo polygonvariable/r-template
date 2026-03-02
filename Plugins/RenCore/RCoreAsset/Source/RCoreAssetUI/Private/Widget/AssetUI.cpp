@@ -15,9 +15,9 @@
 
 
 
-void UAssetUI::SetCatalogId(const FGuid& Id)
+void UAssetUI::SetContainerId(const FGuid& Id)
 {
-	CatalogId = Id;
+	ContainerId = Id;
 }
 
 void UAssetUI::InitializeDetails(const UAssetEntry* Entry)

@@ -8,54 +8,88 @@
 
 // Project Headers
 #include "Asset/RPrimaryDataAsset.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
 
 
 
-const TMap<FPrimaryAssetId, int>& UAssetCollection_Simple::GetAssetList() const
+const TMap<FPrimaryAssetId, FAssetDetail>& UAssetCollection_Simple::GetAssetList() const
 {
 	return AssetList;
 }
 
-bool UAssetCollection_Simple::GetAsset(const FPrimaryAssetId& AssetId, int& OutQuantity) const
+bool UAssetCollection_Simple::GetRandomAsset(TPair<FPrimaryAssetId, FAssetDetail>& OutAsset) const
 {
-	const int* Quantity = AssetList.Find(AssetId);
-	if (Quantity != nullptr)
+	for (const TPair<FPrimaryAssetId, FAssetDetail>& Kv : AssetList)
 	{
-		OutQuantity = *Quantity;
+		OutAsset = Kv;
 		return true;
 	}
 	return false;
 }
 
-bool UAssetCollection_Simple::GetAnyAsset(TPair<FPrimaryAssetId, int>& OutPair) const
+bool UAssetCollection_Simple::GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail& OutDetail) const
 {
-	for (const TPair<FPrimaryAssetId, int>& Pair : AssetList)
+	const FAssetDetail* Detail = AssetList.Find(AssetId);
+	if (Detail == nullptr)
 	{
-		OutPair = Pair;
-		return true;
+		return false;
 	}
-	return false;
+
+	OutDetail = *Detail;
+	return true;
+}
+
+void UAssetCollection_Simple::GetAssetList(TMap<FPrimaryAssetId, FAssetDetail>& OutAssets) const
+{
+	OutAssets = AssetList;
+}
+
+void UAssetCollection_Simple::GetAssetList(TMap<FPrimaryAssetId, int>& OutAssets) const
+{
+	for (const TPair<FPrimaryAssetId, FAssetDetail>& Kv : AssetList)
+	{
+		OutAssets.Add(Kv.Key, Kv.Value.Quantity);
+	}
+}
+
+void UAssetCollection_Simple::GetAssetIds(TArray<FPrimaryAssetId>& OutAssets) const
+{
+	for (const TPair<FPrimaryAssetId, FAssetDetail>& Kv : AssetList)
+	{
+		OutAssets.Add(Kv.Key);
+	}
 }
 
 void UAssetCollection_Simple::PreSave(FObjectPreSaveContext ObjectSaveContext)
 {
 	Super::PreSave(ObjectSaveContext);
 
+
 #if WITH_EDITOR
 
+	AssetType = FPrimaryAssetType();
 	AssetList.Empty();
 
-	for (const FAssetDetail_SimpleEd& AssetDetail : AssetListEd)
+	for (const FAssetDetail_SimpleEd& Item : AssetListEd)
 	{
-		TSoftObjectPtr<URPrimaryDataAsset> Asset = AssetDetail.DataAsset;
+		TSoftObjectPtr<URPrimaryDataAsset> Asset = Item.DataAsset;
 		URPrimaryDataAsset* AssetPtr = Asset.LoadSynchronous();
 		if (!IsValid(AssetPtr))
 		{
+			LOG_ERROR(LogAsset, TEXT("Failed to load asset"));
 			continue;
 		}
 
 		FPrimaryAssetId AssetId = AssetPtr->GetPrimaryAssetId();
-		AssetList.Add(AssetId, AssetDetail.Quantity);
+		if (AssetType.IsValid() && AssetType != AssetId.PrimaryAssetType)
+		{
+			LOG_ERROR(LogAsset, TEXT("Non-matching asset types found in collection"));
+			continue;
+		}
+
+		AssetType = AssetId.PrimaryAssetType;
+		AssetList.Add(AssetId, Item);
 	}
 
 #endif

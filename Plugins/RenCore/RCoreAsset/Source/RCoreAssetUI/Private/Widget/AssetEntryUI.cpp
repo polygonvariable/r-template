@@ -17,12 +17,12 @@ void UAssetEntryUI::ResetDetails()
 	SetPrimaryDetails(nullptr, nullptr);
 }
 
-void UAssetEntryUI::GetAssetDetail(FInstancedStruct& AssetDetail) const
+void UAssetEntryUI::GetAssetSubDetail(FInstancedStruct& SubDetail) const
 {
 	const UAssetEntry* Entry = GetListItem<UAssetEntry>();
 	if (IsValid(Entry))
 	{
-		AssetDetail = Entry->AssetDetail;
+		SubDetail = Entry->AssetSubDetail;
 	}
 }
 

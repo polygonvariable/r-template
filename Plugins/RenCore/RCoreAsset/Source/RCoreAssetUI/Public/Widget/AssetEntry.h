@@ -10,6 +10,9 @@
 // Generated Headers
 #include "AssetEntry.generated.h"
 
+// Module Macros
+#define RCORE_API RCOREASSETUI_API
+
 // Forward Declarations
 
 
@@ -26,21 +29,22 @@ class UAssetEntry : public UObject
 public:
 
 	FPrimaryAssetId AssetId = FPrimaryAssetId();
-	FInstancedStruct AssetDetail;
+	FInstancedStruct AssetSubDetail;
 
-	virtual void ResetData()
-	{
-		AssetId = FPrimaryAssetId();
-		AssetDetail.Reset();
-	}
+
+	RCORE_API virtual FPrimaryAssetId GetAssetId() const;
+	RCORE_API virtual FGuid GetAssetInstanceId() const;
+
+	RCORE_API virtual void ResetData();
 
 	// ~ UObject
-	virtual void BeginDestroy() override
-	{
-		ResetData();
-		Super::BeginDestroy();
-	}
+	RCORE_API virtual void BeginDestroy() override;
 	// ~ End of UObject
 
 };
+
+
+
+// Module Macros
+#undef RCORE_API
 
