@@ -12,7 +12,7 @@
 
 
 
-void UTradeDetailUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UTradeDetailUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	if (!IsValid(Asset))
 	{
@@ -24,7 +24,7 @@ void UTradeDetailUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPrimary
 	EntryIcon->SetBrushFromSoftTexture(Asset->Icon);
 }
 
-void UTradeDetailUI::SetSecondaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UTradeDetailUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 
 }

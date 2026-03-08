@@ -82,74 +82,76 @@ bool UInventoryInstanceSubsystem::CommitItem(const FGuid& InventoryId, const FPr
 
 UInventoryInstance* UInventoryInstanceSubsystem::CreateItem_Internal(const FGuid& InventoryId, const FPrimaryAssetId& AssetId)
 {
-	UInventorySubsystem* InventorySubsystem = WeakInventory.Get();
-	if (!IsValid(AssetManager) || !IsValid(InventorySubsystem))
-	{
-		return nullptr;
-	}
+	return nullptr;
+	//UInventorySubsystem* InventorySubsystem = WeakInventory.Get();
+	//if (!IsValid(AssetManager) || !IsValid(InventorySubsystem))
+	//{
+	//	return nullptr;
+	//}
 
-	FAssetData AssetData;
-	AssetManager->GetPrimaryAssetData(AssetId, AssetData);
+	//FAssetData AssetData;
+	//AssetManager->GetPrimaryAssetData(AssetId, AssetData);
 
-	bool bPersistWhenEmpty = false;
-	InventoryPrimaryAsset::GetPersistWhenEmpty(AssetData, bPersistWhenEmpty);
+	//bool bPersistWhenEmpty = false;
+	//InventoryPrimaryAsset::GetPersistWhenEmpty(AssetData, bPersistWhenEmpty);
 
-	bool bStackable = false;
-	InventoryPrimaryAsset::GetStackable(AssetData, bStackable);
+	//bool bStackable = false;
+	//InventoryPrimaryAsset::GetStackable(AssetData, bStackable);
 
-	if (!bPersistWhenEmpty || !bStackable)
-	{
-		LOG_ERROR(LogInventoryInstance, TEXT("Item instance cannot be created for non-persistent item or non-stackable item"));
-		return nullptr;
-	}
+	//if (!bPersistWhenEmpty || !bStackable)
+	//{
+	//	LOG_ERROR(LogInventoryInstance, TEXT("Item instance cannot be created for non-persistent item or non-stackable item"));
+	//	return nullptr;
+	//}
 
-	const FInventoryItem* Item = InventorySubsystem->GetItem(InventoryId, AssetId);
-	if (!Item)
-	{
-		LOG_ERROR(LogInventoryInstance, TEXT("Unable to find item"));
-		return nullptr;
-	}
+	//const FInventoryItem* Item = InventorySubsystem->GetItem(InventoryId, AssetId);
+	//if (!Item)
+	//{
+	//	LOG_ERROR(LogInventoryInstance, TEXT("Unable to find item"));
+	//	return nullptr;
+	//}
 
-	UInventoryInstance* NewInstance = NewObject<UInventoryInstance>();
-	if (!IsValid(NewInstance))
-	{
-		LOG_ERROR(LogInventoryInstance, TEXT("Failed to create item instance"));
-		return nullptr;
-	}
+	//UInventoryInstance* NewInstance = NewObject<UInventoryInstance>();
+	//if (!IsValid(NewInstance))
+	//{
+	//	LOG_ERROR(LogInventoryInstance, TEXT("Failed to create item instance"));
+	//	return nullptr;
+	//}
 
-	NewInstance->InitializeItem(InventoryId, AssetId, (*Item));
+	//NewInstance->InitializeItem(InventoryId, AssetId, (*Item));
 
-	FInventoryInstanceId InstanceId(InventoryId, AssetId);
-	InventoryInstances.Add(InstanceId, NewInstance);
+	//FInventoryInstanceId InstanceId(InventoryId, AssetId);
+	//InventoryInstances.Add(InstanceId, NewInstance);
 
-	return NewInstance;
+	//return NewInstance;
 }
 
 bool UInventoryInstanceSubsystem::CommitItem_Internal(UInventoryInstance* Item, UInventorySubsystem* InventorySubsystem)
 {
-	if (!IsValid(Item) || !IsValid(InventorySubsystem))
-	{
-		return false;
-	}
+	return false;
+	//if (!IsValid(Item) || !IsValid(InventorySubsystem))
+	//{
+	//	return false;
+	//}
 
-	FGuid InventoryId = Item->GetInventoryId();
-	FPrimaryAssetId AssetId = Item->GetAssetId();
-	FGuid ItemId = Item->GetItemId();
+	//FGuid InventoryId = Item->GetInventoryId();
+	//FPrimaryAssetId AssetId = Item->GetAssetId();
+	//FGuid ItemId = Item->GetItemId();
 
-	int Quantity = Item->GetQuantity();
+	//int Quantity = Item->GetQuantity();
 
-	bool bResult = InventorySubsystem->UpdateItemById(InventoryId, AssetId, ItemId,
-		[Quantity](FInventoryItem* Item)
-		{
-			if (Item)
-			{
-				Item->Quantity = Quantity;
-				Item->Sanitize();
-			}
-		}
-	);
+	//bool bResult = InventorySubsystem->UpdateItemById(InventoryId, AssetId, ItemId,
+	//	[Quantity](FInventoryItem* Item)
+	//	{
+	//		if (Item)
+	//		{
+	//			Item->Quantity = Quantity;
+	//			Item->Sanitize();
+	//		}
+	//	}
+	//);
 
-	return bResult;
+	//return bResult;
 }
 
 

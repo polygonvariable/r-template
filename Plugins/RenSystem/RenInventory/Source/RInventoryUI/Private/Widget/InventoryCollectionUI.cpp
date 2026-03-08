@@ -8,23 +8,41 @@
 // Project Headers
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
+#include "Storage/InventoryStorage.h"
 #include "Subsystem/InventorySubsystem.h"
 #include "Widget/InventoryEntry.h"
 
 
 
+void UInventoryCollectionUI::InitializeCollection()
+{
+	UInventorySubsystem* InventorySubsystem = UInventorySubsystem::Get(GetGameInstance());
+	if (!IsValid(InventorySubsystem))
+	{
+		return;
+	}
+
+	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(ContainerId);
+	if (IsValid(InventoryStorage) && bAutoRefresh)
+	{
+		InventoryStorage->OnInventoryRefreshed.AddUObject(this, &UInventoryCollectionUI::RefreshEntries);
+	}
+
+	Inventory = TWeakObjectPtr<UInventoryStorage>(InventoryStorage);
+}
+
 void UInventoryCollectionUI::DisplayEntries()
 {
-	UInventorySubsystem* Inventory = InventorySubsystem.Get();
-	if (!IsValid(Inventory))
+	UInventoryStorage* InventoryStorage = Inventory.Get();
+	if (!IsValid(InventoryStorage))
 	{
-		LOG_ERROR(LogInventory, TEXT("InventorySubsystem is invalid"));
+		LOG_ERROR(LogInventory, TEXT("InventoryStorage is invalid"));
 		return;
 	}
 
 	const UFilterCriterion* FilterRoot = GetFilterRoot();
-
-	Inventory->QueryItems(ContainerId, FilterRoot, QueryRule,
+	
+	InventoryStorage->QueryItems(FilterRoot, QueryRule,
 		[this](const FInventorySortEntry& SortEntry)
 		{
 			UInventoryEntry* Entry = GetEntryFromPool<UInventoryEntry>();
@@ -38,37 +56,14 @@ void UInventoryCollectionUI::DisplayEntries()
 	);
 }
 
-void UInventoryCollectionUI::OnInventoryRefreshed(const FGuid& InventoryId)
-{
-	if (ContainerId == InventoryId)
-	{
-		RefreshEntries();
-	}
-}
-
-void UInventoryCollectionUI::NativeConstruct()
-{
-	UInventorySubsystem* Inventory = UInventorySubsystem::Get(GetGameInstance());
-	if (IsValid(Inventory))
-	{
-		if (bAutoRefresh)
-		{
-			Inventory->OnInventoryRefreshed.AddUObject(this, &UInventoryCollectionUI::OnInventoryRefreshed);
-		}
-		InventorySubsystem = TWeakObjectPtr<UInventorySubsystem>(Inventory);
-	}
-
-	Super::NativeConstruct();
-}
-
 void UInventoryCollectionUI::NativeDestruct()
 {
-	UInventorySubsystem* Inventory = InventorySubsystem.Get();
-	if (IsValid(Inventory))
+	UInventoryStorage* InventoryStorage = Inventory.Get();
+	if (IsValid(InventoryStorage))
 	{
-		Inventory->OnInventoryRefreshed.RemoveAll(this);
+		InventoryStorage->OnInventoryRefreshed.RemoveAll(this);
 	}
-	InventorySubsystem.Reset();
+	Inventory.Reset();
 
 	Super::NativeDestruct();
 }

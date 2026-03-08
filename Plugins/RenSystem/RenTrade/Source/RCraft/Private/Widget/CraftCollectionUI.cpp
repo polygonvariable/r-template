@@ -18,13 +18,13 @@
 
 
 
-const UAssetCollection* UCraftCollectionUI::GetAssetCollection(const URPrimaryDataAsset* Asset) const
-{
-	const ICraftProviderInterface* CraftProvider = Cast<ICraftProviderInterface>(Asset);
-	if (!CraftProvider)
-	{
-		return nullptr;
-	}
-	return CraftProvider->GetCraftingMaterial();
-}
+//const UAssetCollection* UCraftCollectionUI::GetAssetCollection(const URPrimaryDataAsset* Asset) const
+//{
+//	const ICraftProviderInterface* CraftProvider = Cast<ICraftProviderInterface>(Asset);
+//	if (!CraftProvider)
+//	{
+//		return nullptr;
+//	}
+//	return CraftProvider->GetCraftingMaterial();
+//}
 

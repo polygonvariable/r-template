@@ -10,12 +10,12 @@
 
 
 
-IAssetTransactionInterface* AssetUtil::GetTransactionInterface(UGameInstance* Context, const FPrimaryAssetId& HandleType)
+IAssetInterchangeInterface* AssetUtil::GetAssetInterchange(UGameInstance* Context, const FPrimaryAssetId& HandleType)
 {
-	return GetTransactionInterface(Context, HandleType.PrimaryAssetType);
+	return GetAssetInterchange(Context, HandleType.PrimaryAssetType);
 }
 
-IAssetTransactionInterface* AssetUtil::GetTransactionInterface(UGameInstance* Context, const FPrimaryAssetType& HandleType)
+IAssetInterchangeInterface* AssetUtil::GetAssetInterchange(UGameInstance* Context, const FPrimaryAssetType& HandleType)
 {
 	if (!IsValid(Context))
 	{
@@ -26,18 +26,18 @@ IAssetTransactionInterface* AssetUtil::GetTransactionInterface(UGameInstance* Co
 
 	for (UGameInstanceSubsystem* Subsystem : Subsystems)
 	{
-		if (!IsValid(Subsystem) || !Subsystem->Implements<UAssetTransactionInterface>())
+		if (!IsValid(Subsystem) || !Subsystem->Implements<UAssetInterchangeInterface>())
 		{
 			continue;
 		}
 
-		IAssetTransactionInterface* TransactionInterface = Cast<IAssetTransactionInterface>(Subsystem);
+		IAssetInterchangeInterface* TransactionInterface = Cast<IAssetInterchangeInterface>(Subsystem);
 		if (!TransactionInterface)
 		{
 			continue;
 		}
 
-		if (TransactionInterface->GetHandledAssetType() == HandleType)
+		if (TransactionInterface->GetSupportedAssetType() == HandleType)
 		{
 			return TransactionInterface;
 		}

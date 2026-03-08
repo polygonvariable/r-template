@@ -9,12 +9,13 @@
 // Project Headers
 #include "Asset/RPrimaryDataAsset.h"
 #include "Asset/TradeAsset.h"
-#include "Interface/AssetTransactionInterface.h"
+#include "Definition/AssetDetail.h"
 #include "Definition/AssetRuleDefinition.h"
+#include "Interface/AssetTransactionInterface.h"
 #include "Interface/CraftProviderInterface.h"
 #include "Library/AssetUtil.h"
+#include "Management/AssetCollection.h"
 #include "Management/AssetGroup.h"
-#include "Management/Collection/AssetCollectionUnique.h"
 #include "Manager/RAssetManager.inl"
 
 
@@ -55,7 +56,7 @@ void UCraftItem::Step_LoadAsset()
 	Assets.Add(CraftAssetId);
 	Assets.Add(TargetAssetId);
 
-	TFuture<FLatentResultAssets<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAssets<URPrimaryDataAsset>(TaskId, Assets);
+	TFuture<FLatentLoadedAssets<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAssets<URPrimaryDataAsset>(TaskId, Assets);
 	if (!Future.IsValid())
 	{
 		Fail(TEXT("Failed to create Future"));
@@ -63,7 +64,7 @@ void UCraftItem::Step_LoadAsset()
 	}
 
 	TWeakObjectPtr<UCraftItem> WeakThis(this);
-	Future.Next([WeakThis](const FLatentResultAssets<URPrimaryDataAsset>& Result)
+	Future.Next([WeakThis](const FLatentLoadedAssets<URPrimaryDataAsset>& Result)
 		{
 			UCraftItem* This = WeakThis.Get();
 			if (!IsValid(This) || !Result.IsValid())
@@ -97,7 +98,8 @@ void UCraftItem::Step_CheckTarget()
 		return;
 	}
 
-	const UAssetCollection* TradeCollection = TradeGroup->GetCollectionRule();
+	FInstancedStruct TradeContext = FInstancedStruct::Make(FAssetRuleContext(TradeCollectionId));
+	const UAssetCollection* TradeCollection = TradeGroup->GetCollectionRule(TradeContext);
 	if (!IsValid(TradeCollection))
 	{
 		Fail(TEXT("Item collection is invalid"));
@@ -125,9 +127,8 @@ void UCraftItem::Step_CheckMaterial()
 		return;
 	}
 
-	FInstancedStruct Context = FInstancedStruct::Make(FAssetRuleContext(MaterialTags));
-
-	const UAssetCollection* MaterialCollection = CraftProvider->GetCraftingMaterial(Context);
+	FInstancedStruct MaterialContext = FInstancedStruct::Make(FAssetRuleContext(TradeCollectionId));
+	const UAssetCollection* MaterialCollection = CraftProvider->GetCraftingMaterial(MaterialContext);
 	if (!IsValid(MaterialCollection))
 	{
 		Fail(TEXT("Crafting material is invalid"));
@@ -147,25 +148,34 @@ void UCraftItem::Step_PerformTransaction(const TMap<FPrimaryAssetId, int>& Mater
 	UWorld* World = GetWorld();
 	UGameInstance* GameInstance = World->GetGameInstance();
 
-	IAssetTransactionInterface* TargetTransaction = AssetUtil::GetTransactionInterface(GameInstance, TargetAssetId);
-	IAssetTransactionInterface* MaterialTransaction = AssetUtil::GetTransactionInterface(GameInstance, MaterialAssetType);
+	IAssetInterchangeInterface* TargetInterchange = AssetUtil::GetAssetInterchange(GameInstance, TargetAssetId);
+	IAssetInterchangeInterface* MaterialInterchange = AssetUtil::GetAssetInterchange(GameInstance, MaterialAssetType);
 
-	if (!TargetTransaction || !MaterialTransaction)
+	if (!TargetInterchange || !MaterialInterchange)
 	{
 		Fail(TEXT("Failed to get transaction interface"));
 		return;
 	}
 
-	FGuid TargetSlotId = TargetTransaction->GetDefaultSlotId();
-	FGuid MaterialSlotId = MaterialTransaction->GetDefaultSlotId();
+	FGuid TargetId = TargetInterchange->GetDefaultSourceId();
+	FGuid MaterialId = MaterialInterchange->GetDefaultSourceId();
 
-	if (!MaterialTransaction->RemoveItems(MaterialSlotId, MaterialAssetList, 1))
+	IAssetTransactionInterface* TargetTransaction = TargetInterchange->GetTransactionSource(TargetId);
+	IAssetTransactionInterface* MaterialTransaction = MaterialInterchange->GetTransactionSource(MaterialId);
+
+	if (!TargetTransaction || !MaterialTransaction)
+	{
+		Fail(TEXT("Failed to get transaction source"));
+		return;
+	}
+
+	if (!MaterialTransaction->RemoveItems(MaterialAssetList, 1))
 	{
 		Fail(TEXT("Failed to remove item"));
 		return;
 	}
 	
-	if (!TargetTransaction->AddItem(TargetSlotId, TargetAssetId, TargetQuantity))
+	if (!TargetTransaction->AddItem(TargetAssetId, TargetQuantity))
 	{
 		Fail(TEXT("Failed to add item"));
 		return;

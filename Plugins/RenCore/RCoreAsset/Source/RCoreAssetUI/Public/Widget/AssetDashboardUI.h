@@ -42,7 +42,7 @@ protected:
 	RCORE_API virtual void GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutAssetUI) const;
 
 	// ~ UAssetUI
-	RCORE_API virtual void SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	RCORE_API virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
 	// ~ End of UAssetUI
 
 	// ~ UUserWidget

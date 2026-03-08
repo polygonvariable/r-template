@@ -13,7 +13,7 @@
 
 // Forward Declarations
 class UInventoryAsset;
-class UInventorySubsystem;
+class UInventoryStorage;
 class URAssetManager;
 
 
@@ -43,7 +43,7 @@ protected:
 	TObjectPtr<const UInventoryAsset> TargetAsset = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<UInventorySubsystem> InventorySubsystem = nullptr;
+	TObjectPtr<UInventoryStorage> Inventory = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<URAssetManager> AssetManager = nullptr;

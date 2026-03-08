@@ -24,8 +24,6 @@ protected:
 
 	TArray<IConsoleCommand*> Commands;
 
-	UInventorySubsystem* GetInventorySubsystem(UWorld* World);
-
 	void RegisterCommand();
 	void UnregisterCommand();
 

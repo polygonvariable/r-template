@@ -80,7 +80,7 @@ void UEnvironmentSubsystem::AddProfile(const FGuid& LatentId, const FPrimaryAsse
 		return;
 	}
 
-	TFuture<FLatentResultAsset<UEnvironmentProfileAsset>> Future = AssetManager->FetchPrimaryAsset<UEnvironmentProfileAsset>(LatentId, AssetId);
+	TFuture<FLatentLoadedAsset<UEnvironmentProfileAsset>> Future = AssetManager->FetchPrimaryAsset<UEnvironmentProfileAsset>(LatentId, AssetId);
 	if (!Future.IsValid())
 	{
 		LOG_ERROR(LogWeather, TEXT("Failed to create Future"));
@@ -88,7 +88,7 @@ void UEnvironmentSubsystem::AddProfile(const FGuid& LatentId, const FPrimaryAsse
 	}
 
 	TWeakObjectPtr<UEnvironmentSubsystem> WeakThis(this);
-	Future.Next([WeakThis, Priority](const FLatentResultAsset<UEnvironmentProfileAsset>& Result)
+	Future.Next([WeakThis, Priority](const FLatentLoadedAsset<UEnvironmentProfileAsset>& Result)
 		{
 			UEnvironmentSubsystem* This = WeakThis.Get();
 			if (IsValid(This) && Result.IsValid())
@@ -208,7 +208,7 @@ void UEnvironmentSubsystem::LoadDefaultProfiles(const TArray<FPrimaryAssetId>& A
 		return;
 	}
 
-	TFuture<FLatentResultAssets<UEnvironmentProfileAsset>> Future = AssetManager->FetchPrimaryAssets<UEnvironmentProfileAsset>(AssetIds);
+	TFuture<FLatentLoadedAssets<UEnvironmentProfileAsset>> Future = AssetManager->FetchPrimaryAssets<UEnvironmentProfileAsset>(AssetIds);
 	if (!Future.IsValid())
 	{
 		LOG_ERROR(LogWeather, TEXT("Failed to create Future"));
@@ -216,7 +216,7 @@ void UEnvironmentSubsystem::LoadDefaultProfiles(const TArray<FPrimaryAssetId>& A
 	}
 
 	TWeakObjectPtr<UEnvironmentSubsystem> WeakThis(this);
-	Future.Next([WeakThis](const FLatentResultAssets<UEnvironmentProfileAsset>& Result)
+	Future.Next([WeakThis](const FLatentLoadedAssets<UEnvironmentProfileAsset>& Result)
 		{
 			UEnvironmentSubsystem* This = WeakThis.Get();
 			if (IsValid(This) && Result.IsValid())

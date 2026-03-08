@@ -26,14 +26,11 @@ class UTradeAsset : public UMetadataAsset
 
 public:
 
-	UPROPERTY(EditDefaultsOnly)
-	FGuid TradeId;
-
 	UPROPERTY(EditDefaultsOnly, Instanced)
 	TObjectPtr<UAssetGroup> TradeGroup = nullptr;
 
 	// ~ UObject
-	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
+	RTRADE_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 	// ~ End of UObject
 
 };

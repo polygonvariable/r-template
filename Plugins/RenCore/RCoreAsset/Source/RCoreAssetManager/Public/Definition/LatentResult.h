@@ -39,7 +39,7 @@ public:
  *
  */
 template<typename T>
-struct FLatentResultAsset : public FLatentResult
+struct FLatentLoadedAsset : public FLatentResult
 {
 
 public:
@@ -56,11 +56,6 @@ public:
 		return (bSuccess && !bCancelled) && Asset != nullptr;
 	}
 
-	const T* GetAsset() const
-	{
-		return Asset;
-	}
-
 	const T* Get() const
 	{
 		return Asset;
@@ -71,7 +66,7 @@ public:
  *
  */
 template<typename T>
-struct FLatentResultAssets : public FLatentResult
+struct FLatentLoadedAssets : public FLatentResult
 {
 
 public:

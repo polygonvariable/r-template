@@ -15,10 +15,12 @@
 // Forward Declarations
 
 
+// ~ Storage
+RCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogStorage, Log, All);
+// ~ End Storage
 
 // ~ Task Categories
 RCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogTask, Log, All);
-RCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogStorage, Log, All);
 RCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogAsset, Log, All);
 // ~ End of Task Categories
 

@@ -56,8 +56,8 @@ public:
 
 
 	// ~ IAssetStructureInterface
-	RSYSTEM_API virtual const UAssetCollection* GetBreakdownAssets(const FGameplayTagContainer& InTags) const override;
-	RSYSTEM_API virtual const UAssetCollection* GetRebuildAssets(const FGameplayTagContainer& InTags) const override;
+	RSYSTEM_API virtual const UAssetCollection* GetBreakdownAssets(const FGuid& InId) const override;
+	RSYSTEM_API virtual const UAssetCollection* GetRebuildAssets(const FGuid& InId) const override;
 	// ~ End of IAssetStructureInterface
 
 	// ~ UPrimaryDataAsset

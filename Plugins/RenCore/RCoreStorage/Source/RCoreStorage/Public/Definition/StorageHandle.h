@@ -31,6 +31,7 @@ public:
     FTaskCallback Callback;
 
     RCORESTORAGE_API bool IsValid() const;
+    RCORESTORAGE_API bool IsUrlValid() const;
 
 };
 

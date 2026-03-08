@@ -12,6 +12,8 @@
 
 // Forward Declarations
 class UButton;
+class UAssetCollection;
+class URPrimaryDataAsset;
 
 
 
@@ -31,6 +33,10 @@ protected:
 
 	UFUNCTION()
 	void HandleCraft();
+
+	// ~ UTradeDashboardUI
+	virtual const UAssetCollection* GetMaterialCollection(const URPrimaryDataAsset* Asset) const override;
+	// ~ End of UTradeDashboardUI
 
 	// ~ UUserWidget
 	virtual void NativeConstruct() override;

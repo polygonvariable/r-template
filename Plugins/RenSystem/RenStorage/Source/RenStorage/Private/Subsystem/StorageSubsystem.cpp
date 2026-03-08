@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "StorageSubsystem.h"
+#include "Subsystem/StorageSubsystem.h"
 
 // Engine Headers
 #include "GameFramework/SaveGame.h"
@@ -28,10 +28,17 @@ UStorage* UStorageSubsystem::GetStorage(const FGuid& StorageId)
 
 void UStorageSubsystem::LoadStorage(FStorageHandle&& Handle)
 {
-	if (!Handle.IsValid() || StorageCollection.Contains(Handle.StorageId))
+	if (!Handle.IsValid())
 	{
 		LOG_ERROR(LogStorage, TEXT("Invalid storage handle or storage is already loading"));
 		Handle.Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed));
+		return;
+	}
+
+	if (StorageCollection.Contains(Handle.StorageId))
+	{
+		LOG_WARNING(LogStorage, TEXT("Storage is already loaded"));
+		Handle.Callback.ExecuteIfBound(FTaskResult(ETaskState::Completed));
 		return;
 	}
 
@@ -149,6 +156,8 @@ bool UStorageSubsystem::SaveStorage_Internal(UStorage* Storage, const FGuid& Sto
 		return false;
 	}
 
+	Storage->DeinitializeStorage();
+
 	return UGameplayStatics::SaveGameToSlot(Storage, FileId, 0);
 }
 
@@ -156,6 +165,13 @@ bool UStorageSubsystem::SaveStorage_Internal(UStorage* Storage, const FGuid& Sto
 
 void UStorageSubsystem::LoadStorage_Network(FStorageHandle Handle)
 {
+	if (!Handle.IsUrlValid())
+	{
+		LOG_ERROR(LogStorage, TEXT("Invalid url"));
+		Handle.Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed));
+		return;
+	}
+
 	TSharedPtr<FJsonObject> StorageQuery = MakeShared<FJsonObject>();
 	GetDefaultQuery(Handle.StorageId, StorageQuery);
 
@@ -231,6 +247,7 @@ UStorage* UStorageSubsystem::LoadStorage_Internal(const FGuid& StorageId, TSubcl
 	}
 
 	StorageCollection.Add(StorageId, Storage);
+	Storage->InitializeStorage();
 
 	return Storage;
 }
@@ -267,5 +284,25 @@ void UStorageSubsystem::Deinitialize()
 
 	FLatentDelegate::OnPreGameInitialized.RemoveAll(this);
 	Super::Deinitialize();
+}
+
+
+
+UStorageSubsystem* UStorageSubsystem::Get(UWorld* World)
+{
+	if (!IsValid(World))
+	{
+		return nullptr;
+	}
+	return Get(World->GetGameInstance());
+}
+
+UStorageSubsystem* UStorageSubsystem::Get(UGameInstance* GameInstance)
+{
+	if (!IsValid(GameInstance))
+	{
+		return nullptr;
+	}
+	return GameInstance->GetSubsystem<UStorageSubsystem>();
 }
 

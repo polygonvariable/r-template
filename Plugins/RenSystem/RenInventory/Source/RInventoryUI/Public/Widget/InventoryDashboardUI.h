@@ -25,6 +25,12 @@ class UInventoryDashboardUI : public UAssetDashboardUI
 
 	GENERATED_BODY()
 
+public:
+
+	// ~ UAssetDashboardUI
+	virtual void InitializeDetail() override;
+	// ~ End of UAssetDashboardUI
+
 protected:
 
 	UPROPERTY(Meta = (BindWidget))
@@ -40,7 +46,6 @@ protected:
 	// ~ End of UAssetDashboardUI
 
 	// ~ UUserWidget
-	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 	// ~ End of UUserWidget

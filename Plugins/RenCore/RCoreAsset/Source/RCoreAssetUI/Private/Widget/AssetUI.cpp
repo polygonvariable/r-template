@@ -20,24 +20,33 @@ void UAssetUI::SetContainerId(const FGuid& Id)
 	ContainerId = Id;
 }
 
-void UAssetUI::InitializeDetails(const UAssetEntry* Entry)
+void UAssetUI::InitializeDetail()
 {
-	LatentId = FGuid::NewGuid();
 
-	if (!IsValid(Entry))
+}
+
+void UAssetUI::InitializeDetail(const UAssetEntry* Entry)
+{
+	if (!IsValid(Entry) || !IsValid(AssetManager) || !Entry->AssetId.IsValid())
 	{
-		LOG_ERROR(LogAsset, TEXT("Entry is invalid"));
+		LOG_ERROR(LogAsset, TEXT("Entry, AssetManager or AssetId is invalid"));
 		return;
 	}
 
-	ActiveAssetId = Entry->AssetId;
-	if (!LatentId.IsValid() || !IsValid(AssetManager))
+	if (_ActiveAssetId == Entry->AssetId && _ActiveAsset.IsValid())
 	{
-		LOG_ERROR(LogAsset, TEXT("AssetId, LatentId, AssetManager is invalid"));
+		const URPrimaryDataAsset* Asset = _ActiveAsset.Get();
+		SetPrimaryDetail(Entry, Asset);
+		SetSecondaryDetail(Entry, Asset);
 		return;
 	}
 
-	TFuture<FLatentResultAsset<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAsset<URPrimaryDataAsset>(LatentId, ActiveAssetId);
+	AssetManager->CancelFetch(_ActiveLoadId);
+
+	_ActiveAssetId = Entry->AssetId;
+	_ActiveLoadId = FGuid::NewGuid();
+
+	TFuture<FLatentLoadedAsset<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAsset<URPrimaryDataAsset>(_ActiveLoadId, _ActiveAssetId);
 	if (!Future.IsValid())
 	{
 		LOG_ERROR(LogAsset, TEXT("Failed to create Future"));
@@ -47,65 +56,68 @@ void UAssetUI::InitializeDetails(const UAssetEntry* Entry)
 	TWeakObjectPtr<const UAssetEntry> WeakEntry(Entry);
 	TWeakObjectPtr<UAssetUI> WeakThis(this);
 
-	Future.Next([WeakThis, WeakEntry](const FLatentResultAsset<URPrimaryDataAsset>& Result)
+	Future.Next([WeakThis, WeakEntry](const FLatentLoadedAsset<URPrimaryDataAsset>& Result)
 		{
 			UAssetUI* This = WeakThis.Get();
 			const UAssetEntry* Entry = WeakEntry.Get();
 			if (IsValid(This) && Result.IsValid())
 			{
-				const URPrimaryDataAsset* Asset = Result.GetAsset();
-				This->SetPrimaryDetails(Entry, Asset);
-				This->SetSecondaryDetails(Entry, Asset);
+				const URPrimaryDataAsset* Asset = Result.Get();
+
+				This->_ActiveAsset = TWeakObjectPtr<const URPrimaryDataAsset>(Asset);
+
+				This->SetPrimaryDetail(Entry, Asset);
+				This->SetSecondaryDetail(Entry, Asset);
 			}
 		}
 	);
 }
 
-void UAssetUI::InitializeDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UAssetUI::InitializeDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	if (IsValid(Asset))
 	{
-		ActiveAssetId = Asset->GetPrimaryAssetId();
+		_ActiveAssetId = Asset->GetPrimaryAssetId();
 	}
 
-	SetPrimaryDetails(Entry, Asset);
-	SetSecondaryDetails(Entry, Asset);
+	SetPrimaryDetail(Entry, Asset);
+	SetSecondaryDetail(Entry, Asset);
 }
 
-bool UAssetUI::IsPrimaryAssetIdValid(const FPrimaryAssetId& AssetId) const
+const FPrimaryAssetId& UAssetUI::GetActiveAssetId() const
 {
-	return AssetId.IsValid();
+	return _ActiveAssetId;
 }
 
-void UAssetUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
-{
-
-}
-
-void UAssetUI::SetSecondaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UAssetUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 
 }
 
-void UAssetUI::RefreshDetails()
+void UAssetUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 
 }
 
-void UAssetUI::ResetDetails()
+void UAssetUI::RefreshDetail()
+{
+
+}
+
+void UAssetUI::ResetDetail()
 {
 
 }
 
 void UAssetUI::CancelInitialization()
 {
-	if (LatentId.IsValid() && IsValid(AssetManager))
+	if (_ActiveLoadId.IsValid() && IsValid(AssetManager))
 	{
-		AssetManager->CancelFetch(LatentId);
+		AssetManager->CancelFetch(_ActiveLoadId);
 	}
 }
 
-void UAssetUI::SwitchDetails(bool bPrimary)
+void UAssetUI::SwitchDetail(bool bPrimary)
 {
 
 }

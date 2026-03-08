@@ -24,29 +24,24 @@
 
 void UAvatarDetailUI::HandleAvatarDataChanged(const FPrimaryAssetId& AssetId)
 {
-	if (ActiveAssetId == AssetId)
+	if (GetActiveAssetId() == AssetId)
 	{
-		RefreshDetails();
+		RefreshDetail();
 	}
 }
 
-void UAvatarDetailUI::RefreshDetails()
+void UAvatarDetailUI::RefreshDetail()
 {
 	UGameInstance* GameInstance = GetGameInstance();
 	UAvatarSubsystem* AvatarSubsystem = GameInstance->GetSubsystem<UAvatarSubsystem>();
-	const FAvatarData* Record = AvatarSubsystem->GetAvatarData(ActiveAssetId);
+	const FAvatarData* Record = AvatarSubsystem->GetAvatarData(GetActiveAssetId());
 	if (Record)
 	{
-		SetSecondaryDetails(*Record, nullptr);
+		SetSecondaryDetail(*Record, nullptr);
 	}
 }
 
-bool UAvatarDetailUI::IsPrimaryAssetIdValid(const FPrimaryAssetId& AssetId) const
-{
-	return EntityPrimaryAsset::IsValid(AssetId);
-}
-
-void UAvatarDetailUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UAvatarDetailUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	const UAvatarAsset* AvatarAsset = Cast<UAvatarAsset>(Asset);
 	if (!IsValid(AvatarAsset))
@@ -59,7 +54,7 @@ void UAvatarDetailUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPrimar
 	if (EntryIcon) EntryIcon->SetBrushFromSoftTexture(AvatarAsset->Icon);
 }
 
-void UAvatarDetailUI::SetSecondaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UAvatarDetailUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	const UAvatarEntry* AvatarEntry = Cast<UAvatarEntry>(Entry);
 	if (!IsValid(AvatarEntry))
@@ -68,10 +63,10 @@ void UAvatarDetailUI::SetSecondaryDetails(const UAssetEntry* Entry, const URPrim
 	}
 
 	const FAvatarData& Record = AvatarEntry->AvatarData;
-	SetSecondaryDetails(Record, Asset);
+	SetSecondaryDetail(Record, Asset);
 }
 
-void UAvatarDetailUI::SetSecondaryDetails(const FAvatarData& Record, const URPrimaryDataAsset* Asset)
+void UAvatarDetailUI::SetSecondaryDetail(const FAvatarData& Record, const URPrimaryDataAsset* Asset)
 {
 	const FAscensionData& Ascension = Record.Ascension;
 

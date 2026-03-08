@@ -13,6 +13,7 @@
 #include "Library/AscensionLibrary.h"
 #include "Management/Collection/AssetCollectionSimple.h"
 #include "Manager/RAssetManager.inl"
+#include "Storage/InventoryStorage.h"
 #include "Subsystem/InventorySubsystem.h"
 
 
@@ -21,12 +22,22 @@
 void UGrantItemRank::OnStarted()
 {
 	AssetManager = Cast<URAssetManager>(UAssetManager::GetIfInitialized());
-	InventorySubsystem = UInventorySubsystem::Get(GetWorld());
+
+	UInventorySubsystem* InventorySubsystem = UInventorySubsystem::Get(GetWorld());
 	if (!IsValid(AssetManager) || !IsValid(InventorySubsystem))
 	{
 		Fail(TEXT("AssetManager, InventorySubsystem is invalid"));
 		return;
 	}
+
+	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(UInventorySubsystem::GetStorageId());
+	if (!IsValid(InventoryStorage))
+	{
+		Fail(TEXT("InventoryStorage is invalid"));
+		return;
+	}
+
+	Inventory = InventoryStorage;
 
 	Step_LoadAsset();
 }
@@ -45,14 +56,14 @@ void UGrantItemRank::OnCleanup()
 
 	TargetAsset = nullptr;
 	AssetManager = nullptr;
-	InventorySubsystem = nullptr;
+	Inventory = nullptr;
 
 	AscensionData.Reset();
 }
 
 void UGrantItemRank::Step_LoadAsset()
 {
-	TFuture<FLatentResultAsset<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAsset<URPrimaryDataAsset>(TargetAssetId);
+	TFuture<FLatentLoadedAsset<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAsset<URPrimaryDataAsset>(TargetAssetId);
 	if (!Future.IsValid())
 	{
 		Fail(TEXT("Failed to create Future"));
@@ -60,7 +71,7 @@ void UGrantItemRank::Step_LoadAsset()
 	}
 
 	TWeakObjectPtr<UGrantItemRank> WeakThis(this);
-	Future.Next([WeakThis](const FLatentResultAsset<URPrimaryDataAsset>& Result)
+	Future.Next([WeakThis](const FLatentLoadedAsset<URPrimaryDataAsset>& Result)
 		{
 			UGrantItemRank* This = WeakThis.Get();
 			if (!IsValid(This) || !Result.IsValid())
@@ -84,7 +95,7 @@ void UGrantItemRank::Step_CheckTarget()
 		return;
 	}
 
-	const FInventoryItem* Item = InventorySubsystem->GetItemById(InventoryId, TargetAssetId, TargetId);
+	const FInventoryItem* Item = Inventory->GetItemById(TargetAssetId, TargetId);
 	if (!IsValid(TargetAsset) || !Item)
 	{
 		Fail(TEXT("Item not found, TargetAsset is invalid"));
@@ -115,14 +126,14 @@ void UGrantItemRank::Step_CheckTarget()
 	TMap<FPrimaryAssetId, int> AssetList;
 	RankItems->GetAssetList(AssetList);
 
-	bool bRemoved = InventorySubsystem->RemoveItems(InventoryId, AssetList, 1);
+	bool bRemoved = Inventory->RemoveItems(AssetList, 1);
 	if (!bRemoved)
 	{
 		Fail(TEXT("Failed to remove material"));
 		return;
 	}
 
-	bool bSuccess = InventorySubsystem->UpdateItemById(InventoryId, TargetAssetId, TargetId,
+	bool bSuccess = Inventory->UpdateItemById(TargetAssetId, TargetId,
 		[](FInventoryItem* Item)
 		{
 			if (Item)

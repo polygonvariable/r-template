@@ -35,7 +35,7 @@ void AWeatherManagerActor::HandleWeatherChanged(UPrimaryDataAsset* Asset)
     LatentIds.Add(WeatherAsset, LatentId);
 
     const TArray<TSoftClassPtr<AWeatherEffectActor>>& Classes = WeatherAsset->EffectClasses;
-    TFuture<FLatentResultAssets<UClass>> Future = AssetManager->FetchSecondaryClasses<AWeatherEffectActor>(LatentId, Classes);
+    TFuture<FLatentLoadedAssets<UClass>> Future = AssetManager->FetchSecondaryClasses<AWeatherEffectActor>(LatentId, Classes);
     if (!Future.IsValid())
     {
 		LOG_ERROR(LogWeather, TEXT("Future is invalid"));
@@ -43,7 +43,7 @@ void AWeatherManagerActor::HandleWeatherChanged(UPrimaryDataAsset* Asset)
     }
 
     TWeakObjectPtr<AWeatherManagerActor> WeakThis(this);
-    TFunction<void(const FLatentResultAssets<UClass>&)> Callback = [WeakThis](const FLatentResultAssets<UClass>& Result)
+    TFunction<void(const FLatentLoadedAssets<UClass>&)> Callback = [WeakThis](const FLatentLoadedAssets<UClass>& Result)
         {
             AWeatherManagerActor* This = WeakThis.Get();
             if (IsValid(This) && Result.IsValid())

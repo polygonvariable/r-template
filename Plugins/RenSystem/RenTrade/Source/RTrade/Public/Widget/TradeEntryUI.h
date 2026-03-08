@@ -29,10 +29,13 @@ class UTradeEntryUI : public UAssetEntryUI
 protected:
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	TObjectPtr<UTextBlock> TradeQuota = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UTextBlock> TradeQuantity = nullptr;
 
 	// ~ UInventoryUI
-	virtual void SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
 	// ~ End of UInventoryUI
 
 };

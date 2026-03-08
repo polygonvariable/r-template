@@ -55,7 +55,7 @@ protected:
 	virtual void HandleItemSelected(const UAssetEntry* Entry);
 
 	// ~ UAssetUI
-	virtual void SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
 	// ~ End of UAssetUI
 
 	// ~ UUserWidget

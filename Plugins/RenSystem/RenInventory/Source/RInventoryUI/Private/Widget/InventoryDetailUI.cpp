@@ -8,28 +8,44 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Asset/InventoryAsset.h"
 #include "Asset/RPrimaryDataAsset.h"
 #include "Definition/Runtime/InventoryItem.h"
-#include "Library/InventoryPrimaryAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
+#include "Storage/InventoryStorage.h"
 #include "Subsystem/InventorySubsystem.h"
 #include "Widget/AscensionDetailUI.h"
 #include "Widget/InventoryEntry.h"
 
 
 
-void UInventoryDetailUI::RefreshDetails()
+void UInventoryDetailUI::InitializeDetail()
 {
-	UInventorySubsystem* Inventory = InventorySubsystem.Get();
-	if (!IsValid(Inventory))
+	UInventorySubsystem* InventorySubsystem = UInventorySubsystem::Get(GetGameInstance());
+	if (!IsValid(InventorySubsystem))
 	{
-		LOG_ERROR(LogInventory, TEXT("InventorySubsystem is invalid"));
 		return;
 	}
 
-	const FInventoryItem* Item = Inventory->GetItemById(ContainerId, ActiveAssetId, ActiveItemId);
+	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(ContainerId);
+	if (IsValid(InventoryStorage) && bAutoRefresh)
+	{
+		InventoryStorage->OnInventoryRefreshed.AddUObject(this, &UInventoryDetailUI::RefreshDetail);
+	}
+
+	Inventory = TWeakObjectPtr<UInventoryStorage>(InventoryStorage);
+}
+
+void UInventoryDetailUI::RefreshDetail()
+{
+	UInventoryStorage* InventoryStorage = Inventory.Get();
+	if (!IsValid(InventoryStorage))
+	{
+		LOG_ERROR(LogInventory, TEXT("InventoryStorage is invalid"));
+		return;
+	}
+
+	const FInventoryItem* Item = InventoryStorage->GetItemById(GetActiveAssetId(), ActiveItemId);
 	if (!Item)
 	{
 		LOG_ERROR(LogInventory, TEXT("Item is invalid"));
@@ -40,7 +56,7 @@ void UInventoryDetailUI::RefreshDetails()
 	SetCustomDetails(Item, Quantity);
 }
 
-void UInventoryDetailUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UInventoryDetailUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	if (!IsValid(Asset))
 	{
@@ -51,7 +67,7 @@ void UInventoryDetailUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPri
 	EntryIcon->SetBrushFromSoftTexture(Asset->Icon);
 }
 
-void UInventoryDetailUI::SetSecondaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UInventoryDetailUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	const UInventoryEntry* InventoryEntry = Cast<UInventoryEntry>(Entry);
 	if (!IsValid(InventoryEntry))
@@ -75,32 +91,17 @@ void UInventoryDetailUI::SetCustomDetails(const FInventoryItem* Item, int Quanti
 
 	EntryQuantity->SetText(FText::AsNumber(Quantity));
 
-	if (IsValid(AscensionDetail)) AscensionDetail->InitializeDetails(Item->Ascension);
-}
-
-void UInventoryDetailUI::NativeConstruct()
-{
-	UInventorySubsystem* Inventory = UInventorySubsystem::Get(GetGameInstance());
-	if (IsValid(Inventory))
-	{
-		if (bAutoRefresh)
-		{
-			Inventory->OnInventoryRefreshed.AddWeakLambda(this, [this](const FGuid& InventoryId) { if (ContainerId == InventoryId) RefreshDetails(); });
-		}
-		InventorySubsystem = TWeakObjectPtr<UInventorySubsystem>(Inventory);
-	}
-
-	Super::NativeConstruct();
+	if (IsValid(AscensionDetail)) AscensionDetail->InitializeDetail(Item->Ascension);
 }
 
 void UInventoryDetailUI::NativeDestruct()
 {
-	UInventorySubsystem* Inventory = InventorySubsystem.Get();
-	if (IsValid(Inventory))
+	UInventoryStorage* InventoryStorage = Inventory.Get();
+	if (IsValid(InventoryStorage))
 	{
-		Inventory->OnInventoryRefreshed.RemoveAll(this);
+		InventoryStorage->OnInventoryRefreshed.RemoveAll(this);
 	}
-	InventorySubsystem.Reset();
+	Inventory.Reset();
 
 	Super::NativeDestruct();
 }

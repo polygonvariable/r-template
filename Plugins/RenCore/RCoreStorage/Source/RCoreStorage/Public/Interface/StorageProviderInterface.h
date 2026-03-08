@@ -47,6 +47,7 @@ public:
 
 public:
 
+	static IStorageProviderInterface* Get(UWorld* World);
 	static IStorageProviderInterface* Get(UGameInstance* GameInstance);
 
 };

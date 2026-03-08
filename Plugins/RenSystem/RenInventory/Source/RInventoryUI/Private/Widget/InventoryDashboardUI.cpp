@@ -9,9 +9,18 @@
 #include "Widget/AssetCollectionUI.h"
 #include "Widget/AssetDetailUI.h"
 #include "Widget/AssetEntry.h"
-#include "Asset/InventoryAsset.h"
 
 
+
+void UInventoryDashboardUI::InitializeDetail()
+{
+	PrimaryDetail->SetContainerId(ContainerId);
+	PrimaryDetail->InitializeDetail();
+
+	PrimaryCollection->SetContainerId(ContainerId);
+	PrimaryCollection->InitializeCollection();
+	PrimaryCollection->DisplayEntries();
+}
 
 void UInventoryDashboardUI::RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetClass)
 {
@@ -29,7 +38,8 @@ void UInventoryDashboardUI::RedirectToWidget(TSubclassOf<UAssetDashboardUI> Widg
 
 	Widget->AddToViewport();
 	Widget->SetContainerId(ContainerId);
-	Widget->InitializeDetails(SelectedEntry);
+	Widget->InitializeDetail();
+	Widget->InitializeDetail(SelectedEntry);
 }
 
 void UInventoryDashboardUI::GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutAssetUI) const
@@ -37,18 +47,9 @@ void UInventoryDashboardUI::GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutA
 	OutAssetUI.Add(PrimaryDetail);
 }
 
-void UInventoryDashboardUI::NativePreConstruct()
-{
-	Super::NativePreConstruct();
-
-	PrimaryCollection->SetContainerId(ContainerId);
-	PrimaryDetail->SetContainerId(ContainerId);
-}
-
 void UInventoryDashboardUI::NativeConstruct()
 {
-	PrimaryCollection->OnEntrySelected.BindUObject(this, &UInventoryDashboardUI::InitializeDetails);
-	PrimaryCollection->DisplayEntries();
+	PrimaryCollection->OnEntrySelected.BindUObject(this, &UAssetDashboardUI::InitializeDetail);
 	
 	Super::NativeConstruct();
 }

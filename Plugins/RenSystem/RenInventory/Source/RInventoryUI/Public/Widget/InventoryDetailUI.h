@@ -13,6 +13,7 @@
 // Forward Declarations
 class UTextBlock;
 class UAscensionDetailUI;
+class UInventoryStorage;
 class UInventorySubsystem;
 class URPrimaryDataAsset;
 struct FInventoryItem;
@@ -33,7 +34,8 @@ class UInventoryDetailUI : public UAssetDetailUI
 public:
 
 	// ~ UAssetDetailUI
-	virtual void RefreshDetails() override;
+	virtual void InitializeDetail() override;
+	virtual void RefreshDetail() override;
 	// ~ End of UAssetDetailUI
 
 protected:
@@ -41,7 +43,7 @@ protected:
 	FGuid ActiveItemId;
 
 	UPROPERTY()
-	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem;
+	TWeakObjectPtr<UInventoryStorage> Inventory = nullptr;
 
 	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UTextBlock> EntryQuantity = nullptr;
@@ -53,12 +55,11 @@ protected:
 	virtual void SetCustomDetails(const FInventoryItem* Item, int Quantity);
 
 	// ~ UAssetDetailUI
-	virtual void SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
-	virtual void SetSecondaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	virtual void SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
 	// ~ End of UAssetDetailUI
 
 	// ~ End of UUserWidget
-	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 	// ~ End of UUserWidget
 

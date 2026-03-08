@@ -35,17 +35,40 @@ class RCORE_API IAssetTransactionInterface
 
 public:
 
-	virtual bool AddItem(const FGuid& SlotId, const FPrimaryAssetId& AssetId, int Quantity) = 0;
-	virtual bool AddItems(const FGuid& SlotId, const TMap<FPrimaryAssetId, int>& Items, int Multiplier) = 0;
+	virtual bool AddItem(const FPrimaryAssetId& AssetId, int Quantity) = 0;
+	virtual bool AddItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier) = 0;
 
-	virtual bool RemoveItem(const FGuid& SlotId, const FPrimaryAssetId& AssetId, int Quantity) = 0;
-	virtual bool RemoveItems(const FGuid& SlotId, const TMap<FPrimaryAssetId, int>& Items, int Multiplier) = 0;
-
-	virtual FPrimaryAssetType GetHandledAssetType() const = 0;
-	virtual FGuid GetDefaultSlotId() const = 0;
+	virtual bool RemoveItem(const FPrimaryAssetId& AssetId, int Quantity) = 0;
+	virtual bool RemoveItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier) = 0;
 
 };
 
+
+
+
+UINTERFACE(MinimalAPI)
+class UAssetInterchangeInterface : public UInterface
+{
+
+	GENERATED_BODY()
+
+};
+
+/**
+ *
+ */
+class RCORE_API IAssetInterchangeInterface
+{
+
+	GENERATED_BODY()
+
+public:
+
+	virtual IAssetTransactionInterface* GetTransactionSource(const FGuid& SourceId) const = 0;
+	virtual FPrimaryAssetType GetSupportedAssetType() const = 0;
+	virtual FGuid GetDefaultSourceId() const = 0;
+
+};
 
 
 // Module Macros

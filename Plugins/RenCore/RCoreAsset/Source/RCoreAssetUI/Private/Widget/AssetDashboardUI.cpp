@@ -21,7 +21,7 @@ void UAssetDashboardUI::GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutAsset
 
 }
 
-void UAssetDashboardUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UAssetDashboardUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	TArray<UAssetUI*> AssetUI;
 	GetAllAssetUI(AssetUI);
@@ -30,7 +30,7 @@ void UAssetDashboardUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPrim
 	{
 		if (IsValid(Catalog) && Catalog != this)
 		{
-			Catalog->InitializeDetails(Entry, Asset);
+			Catalog->InitializeDetail(Entry, Asset);
 		}
 	}
 }

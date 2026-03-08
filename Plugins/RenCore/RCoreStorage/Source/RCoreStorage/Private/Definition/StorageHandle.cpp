@@ -12,6 +12,11 @@
 
 bool FStorageHandle::IsValid() const
 {
-	return StorageClass != nullptr && StorageId.IsValid() && !Url.IsEmpty();
+	return StorageClass != nullptr && StorageId.IsValid();
+}
+
+bool FStorageHandle::IsUrlValid() const
+{
+	return !Url.IsEmpty();
 }
 

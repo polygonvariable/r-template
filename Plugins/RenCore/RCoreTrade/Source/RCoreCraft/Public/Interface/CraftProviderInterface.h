@@ -30,13 +30,14 @@ class UCraftProviderInterface : public UInterface
 /**
  *
  */
-class RCORECRAFT_API ICraftProviderInterface
+class RCORE_API ICraftProviderInterface
 {
 
 	GENERATED_BODY()
 
 public:
 
+	virtual int GetCraftingTime() const = 0;
 	virtual const UAssetCollection* GetCraftingMaterial() const = 0;
 	virtual const UAssetCollection* GetCraftingMaterial(const FInstancedStruct& Context) const = 0;
 

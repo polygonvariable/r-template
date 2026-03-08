@@ -4,22 +4,32 @@
 #include "Subsystem/ShopSubsystem.h"
 
 // Engine Headers
-#include "GameplayTagContainer.h"
+#include "InstancedStruct.h"
 
 // Project Headers
+#include "Asset/ShopAsset.h"
+#include "Definition/AssetDetailTrade.h"
+#include "Definition/AssetRuleDefinition.h"
+#include "Delegate/LatentDelegate.h"
+#include "Interface/ShopProviderInterface.h"
+#include "Interface/StorageProviderInterface.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
+#include "Management/AssetGroup.h"
+#include "Management/Collection/AssetCollectionTrade.h"
+#include "Storage/ShopStorage.h"
 #include "Subsystem/TaskSubsystem.h"
 #include "Task/PurchaseItem.h"
 
 
 
-void UShopSubsystem::PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& ShopAssetId, const FPrimaryAssetId& TargetAssetId, const FGameplayTagContainer& CostTags, FTaskCallback Callback)
+void UShopSubsystem::PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& ShopAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId, FTaskCallback Callback)
 {
 	UTaskSubsystem* TaskSubsystem = UTaskSubsystem::Get(GetGameInstance());
 	if (!IsValid(TaskSubsystem))
 	{
 		LOG_ERROR(LogShop, TEXT("Task subsystem is invalid"));
+		Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed));
 		return;
 	}
 
@@ -27,14 +37,97 @@ void UShopSubsystem::PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& Sh
 	if (!IsValid(Task))
 	{
 		LOG_ERROR(LogShop, TEXT("Failed to create task"));
+		Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed));
 		return;
 	}
 
 	Task->Callback = MoveTemp(Callback);
 	Task->ShopAssetId = ShopAssetId;
+	Task->TradeCollectionId = TradeCollectionId;
 	Task->TargetAssetId = TargetAssetId;
-	Task->CostTags = CostTags;
 	Task->StartTask();
+}
+
+
+UShopStorage* UShopSubsystem::GetShopStorage()
+{
+	IStorageProviderInterface* StorageInterface = StorageProvider.Get();
+	if (!StorageInterface)
+	{
+		return nullptr;
+	}
+	return StorageInterface->GetStorage<UShopStorage>(UShopSubsystem::GetStorageId());
+}
+
+
+void UShopSubsystem::QueryItems(const UShopAsset* Asset, const FGuid& CollectionId, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&)> Callback)
+{
+	const UAssetGroup* TradeGroup = Asset->TradeGroup;
+	if (!IsValid(TradeGroup))
+	{
+		return;
+	}
+
+	FInstancedStruct TradeContext = FInstancedStruct::Make(FAssetRuleContext(CollectionId));
+	const UAssetCollection_TradeReferenced* AssetCollection = TradeGroup->GetCollectionRule<UAssetCollection_TradeReferenced>(TradeContext);
+	if (!IsValid(AssetCollection))
+	{
+		return;
+	}
+
+	const TMap<URPrimaryDataAsset*, FAssetDetail_Trade>& AssetList = AssetCollection->GetAssetList();
+
+	for (const TPair<URPrimaryDataAsset*, FAssetDetail_Trade>& AssetKv : AssetList)
+	{
+		const URPrimaryDataAsset* ItemDataAsset = AssetKv.Key;
+		const FAssetDetail_Trade& ItemDetail = AssetKv.Value;
+
+		const UAssetCollection* MaterialCollection = GetMaterialCollection(ItemDataAsset, TradeContext);
+		if (!IsValid(MaterialCollection))
+		{
+			continue;
+		}
+
+		const FPrimaryAssetId& ItemAssetId = ItemDataAsset->GetPrimaryAssetId();
+
+		Callback(ItemAssetId, ItemDetail);
+	}
+}
+
+const UAssetCollection* UShopSubsystem::GetMaterialCollection(const URPrimaryDataAsset* Asset, const FInstancedStruct& Context) const
+{
+	const IShopProviderInterface* ShopProvider = Cast<IShopProviderInterface>(Asset);
+	if (!ShopProvider)
+	{
+		return nullptr;
+	}
+	return ShopProvider->GetPurchaseCost(Context);
+}
+
+const UAssetCollection* UShopSubsystem::GetMaterialCollection(const URPrimaryDataAsset* Asset, const FGuid& CollectionId) const
+{
+	return GetMaterialCollection(Asset, FInstancedStruct::Make(FAssetRuleContext(CollectionId)));
+}
+
+
+
+void UShopSubsystem::OnPreGameInitialized()
+{
+	IStorageProviderInterface* StorageInterface = IStorageProviderInterface::Get(GetGameInstance());
+	if (!StorageInterface)
+	{
+		LOG_ERROR(LogShop, TEXT("Storage subsystem not found"));
+		return;
+	}
+
+	FStorageHandle Handle;
+	Handle.StorageClass = UShopSubsystem::GetStorageClass();
+	Handle.StorageId = UShopSubsystem::GetStorageId();
+	Handle.Url = UShopSubsystem::GetStorageUrl();
+
+	StorageInterface->LoadStorage(MoveTemp(Handle));
+
+	StorageProvider = TWeakInterfacePtr<IStorageProviderInterface>(StorageInterface);
 }
 
 bool UShopSubsystem::ShouldCreateSubsystem(UObject* Outer) const
@@ -46,10 +139,16 @@ void UShopSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	LOG_WARNING(LogShop, TEXT("ShopSubsystem initialized"));
+
+	FLatentDelegate::OnPreGameInitialized.AddUObject(this, &UShopSubsystem::OnPreGameInitialized);
 }
 
 void UShopSubsystem::Deinitialize()
 {
+	StorageProvider.Reset();
+
+	FLatentDelegate::OnPreGameInitialized.RemoveAll(this);
+
 	LOG_WARNING(LogShop, TEXT("ShopSubsystem deinitialized"));
 	Super::Deinitialize();
 }
@@ -72,5 +171,22 @@ UShopSubsystem* UShopSubsystem::Get(UGameInstance* GameInstance)
 		return nullptr;
 	}
 	return GameInstance->GetSubsystem<UShopSubsystem>();
+}
+
+
+
+FGuid UShopSubsystem::GetStorageId()
+{
+	return FGuid(TEXT("390C55A4-BF6C-4874-9346-C422E916AD64"));
+}
+
+FString UShopSubsystem::GetStorageUrl()
+{
+	return TEXT("/api/get/shop");
+}
+
+TSubclassOf<UStorage> UShopSubsystem::GetStorageClass()
+{
+	return UShopStorage::StaticClass();
 }
 

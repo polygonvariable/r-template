@@ -7,6 +7,9 @@
 #include "Components/Button.h"
 
 // Project Headers
+#include "Asset/RPrimaryDataAsset.h"
+#include "Definition/AssetRuleDefinition.h"
+#include "Interface/CraftProviderInterface.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Management/AssetCollection.h"
@@ -25,13 +28,6 @@ void UCraftDashboardUI::HandleCraft()
 		return;
 	}
 
-	const UAssetCollection* AssetCollection = ShopEntry->CostCollection.Get();
-	if (!IsValid(AssetCollection))
-	{
-		LOG_ERROR(LogCraft, TEXT("AssetCollection is invalid"));
-		return;
-	}
-
 	UGameInstance* GameInstance = GetGameInstance();
 	UCraftSubsystem* CraftSubsystem = GameInstance->GetSubsystem<UCraftSubsystem>();
 	if (!IsValid(CraftSubsystem))
@@ -40,11 +36,10 @@ void UCraftDashboardUI::HandleCraft()
 		return;
 	}
 
-	const FPrimaryAssetId& ItemAssetId = ShopEntry->AssetId;
-	const FGameplayTagContainer& CostTags = AssetCollection->GetCollectionTags();
+	const FPrimaryAssetId& TargetAssetId = ShopEntry->AssetId;
 
 	FGuid TaskId = FGuid::NewGuid();
-	CraftSubsystem->CraftItem(TaskId, TradeAssetId, ItemAssetId, CostTags, FTaskCallback::CreateWeakLambda(this,
+	CraftSubsystem->CraftItem(TaskId, TradeAssetId, TradeCollectionId, TargetAssetId, FTaskCallback::CreateWeakLambda(this,
 		[](const FTaskResult& Result)
 		{
 			if (Result.State == ETaskState::Pending)
@@ -57,6 +52,19 @@ void UCraftDashboardUI::HandleCraft()
 			}
 		}
 	));
+}
+
+const UAssetCollection* UCraftDashboardUI::GetMaterialCollection(const URPrimaryDataAsset* Asset) const
+{
+	FInstancedStruct Context = FInstancedStruct::Make(FAssetRuleContext(TradeCollectionId));
+
+	const ICraftProviderInterface* CraftProvider = Cast<ICraftProviderInterface>(Asset);
+	if (!CraftProvider)
+	{
+		return nullptr;
+	}
+
+	return CraftProvider->GetCraftingMaterial(Context);
 }
 
 void UCraftDashboardUI::NativeConstruct()

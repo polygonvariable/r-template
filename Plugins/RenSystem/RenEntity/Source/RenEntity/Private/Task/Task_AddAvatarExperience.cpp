@@ -56,7 +56,7 @@ void UTask_AddAvatarExperience::Step_LoadAssets()
 	Assets.Add(AvatarId);
 	Assets.Add(ItemId);
 
-	TFuture<FLatentResultAssets<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAssets<URPrimaryDataAsset>(TaskId, Assets);
+	TFuture<FLatentLoadedAssets<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAssets<URPrimaryDataAsset>(TaskId, Assets);
 	if (!Future.IsValid())
 	{
 		Fail(TEXT("Failed to create Future"));
@@ -64,7 +64,7 @@ void UTask_AddAvatarExperience::Step_LoadAssets()
 	}
 
 	TWeakObjectPtr<UTask_AddAvatarExperience> WeakThis(this);
-	Future.Next([WeakThis](const FLatentResultAssets<URPrimaryDataAsset>& Result)
+	Future.Next([WeakThis](const FLatentLoadedAssets<URPrimaryDataAsset>& Result)
 		{
 			UTask_AddAvatarExperience* This = WeakThis.Get();
 			if (!IsValid(This) || !Result.IsValid())

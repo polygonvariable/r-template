@@ -4,21 +4,38 @@
 #include "Widget/ShopCollectionUI.h"
 
 // Engine Headers
-#include "InstancedStruct.h"
 
 // Project Headers
-#include "Asset/RPrimaryDataAsset.h"
-#include "Interface/ShopProviderInterface.h"
+#include "Asset/ShopAsset.h"
+#include "Subsystem/ShopSubsystem.h"
+#include "Widget/TradeEntry.h"
 
 
 
-const UAssetCollection* UShopCollectionUI::GetAssetCollection(const URPrimaryDataAsset* Asset) const
+void UShopCollectionUI::DisplayEntries()
 {
-	const IShopProviderInterface* ShopProvider = Cast<IShopProviderInterface>(Asset);
-	if (!ShopProvider)
+	UShopSubsystem* ShopSubsystem = UShopSubsystem::Get(GetGameInstance());
+	if (!IsValid(ShopSubsystem))
 	{
-		return nullptr;
+		return;
 	}
-	return ShopProvider->GetPurchaseCost();
-}
 
+	const UShopAsset* ShopAsset = Cast<const UShopAsset>(TradeAsset);
+	if (!IsValid(ShopAsset))
+	{
+		return;
+	}
+
+	ShopSubsystem->QueryItems(ShopAsset, TradeCollectionId,
+		[this](const FPrimaryAssetId& ItemAssetId, const FAssetDetail_Trade& ItemDetail) {
+
+			UTradeEntry* Entry = GetEntryFromPool<UTradeEntry>();
+			if (IsValid(Entry))
+			{
+				Entry->TradeDetail = ItemDetail;
+				AddEntry(ItemAssetId, Entry);
+			}
+
+		}
+	);
+}

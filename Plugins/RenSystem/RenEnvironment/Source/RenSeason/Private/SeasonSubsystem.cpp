@@ -106,7 +106,7 @@ void USeasonSubsystem::LoadDefaultSeasons(const TArray<FPrimaryAssetId>& AssetId
 		return;
 	}
 
-	TFuture<FLatentResultAssets<USeasonAsset>> Future = AssetManager->FetchPrimaryAssets<USeasonAsset>(AssetIds);
+	TFuture<FLatentLoadedAssets<USeasonAsset>> Future = AssetManager->FetchPrimaryAssets<USeasonAsset>(AssetIds);
 	if (Future.IsValid())
 	{
 		LOG_ERROR(LogWeather, TEXT("Failed to create Future"));
@@ -114,7 +114,7 @@ void USeasonSubsystem::LoadDefaultSeasons(const TArray<FPrimaryAssetId>& AssetId
 	}
 
 	TWeakObjectPtr<USeasonSubsystem> WeakThis(this);
-	Future.Next([WeakThis, AssetIds](const FLatentResultAssets<USeasonAsset>& Result)
+	Future.Next([WeakThis, AssetIds](const FLatentLoadedAssets<USeasonAsset>& Result)
 		{
 			USeasonSubsystem* This = WeakThis.Get();
 			if (IsValid(This) && Result.IsValid())

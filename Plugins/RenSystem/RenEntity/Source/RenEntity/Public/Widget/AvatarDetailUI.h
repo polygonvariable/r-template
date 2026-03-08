@@ -42,13 +42,12 @@ protected:
 	virtual void HandleAvatarDataChanged(const FPrimaryAssetId& AssetId);
 
 	// ~ UAssetDetailUI
-	virtual void RefreshDetails() override;
-	virtual bool IsPrimaryAssetIdValid(const FPrimaryAssetId& AssetId) const override;
-	virtual void SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
-	virtual void SetSecondaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	virtual void RefreshDetail() override;
+	virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	virtual void SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
 	// ~ End of UAssetDetailUI
 
-	virtual void SetSecondaryDetails(const FAvatarData& Entry, const URPrimaryDataAsset* Asset);
+	virtual void SetSecondaryDetail(const FAvatarData& Entry, const URPrimaryDataAsset* Asset);
 
 	// ~ UUserWidget
 	virtual void NativeConstruct() override;

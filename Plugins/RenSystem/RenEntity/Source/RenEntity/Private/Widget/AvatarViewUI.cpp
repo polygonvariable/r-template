@@ -36,14 +36,14 @@ void UAvatarViewUI::HandleEnhanceClicked()
 	}
 
 	Widget->AddToViewport();
-	Widget->InitializeDetails(Entry, Asset);
+	Widget->InitializeDetail(Entry, Asset);
 }
 
-void UAvatarViewUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UAvatarViewUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	if (IsValid(AvatarDetail))
 	{
-		AvatarDetail->InitializeDetails(Entry, Asset);
+		AvatarDetail->InitializeDetail(Entry, Asset);
 	}
 
 	ActiveEntry = TWeakObjectPtr<const UAssetEntry>(Entry);
@@ -59,7 +59,7 @@ void UAvatarViewUI::NativeConstruct()
 {
 	if (IsValid(AvatarCollection))
 	{
-		AvatarCollection->OnEntrySelected.BindUObject(this, &UAvatarViewUI::InitializeDetails);
+		AvatarCollection->OnEntrySelected.BindUObject(this, &UAvatarViewUI::InitializeDetail);
 	}
 
 	if (IsValid(EnhanceButton))

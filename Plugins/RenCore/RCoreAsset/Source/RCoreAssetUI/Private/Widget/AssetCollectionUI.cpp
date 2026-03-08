@@ -9,8 +9,14 @@
 // Project Headers
 #include "Filter/FilterGroup.h"
 #include "Widget/AssetEntry.h"
+#include "Log/LogMacro.h"
 
 
+
+void UAssetCollectionUI::InitializeCollection()
+{
+
+}
 
 void UAssetCollectionUI::SetContainerId(const FGuid& Id)
 {
@@ -50,6 +56,11 @@ void UAssetCollectionUI::ClearEntries(bool bRegenerate)
 
 void UAssetCollectionUI::RefreshEntries()
 {
+	if (bAutoSelectAfterRefresh)
+	{
+		AutoSelectCaching();
+	}
+
 	ClearEntries(true);
 	DisplayEntries();
 }
@@ -103,6 +114,22 @@ const UFilterCriterion* UAssetCollectionUI::GetFilterRoot() const
 
 
 
+void UAssetCollectionUI::AutoSelectCaching()
+{
+	UAssetEntry* Entry = GetSelectedEntry();
+	if (IsValid(Entry))
+	{
+		_SelectedAssetId = Entry->AssetId;
+	}
+}
+
+bool UAssetCollectionUI::AutoSelectCondition(UAssetEntry* Item) const
+{
+	return Item->AssetId == _SelectedAssetId;
+}
+
+
+
 void UAssetCollectionUI::AddEntry(const FPrimaryAssetId& AssetId, UAssetEntry* Entry)
 {
 	if (!IsValid(Entry) || !IsValid(EntryList))
@@ -115,9 +142,17 @@ void UAssetCollectionUI::AddEntry(const FPrimaryAssetId& AssetId, UAssetEntry* E
 	{
 		Entry->AssetSubDetail = *Detail;
 	}
-	Entry->AssetId = AssetId;
 
+	Entry->AssetId = AssetId;
 	EntryList->AddItem(Entry);
+
+	if (bAutoSelectAfterRefresh)
+	{
+		if (AutoSelectCondition(Entry))
+		{
+			EntryList->SetSelectedItem(Entry);
+		}
+	}
 }
 
 void UAssetCollectionUI::ReturnEntryToPool(UAssetEntry* Item)
@@ -141,9 +176,16 @@ UAssetEntry* UAssetCollectionUI::GetEntryFromPool(const TSubclassOf<UAssetEntry>
 
 void UAssetCollectionUI::HandleOnItemSelectionChanged(UObject* Object)
 {
+	if (_SelectedEntry.Get() == Object)
+	{
+		PRINT_WARNING(LogTemp, 2.0f, TEXT("already selected"));
+		return;
+	}
+
 	const UAssetEntry* Entry = Cast<UAssetEntry>(Object);
 	if (IsValid(Entry))
 	{
+		_SelectedEntry = TWeakObjectPtr<const UAssetEntry>(Entry);
 		OnEntrySelected.ExecuteIfBound(Entry);
 	}
 }

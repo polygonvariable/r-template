@@ -14,7 +14,7 @@
 // Module Macros
 
 // Forward Declarations
-class UInventorySubsystem;
+class UInventoryStorage;
 
 
 
@@ -30,6 +30,7 @@ class UInventoryCollectionUI : public UAssetCollectionUI
 public:
 
 	// ~ UAssetCollectionUI
+	virtual void InitializeCollection() override;
 	virtual void DisplayEntries() override;
 	// ~ End of UAssetCollectionUI
 
@@ -42,13 +43,10 @@ protected:
 	FInventoryQueryRule QueryRule;
 
 	UPROPERTY()
-	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem = nullptr;
+	TWeakObjectPtr<UInventoryStorage> Inventory = nullptr;
 
-
-	void OnInventoryRefreshed(const FGuid& InventoryId);
 
 	// ~ UUserWidget
-	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 	// ~ End of UUserWidget
 

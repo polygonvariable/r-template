@@ -31,7 +31,7 @@ class UAscensionDetailUI : public UUserWidget
 
 public:
 	
-    RCORE_API void InitializeDetails(const FAscensionData& Data);
+    RCORE_API void InitializeDetail(const FAscensionData& Data);
 
 protected:
 

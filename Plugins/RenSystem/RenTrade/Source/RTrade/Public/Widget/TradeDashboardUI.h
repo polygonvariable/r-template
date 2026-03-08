@@ -14,10 +14,12 @@
 #define RSYSTEM_API RTRADE_API
 
 // Forward Declarations
+class UAssetCollection;
 class UAssetCollectionUI;
 class UTradeCollectionUI;
 class UTradeDetailUI;
 class UAssetEntry;
+class UTradeAsset;
 class URPrimaryDataAsset;
 
 
@@ -36,6 +38,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FPrimaryAssetId TradeAssetId;
 
+	UPROPERTY(EditAnywhere)
+	FGuid TradeCollectionId;
+
 	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UTradeCollectionUI> PrimaryCollection = nullptr;
 
@@ -46,16 +51,23 @@ protected:
 	TObjectPtr<UAssetCollectionUI> SecondaryCollection = nullptr;
 
 
+	RSYSTEM_API virtual void OnTradeAssetLoaded(const UTradeAsset* Asset);
+	RSYSTEM_API virtual const UAssetCollection* GetMaterialCollection(const URPrimaryDataAsset* Asset) const;
+
 	// ~ UAssetDashboardUI
-	RSYSTEM_API virtual void SetSecondaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	RSYSTEM_API virtual void InitializeDetail() override;
+	RSYSTEM_API virtual void SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
 	RSYSTEM_API virtual void GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutAssetUI) const override;
 	// ~ End of UAssetDashboardUI
 	
 	// ~ UUserWidget
-	RSYSTEM_API virtual void NativePreConstruct() override;
 	RSYSTEM_API virtual void NativeConstruct() override;
 	RSYSTEM_API virtual void NativeDestruct() override;
 	// ~ End of UUserWidget
+
+private:
+
+	FGuid _TradeLoadId;
 
 };
 

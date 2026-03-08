@@ -3,7 +3,6 @@
 #pragma once
 
 // Engine Headers
-#include "GameplayTagContainer.h"
 
 // Project Headers
 #include "Task/TaskObject.h"
@@ -33,7 +32,7 @@ public:
 
 	FPrimaryAssetId CraftAssetId;
 	FPrimaryAssetId TargetAssetId;
-	FGameplayTagContainer MaterialTags;
+	FGuid TradeCollectionId;
 
 protected:
 
@@ -48,16 +47,17 @@ protected:
 	UPROPERTY()
 	TObjectPtr<const URPrimaryDataAsset> TargetAsset = nullptr;
 
-	// ~ UTaskObject
-	void OnStarted() override;
-	void OnStopped() override;
-	void OnCleanup() override;
-	// ~ End of UTaskObject
 
 	void Step_LoadAsset();
 	void Step_CheckTarget();
 	void Step_CheckMaterial();
 	void Step_PerformTransaction(const TMap<FPrimaryAssetId, int>& MaterialAssetList, FPrimaryAssetType MaterialAssetType);
+
+	// ~ UTaskObject
+	void OnStarted() override;
+	void OnStopped() override;
+	void OnCleanup() override;
+	// ~ End of UTaskObject
 
 };
 

@@ -5,7 +5,7 @@
 // Engine Headers
 
 // Project Headers
-#include "Definition/AssetDetail.h"
+#include "Definition/AssetDetailTrade.h"
 #include "Widget/AssetEntry.h"
 
 // Generated Headers
@@ -27,15 +27,13 @@ class UTradeEntry : public UAssetEntry
 
 public:
 
-	FAssetDetail_Unique TradeItem;
-
-	UPROPERTY()
-	TWeakObjectPtr<const UAssetCollection> CostCollection;
+	//FGuid MaterialCollectionId;
+	FAssetDetail_Trade TradeDetail;
 
 	RTRADE_API virtual void ResetData() override
 	{
-		TradeItem.Reset();
-		CostCollection.Reset();
+		//MaterialCollectionId.Invalidate();
+		TradeDetail.Reset();
 		Super::ResetData();
 	}
 

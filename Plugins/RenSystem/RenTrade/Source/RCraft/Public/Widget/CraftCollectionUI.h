@@ -28,7 +28,7 @@ class UCraftCollectionUI : public UTradeCollectionUI
 protected:
 
 	// ~ UTradeCollectionUI
-	virtual const UAssetCollection* GetAssetCollection(const URPrimaryDataAsset* Asset) const override;
+	//virtual const UAssetCollection* GetAssetCollection(const URPrimaryDataAsset* Asset) const override;
 	// ~ End of UTradeCollectionUI
 
 };

@@ -32,7 +32,7 @@ class UAssetCollection : public UObject
 
 public:
 
-	RCORE_API const FGameplayTagContainer& GetCollectionTags() const;
+	RCORE_API const FGuid& GetCollectionId() const;
 	RCORE_API const FPrimaryAssetType& GetCollectionType() const;
 
 	RCORE_API virtual bool GetRandomAsset(TPair<FPrimaryAssetId, FAssetDetail>& OutAsset) const;
@@ -44,7 +44,7 @@ public:
 protected:
 
 	UPROPERTY(EditDefaultsOnly)
-	FGameplayTagContainer Tags;
+	FGuid CollectionId;
 
 	UPROPERTY(VisibleAnywhere, Meta = (DisplayName = "Asset Type (Debug)"))
 	FPrimaryAssetType AssetType;

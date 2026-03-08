@@ -23,9 +23,9 @@ struct FAssetRuleContext
 public:
 
 	FAssetRuleContext() {}
-	FAssetRuleContext(const FGameplayTagContainer& InTags) : Tags(InTags) {}
+	FAssetRuleContext(const FGuid& InId) : Id(InId) {}
 
-	FGameplayTagContainer Tags;
+	FGuid Id;
 
 };
 

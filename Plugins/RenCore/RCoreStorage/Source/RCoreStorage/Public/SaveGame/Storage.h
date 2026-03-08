@@ -28,6 +28,9 @@ class UStorage : public USaveGame
 
 public:
 
+	RCORE_API virtual void InitializeStorage();
+	RCORE_API virtual void DeinitializeStorage();
+
 	RCORE_API virtual void NetDeserialize(TSharedPtr<FJsonObject>& JsonObject);
 	RCORE_API bool GetForceSave() const;
 

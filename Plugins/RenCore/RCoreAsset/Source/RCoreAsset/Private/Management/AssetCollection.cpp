@@ -9,9 +9,9 @@
 
 
 
-const FGameplayTagContainer& UAssetCollection::GetCollectionTags() const
+const FGuid& UAssetCollection::GetCollectionId() const
 {
-	return Tags;
+	return CollectionId;
 }
 
 const FPrimaryAssetType& UAssetCollection::GetCollectionType() const

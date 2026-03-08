@@ -10,11 +10,11 @@
 
 
 
-void UAssetEntryUI::ResetDetails()
+void UAssetEntryUI::ResetDetail()
 {
 	CancelInitialization();
 
-	SetPrimaryDetails(nullptr, nullptr);
+	SetPrimaryDetail(nullptr, nullptr);
 }
 
 void UAssetEntryUI::GetAssetSubDetail(FInstancedStruct& SubDetail) const
@@ -31,7 +31,7 @@ void UAssetEntryUI::NativeOnListItemObjectSet(UObject* ListItemObject)
 	CancelInitialization();
 
 	const UAssetEntry* Entry = Cast<UAssetEntry>(ListItemObject);
-	InitializeDetails(Entry);
+	InitializeDetail(Entry);
 
 	Execute_OnListItemObjectSet(this, ListItemObject);
 }

@@ -13,7 +13,7 @@
 
 // Forward Declarations
 class UInventoryAsset;
-class UInventorySubsystem;
+class UInventoryStorage;
 class URAssetManager;
 class URPrimaryDataAsset;
 struct FGameplayTagContainer;
@@ -50,7 +50,7 @@ protected:
 	TObjectPtr<const URPrimaryDataAsset> MaterialAsset = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<UInventorySubsystem> InventorySubsystem = nullptr;
+	TObjectPtr<UInventoryStorage> Inventory = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<URAssetManager> AssetManager = nullptr;
@@ -73,7 +73,7 @@ protected:
 
 	void Step_LoadAssets();
 	void Step_CheckItemAsset();
-	void Step_CheckMaterialAsset(const FGameplayTagContainer& ExperienceTags);
+	void Step_CheckMaterialAsset(const FGuid& MaterialCollectionId);
 	void Step_LoadBreakdownAsset(const FPrimaryAssetId& AssetId, int Quantity);
 	void Step_RemoveItem();
 	void Step_AddExperience();

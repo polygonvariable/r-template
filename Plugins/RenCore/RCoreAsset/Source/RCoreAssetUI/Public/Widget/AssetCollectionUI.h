@@ -36,6 +36,7 @@ public:
 	DECLARE_DELEGATE_OneParam(FOnEntrySelected, const UAssetEntry* /* Entry */);
 	FOnEntrySelected OnEntrySelected;
 
+	RCORE_API virtual void InitializeCollection();
 
 	RCORE_API virtual void SetContainerId(const FGuid& Id);
 	RCORE_API virtual void DisplayEntries();
@@ -87,6 +88,10 @@ protected:
 	RCORE_API const UFilterCriterion* GetFilterRoot() const;
 
 
+	RCORE_API virtual void AutoSelectCaching();
+	RCORE_API virtual bool AutoSelectCondition(UAssetEntry* Item) const;
+
+
 	RCORE_API void AddEntry(const FPrimaryAssetId& AssetId, UAssetEntry* Entry);
 	RCORE_API void ReturnEntryToPool(UAssetEntry* Item);
 	RCORE_API UAssetEntry* GetEntryFromPool(const TSubclassOf<UAssetEntry>& EntryClass);
@@ -105,6 +110,11 @@ protected:
 	RCORE_API virtual void NativeConstruct() override;
 	RCORE_API virtual void NativeDestruct() override;
 	// ~ End of UUserWidget
+
+private:
+
+	TWeakObjectPtr<const UAssetEntry> _SelectedEntry;
+	FPrimaryAssetId _SelectedAssetId;
 
 };
 

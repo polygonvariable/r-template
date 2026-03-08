@@ -26,21 +26,21 @@ const UAssetCollection* UAssetGroup::GetCollectionRule(const FInstancedStruct& C
 
 const UAssetCollection* UAssetGroup_Single::GetCollectionRule() const
 {
-	return RuleCollection;
+	return Collection;
 }
 
 const UAssetCollection* UAssetGroup_Single::GetCollectionRule(const FInstancedStruct& Context) const
 {
-	return RuleCollection;
+	return Collection;
 }
 
 
 
 const UAssetCollection* UAssetGroup_List::GetCollectionRule() const
 {
-	if (RuleCollections.Num() > 0)
+	if (Collections.Num() > 0)
 	{
-		return RuleCollections.Last();
+		return Collections.Last();
 	}
 	return nullptr;
 }
@@ -53,34 +53,34 @@ const UAssetCollection* UAssetGroup_List::GetCollectionRule(const FInstancedStru
 		return nullptr;
 	}
 
-	const FGameplayTagContainer& RuleTags = BaseContext->Tags;
-	if (RuleTags.IsEmpty())
+	const FGuid& RuleId = BaseContext->Id;
+	if (!RuleId.IsValid())
 	{
 		const FAssetRuleContext_List* ListContext = Context.GetPtr<FAssetRuleContext_List>();
 		if (ListContext)
 		{
 			int Index = ListContext->Index;
-			if (!RuleCollections.IsValidIndex(Index))
+			if (!Collections.IsValidIndex(Index))
 			{
 				return nullptr;
 			}
 
-			return RuleCollections[Index];
+			return Collections[Index];
 		}
 	}
 
-	const TObjectPtr<UAssetCollection>* RulePointer = RuleCollections.FindByPredicate(
-		[RuleTags](const UAssetCollection* Rule)
+	const TObjectPtr<UAssetCollection>* FoundCollection = Collections.FindByPredicate(
+		[RuleId](const UAssetCollection* Rule)
 		{
-			return Rule->GetCollectionTags().HasAllExact(RuleTags);
+			return Rule->GetCollectionId() == RuleId;
 		}
 	);
 
-	if (!RulePointer)
+	if (!FoundCollection)
 	{
 		return nullptr;
 	}
 
-	return RulePointer->Get();
+	return FoundCollection->Get();
 }
 

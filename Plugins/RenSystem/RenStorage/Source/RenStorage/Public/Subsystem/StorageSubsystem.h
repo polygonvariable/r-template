@@ -68,5 +68,10 @@ protected:
 	virtual void Deinitialize() override;
 	// ~ End of UGameInstanceSubsystem
 
+public:
+
+	static UStorageSubsystem* Get(UWorld* World);
+	static UStorageSubsystem* Get(UGameInstance* GameInstance);
+
 };
 

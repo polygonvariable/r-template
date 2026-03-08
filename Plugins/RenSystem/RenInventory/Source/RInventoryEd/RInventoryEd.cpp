@@ -3,6 +3,7 @@
 #include "RInventoryEd.h"
 #include "HAL/IConsoleManager.h"
 #include "Subsystem/InventorySubsystem.h"
+#include "Storage/InventoryStorage.h"
 #include "Library/InventoryPrimaryAsset.h"
 
 #define LOCTEXT_NAMESPACE "FRInventoryEdModule"
@@ -52,53 +53,60 @@ void FRInventoryEdModule::UnregisterCommand()
 	}
 }
 
-UInventorySubsystem* FRInventoryEdModule::GetInventorySubsystem(UWorld* World)
-{
-	UGameInstance* GameInstance = World->GetGameInstance();
-	if (!IsValid(GameInstance))
-	{
-		return nullptr;
-	}
-	return GameInstance->GetSubsystem<UInventorySubsystem>();
-}
-
 void FRInventoryEdModule::AddItem(const TArray<FString>& Args, UWorld* World)
 {
 	if (Args.Num() < 2 || !IsValid(World))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Invalid arguments"));
+		UE_LOG(LogTemp, Error, TEXT("Invalid arguments"));
 		return;
 	}
 
-	UInventorySubsystem* InventorySubsystem = GetInventorySubsystem(World);
-	if (IsValid(InventorySubsystem))
+	UInventorySubsystem* InventorySubsystem = UInventorySubsystem::Get(World);
+	if (!IsValid(InventorySubsystem))
 	{
-		FGuid InventoryId = UInventorySubsystem::GetStorageId();
-		FPrimaryAssetId AssetId = InventoryPrimaryAsset::GetPrimaryAssetId(FName(*Args[0]));
-		int Quantity = FCString::Atoi(*Args[1]);
-
-		InventorySubsystem->AddItem(InventoryId, AssetId, Quantity);
+		UE_LOG(LogTemp, Error, TEXT("Invalid inventory subsystem"));
+		return;
 	}
+
+	UInventoryStorage* Inventory = InventorySubsystem->GetInventory(UInventorySubsystem::GetStorageId());
+	if (!IsValid(Inventory))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Invalid inventory"));
+		return;
+	}
+
+	FPrimaryAssetId AssetId = InventoryPrimaryAsset::GetPrimaryAssetId(FName(*Args[0]));
+	int Quantity = FCString::Atoi(*Args[1]);
+
+	Inventory->AddItem(AssetId, Quantity);
 }
 
 void FRInventoryEdModule::RemoveItem(const TArray<FString>& Args, UWorld* World)
 {
-	if (Args.Num() < 3 || !IsValid(World))
+	if (Args.Num() < 2 || !IsValid(World))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Invalid arguments"));
+		UE_LOG(LogTemp, Error, TEXT("Invalid arguments"));
 		return;
 	}
 
-	//UInventoryStorageSubsystem* InventoryStorageSubsystem = GetInventoryStorageSubsystem(World);
-	//UInventorySubsystem* InventorySubsystem = GetInventorySubsystem(World);
-	//if (IsValid(InventorySubsystem))
-	//{
-	//	FName ContainerId = FName(*Args[0]);
-	//	FPrimaryAssetId AssetId = InventoryPrimaryAsset::GetPrimaryAssetId(FName(*Args[1]));
-	//	int Quantity = FCString::Atoi(*Args[2]);
+	UInventorySubsystem* InventorySubsystem = UInventorySubsystem::Get(World);
+	if (!IsValid(InventorySubsystem))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Invalid inventory subsystem"));
+		return;
+	}
 
-	//	//InventorySubsystem->RemoveItem(ContainerId, ItemGuid, Quantity);
-	//}
+	UInventoryStorage* Inventory = InventorySubsystem->GetInventory(UInventorySubsystem::GetStorageId());
+	if (!IsValid(Inventory))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Invalid inventory"));
+		return;
+	}
+
+	FPrimaryAssetId AssetId = InventoryPrimaryAsset::GetPrimaryAssetId(FName(*Args[0]));
+	int Quantity = FCString::Atoi(*Args[1]);
+
+	Inventory->RemoveItem(AssetId, Quantity);
 }
 
 #undef LOCTEXT_NAMESPACE

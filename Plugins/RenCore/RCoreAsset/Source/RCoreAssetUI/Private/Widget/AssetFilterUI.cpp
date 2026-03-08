@@ -9,7 +9,7 @@
 
 
 
-void UAssetFilterUI::SwitchDetails(bool bPrimary)
+void UAssetFilterUI::SwitchDetail(bool bPrimary)
 {
 	ESlateVisibility NewVisibility = (bPrimary) ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
 	SetVisibility(NewVisibility);

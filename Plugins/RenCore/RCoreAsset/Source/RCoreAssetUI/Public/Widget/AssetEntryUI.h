@@ -34,7 +34,7 @@ class UAssetEntryUI : public UAssetUI, public IUserObjectListEntry
 public:
 
 	// ~ UAssetUI
-	RCORE_API virtual void ResetDetails() override;
+	RCORE_API virtual void ResetDetail() override;
 	// ~ End of UAssetUI
 
 protected:

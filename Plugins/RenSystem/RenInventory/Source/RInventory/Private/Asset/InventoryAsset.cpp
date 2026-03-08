@@ -19,12 +19,12 @@ FPrimaryAssetId UInventoryAsset::GetPrimaryAssetId() const
 	return FPrimaryAssetId(UInventoryAsset::GetPrimaryAssetType(), GetFName());
 }
 
-const UAssetCollection* UInventoryAsset::GetBreakdownAssets(const FGameplayTagContainer& InTags) const
+const UAssetCollection* UInventoryAsset::GetBreakdownAssets(const FGuid& InId) const
 {
 	return nullptr;
 }
 
-const UAssetCollection* UInventoryAsset::GetRebuildAssets(const FGameplayTagContainer& InTags) const
+const UAssetCollection* UInventoryAsset::GetRebuildAssets(const FGuid& InId) const
 {
 	return nullptr;
 }

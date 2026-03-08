@@ -6,6 +6,7 @@
 #include "SaveGame/Storage.h"
 
 // Project Headers
+#include "Definition/Runtime/ShopRuntime.h"
 
 // Generated Headers
 #include "ShopStorage.generated.h"
@@ -15,37 +16,24 @@
 /**
  *
  */
-USTRUCT(BlueprintType)
-struct FShopStack
-{
-
-	GENERATED_BODY()
-
-public:
-	
-	UPROPERTY(SaveGame)
-	FGuid ItemID;
-
-	UPROPERTY(SaveGame)
-	int Quantity;
-
-};
-
-
-
-/**
- *
- */
 UCLASS()
-class UItemShopStorage : public UStorage
+class UShopStorage : public UStorage
 {
 
 	GENERATED_BODY()
 
 public:
 
+	bool GetItem(const FShopKey& ShopKey, FShopData& OutShopData);
+	bool AddItem(const FShopKey& ShopKey);
+	//int RemoveAvailableItems(FTradeKey TradeKey);
+
+	void ResetItems();
+
+protected:
+
 	UPROPERTY(SaveGame)
-	TMap<FGuid, FShopStack> ShopItems;
+	TMap<FShopKey, FShopData> ShopItems;
 
 };
 

@@ -10,6 +10,15 @@
 
 
 
+IStorageProviderInterface* IStorageProviderInterface::Get(UWorld* World)
+{
+	if (!IsValid(World))
+	{
+		return nullptr;
+	}
+	return SubsystemUtil::GetSubsystemInterface<IStorageProviderInterface>(World->GetGameInstance());
+}
+
 IStorageProviderInterface* IStorageProviderInterface::Get(UGameInstance* GameInstance)
 {
 	return SubsystemUtil::GetSubsystemInterface<IStorageProviderInterface>(GameInstance);

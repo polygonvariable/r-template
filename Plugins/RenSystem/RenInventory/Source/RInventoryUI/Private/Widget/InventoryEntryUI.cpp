@@ -14,7 +14,7 @@
 
 
 
-void UInventoryEntryUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UInventoryEntryUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	const UInventoryAsset* InventoryAsset = Cast<UInventoryAsset>(Asset);
 	const UInventoryEntry* InventoryEntry = Cast<UInventoryEntry>(Entry);

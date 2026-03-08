@@ -33,6 +33,7 @@ class UCraftableAsset : public UPurchasableAsset, public ICraftProviderInterface
 public:
 
 	// ~ ICraftProviderInterface
+	RSYSTEM_API virtual int GetCraftingTime() const override;
 	RSYSTEM_API virtual const UAssetCollection* GetCraftingMaterial() const override;
 	RSYSTEM_API virtual const UAssetCollection* GetCraftingMaterial(const FInstancedStruct& Context) const override;
 	// ~ End of ICraftProviderInterface

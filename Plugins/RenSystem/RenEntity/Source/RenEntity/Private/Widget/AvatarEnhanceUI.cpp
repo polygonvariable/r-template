@@ -30,7 +30,7 @@ void UAvatarEnhanceUI::AddExperiencePoints(const UAssetEntry* Entry)
 	}
 
 	FGuid TaskId = FGuid::NewGuid();
-	AscensionSubsystem->AddExperiencePoints(TaskId, ActiveAssetId, Entry->AssetId,
+	AscensionSubsystem->AddExperiencePoints(TaskId, GetActiveAssetId(), Entry->AssetId,
 		FTaskCallback::CreateWeakLambda(this,
 			[](const FTaskResult& Result)
 			{
@@ -61,11 +61,11 @@ void UAvatarEnhanceUI::HandleItemSelected(const UAssetEntry* Entry)
 	AddExperiencePoints(Entry);
 }
 
-void UAvatarEnhanceUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UAvatarEnhanceUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {/*
 	if (IsValid(AvatarDetail))
 	{
-		AvatarDetail->InitializeDetails(Entry, Asset);
+		AvatarDetail->InitializeDetail(Entry, Asset);
 	}
 
 	const UAvatarAsset* AvatarAsset = Cast<UAvatarAsset>(Asset);

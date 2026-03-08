@@ -10,6 +10,16 @@
 
 
 
+ void UStorage::InitializeStorage()
+{
+
+}
+
+void UStorage::DeinitializeStorage()
+{
+
+}
+
 void UStorage::NetDeserialize(TSharedPtr<FJsonObject>& JsonObject)
 {
 	

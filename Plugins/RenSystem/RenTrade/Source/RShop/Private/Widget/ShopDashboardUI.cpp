@@ -5,9 +5,11 @@
 
 // Engine Headers
 #include "Components/Button.h"
-#include "GameplayTagContainer.h"
 
 // Project Headers
+#include "Asset/RPrimaryDataAsset.h"
+#include "Definition/AssetRuleDefinition.h"
+#include "Interface/ShopProviderInterface.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Management/AssetCollection.h"
@@ -26,27 +28,17 @@ void UShopDashboardUI::HandlePurchase()
 		return;
 	}
 
-	const UAssetCollection* AssetCollection = ShopEntry->CostCollection.Get();
-	if (!IsValid(AssetCollection))
-	{
-		LOG_ERROR(LogShop, TEXT("AssetCollection is invalid"));
-		return;
-	}
-
-	UGameInstance* GameInstance = GetGameInstance();
-	UShopSubsystem* ShopSubsystem = GameInstance->GetSubsystem<UShopSubsystem>();
 	if (!IsValid(ShopSubsystem))
 	{
 		LOG_ERROR(LogShop, TEXT("ShopSubsystem is invalid"));
 		return;
 	}
 
-	const FPrimaryAssetId& ItemAssetId = ShopEntry->AssetId;
-	const FGameplayTagContainer& CostTags = AssetCollection->GetCollectionTags();
+	const FPrimaryAssetId& TargetAssetId = ShopEntry->AssetId;
 
 	FGuid TaskId = FGuid::NewGuid();
-	ShopSubsystem->PurchaseItem(TaskId, TradeAssetId, ItemAssetId, CostTags, FTaskCallback::CreateWeakLambda(this,
-		[](const FTaskResult& Result)
+	ShopSubsystem->PurchaseItem(TaskId, TradeAssetId, TradeCollectionId, TargetAssetId, FTaskCallback::CreateWeakLambda(this,
+		[this](const FTaskResult& Result)
 		{
 			if (Result.State == ETaskState::Pending)
 			{
@@ -55,21 +47,33 @@ void UShopDashboardUI::HandlePurchase()
 			else
 			{
 				UE_LOG(LogShop, Log, TEXT("Task Finished, Message: %s"), *Result.Message);
+				PrimaryCollection->RefreshEntries();
 			}
 		}
 	));
 }
 
+const UAssetCollection* UShopDashboardUI::GetMaterialCollection(const URPrimaryDataAsset* Asset) const
+{
+	if (!IsValid(ShopSubsystem))
+	{
+		return nullptr;
+	}
+	return ShopSubsystem->GetMaterialCollection(Asset, TradeCollectionId);
+}
+
 void UShopDashboardUI::NativeConstruct()
 {
-	if (IsValid(PurchaseButton)) PurchaseButton->OnClicked.AddDynamic(this, &UShopDashboardUI::HandlePurchase);
+	PurchaseButton->OnClicked.AddDynamic(this, &UShopDashboardUI::HandlePurchase);
+
+	ShopSubsystem = UShopSubsystem::Get(GetGameInstance());
 
 	Super::NativeConstruct();
 }
 
 void UShopDashboardUI::NativeDestruct()
 {
-	if (IsValid(PurchaseButton)) PurchaseButton->OnClicked.RemoveAll(this);
+	PurchaseButton->OnClicked.RemoveAll(this);
 
 	Super::NativeDestruct();
 }

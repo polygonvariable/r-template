@@ -8,12 +8,15 @@
 // Project Headers
 
 
+// ~ Storage
+DEFINE_LOG_CATEGORY(LogStorage);
+// ~ End of Storage
+
 // ~ Task Categories
 DEFINE_LOG_CATEGORY(LogTask);
-DEFINE_LOG_CATEGORY(LogStorage);
 DEFINE_LOG_CATEGORY(LogAsset);
 // ~ End of Library Task
-// 
+
 // ~ Library Categories
 DEFINE_LOG_CATEGORY(LogTimer);
 // ~ End of Library Categories

@@ -20,12 +20,7 @@
 
 
 
-bool UAvatarEntryUI::IsPrimaryAssetIdValid(const FPrimaryAssetId& AssetId) const
-{
-	return EntityPrimaryAsset::IsValid(AssetId);
-}
-
-void UAvatarEntryUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UAvatarEntryUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	const UAvatarAsset* AvatarAsset = Cast<UAvatarAsset>(Asset);
 	if (!IsValid(AvatarAsset))

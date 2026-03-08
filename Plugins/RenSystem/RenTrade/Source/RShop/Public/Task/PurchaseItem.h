@@ -3,7 +3,6 @@
 #pragma once
 
 // Engine Headers
-#include "GameplayTagContainer.h"
 
 // Project Headers
 #include "Task/TaskObject.h"
@@ -13,11 +12,8 @@
 
 // Forward Declarations
 class URAssetManager;
-class UTradeAsset;
+class UShopAsset;
 class URPrimaryDataAsset;
-class UAssetCollection;
-
-struct FAssetDetail;
 
 
 
@@ -36,17 +32,18 @@ public:
 
 	FPrimaryAssetId ShopAssetId;
 	FPrimaryAssetId TargetAssetId;
-	FGameplayTagContainer CostTags;
+	FGuid TradeCollectionId;
 
 protected:
 
+	int TargetQuota = 1;
 	int TargetQuantity = 1;
 
 	UPROPERTY()
 	TObjectPtr<URAssetManager> AssetManager = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<const UTradeAsset> ShopAsset = nullptr;
+	TObjectPtr<const UShopAsset> ShopAsset = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<const URPrimaryDataAsset> TargetAsset = nullptr;
@@ -54,8 +51,9 @@ protected:
 
 	void Step_LoadAsset();
 	void Step_CheckTarget();
-	void Step_CheckCost();
-	void Step_PerformTransaction(const TMap<FPrimaryAssetId, int>& CostAssetList, FPrimaryAssetType CostAssetType);
+	void Step_CheckMaterial();
+	void Step_CheckQuota(const TMap<FPrimaryAssetId, int>& MaterialAssetList, FPrimaryAssetType MaterialAssetType);
+	void Step_PerformTransaction(const TMap<FPrimaryAssetId, int>& MaterialAssetList, FPrimaryAssetType MaterialAssetType);
 
 	// ~ UTaskObject
 	void OnStarted() override;

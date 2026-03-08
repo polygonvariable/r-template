@@ -16,8 +16,6 @@
 // Forward Declarations
 class UAssetCollection;
 
-struct FGameplayTagContainer;
-
 
 
 UINTERFACE(MinimalAPI)
@@ -38,8 +36,8 @@ class RCORE_API IAssetStructureInterface
 
 public:
 
-	virtual const UAssetCollection* GetBreakdownAssets(const FGameplayTagContainer& InTags) const = 0;
-	virtual const UAssetCollection* GetRebuildAssets(const FGameplayTagContainer& InTags) const = 0;
+	virtual const UAssetCollection* GetBreakdownAssets(const FGuid& InId) const = 0;
+	virtual const UAssetCollection* GetRebuildAssets(const FGuid& InId) const = 0;
 
 };
 

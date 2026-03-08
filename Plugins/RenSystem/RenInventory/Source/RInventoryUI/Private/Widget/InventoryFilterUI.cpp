@@ -17,18 +17,18 @@
 
 
 
-void UInventoryFilterUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UInventoryFilterUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	if (!IsValid(AssetManager) || !IsValid(FilterRule))
 	{
-		SwitchDetails(false);
+		SwitchDetail(false);
 		return;
 	}
 
 	FAssetData AssetData;
-	if (!AssetManager->GetPrimaryAssetData(ActiveAssetId, AssetData))
+	if (!AssetManager->GetPrimaryAssetData(GetActiveAssetId(), AssetData))
 	{
-		SwitchDetails(false);
+		SwitchDetail(false);
 		return;
 	}
 
@@ -39,18 +39,18 @@ void UInventoryFilterUI::SetPrimaryDetails(const UAssetEntry* Entry, const URPri
 	InventoryPrimaryAsset::GetRarity(AssetData, ItemRarity);
 
 	FFilterContext Context;
-	Context.SetValue(AssetFilterProperty::AssetId, ActiveAssetId);
+	Context.SetValue(AssetFilterProperty::AssetId, GetActiveAssetId());
 	Context.SetValue(InventoryFilterProperty::ItemType, ItemType);
 	Context.SetValue(InventoryFilterProperty::ItemRarity, ItemRarity);
 
 	UFilterCriterion* FilterRoot = FilterRule->CriterionRoot;
 	if (IsValid(FilterRoot))
 	{
-		SwitchDetails(FilterRoot->Evaluate(Context));
+		SwitchDetail(FilterRoot->Evaluate(Context));
 	}
 	else
 	{
-		SwitchDetails(false);
+		SwitchDetail(false);
 	}
 }
 

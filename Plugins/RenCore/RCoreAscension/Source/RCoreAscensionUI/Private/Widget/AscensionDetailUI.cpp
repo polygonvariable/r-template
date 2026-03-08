@@ -11,7 +11,7 @@
 
 
 
-void UAscensionDetailUI::InitializeDetails(const FAscensionData& Data)
+void UAscensionDetailUI::InitializeDetail(const FAscensionData& Data)
 {
 	if (RankText) RankText->SetText(FText::FromString(FString::FromInt(Data.Rank)));
 	if (LevelText) LevelText->SetText(FText::FromString(FString::FromInt(Data.Level)));

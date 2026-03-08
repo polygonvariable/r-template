@@ -12,6 +12,9 @@
 
 // Forward Declarations
 class UButton;
+class UAssetCollection;
+class URPrimaryDataAsset;
+class UShopSubsystem;
 
 
 
@@ -26,11 +29,19 @@ class UShopDashboardUI : public UTradeDashboardUI
 
 protected:
 
-	UPROPERTY(Meta = (BindWidgetOptional))
+	UPROPERTY()
+	TObjectPtr<UShopSubsystem> ShopSubsystem;
+
+	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UButton> PurchaseButton = nullptr;
+
 
 	UFUNCTION()
 	void HandlePurchase();
+
+	// ~ UTradeDashboardUI
+	virtual const UAssetCollection* GetMaterialCollection(const URPrimaryDataAsset* Asset) const override;
+	// ~ End of UTradeDashboardUI
 
 	// ~ UUserWidget
 	virtual void NativeConstruct() override;

@@ -14,7 +14,7 @@
 class UAssetEntry;
 class UAssetCollectionUI;
 class UAssetDetailUI;
-class UInventorySubsystem;
+class UInventoryStorage;
 class UInventoryAscensionSubsystem;
 class URPrimaryDataAsset;
 class IAscensionProviderInterface;
@@ -36,8 +36,8 @@ class UInventoryAscensionDashboardUI : public UAssetDashboardUI
 public:
 
 	// ~ UAssetDashboardUI
-	virtual void SetContainerId(const FGuid& Id) override;
-	virtual void RefreshDetails() override;
+	virtual void InitializeDetail() override;
+	virtual void RefreshDetail() override;
 	// ~ End of UAssetDashboardUI
 
 protected:
@@ -52,7 +52,7 @@ protected:
 	TObjectPtr<UInventoryAscensionSubsystem> AscensionSubsystem = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<UInventorySubsystem> InventorySubsystem = nullptr;
+	TWeakObjectPtr<UInventoryStorage> Inventory = nullptr;
 
 	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UAssetCollectionUI> PrimaryCollection = nullptr;
@@ -86,10 +86,10 @@ protected:
 	UFUNCTION()
 	void HandleRankUp();
 
-	void HandleOnItemUpdated(const FGuid& InventoryId);
+	void HandleOnItemUpdated();
 
 	// ~ UAssetDashboardUI
-	virtual void SetSecondaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	virtual void SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
 	virtual void GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutAssetUI) const;
 	// ~ End of UAssetDashboardUI
 

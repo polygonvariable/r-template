@@ -12,7 +12,14 @@
 #include "ShopSubsystem.generated.h"
 
 // Forward Declarations
-struct FGameplayTagContainer;
+class UAssetCollection;
+class UStorage;
+class IStorageProviderInterface;
+class UShopStorage;
+class UShopAsset;
+class URPrimaryDataAsset;
+struct FAssetDetail_Trade;
+struct FInstancedStruct;
 
 
 
@@ -27,9 +34,20 @@ class UShopSubsystem : public UGameInstanceSubsystem
 
 public:
 
-	void PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& ShopAssetId, const FPrimaryAssetId& TargetAssetId, const FGameplayTagContainer& CostTags, FTaskCallback Callback);
+	void PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& ShopAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId, FTaskCallback Callback);
+
+	UShopStorage* GetShopStorage();
+
+	void QueryItems(const UShopAsset* Asset, const FGuid& CollectionId, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&)> Callback);
+
+	const UAssetCollection* GetMaterialCollection(const URPrimaryDataAsset* Asset, const FInstancedStruct& Context) const;
+	const UAssetCollection* GetMaterialCollection(const URPrimaryDataAsset* Asset, const FGuid& CollectionId) const;
 
 protected:
+
+	TWeakInterfacePtr<IStorageProviderInterface> StorageProvider;
+
+	void OnPreGameInitialized();
 
 	// ~ UGameInstanceSubsystem
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
@@ -41,6 +59,11 @@ public:
 
 	static UShopSubsystem* Get(UWorld* World);
 	static UShopSubsystem* Get(UGameInstance* GameInstance);
+
+
+	static FGuid GetStorageId();
+	static FString GetStorageUrl();
+	static TSubclassOf<UStorage> GetStorageClass();
 
 };
 

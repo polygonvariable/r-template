@@ -41,7 +41,7 @@ protected:
 	TObjectPtr<UNamedSlot> Content = nullptr;
 
 	// ~ UAssetUI
-	RCORE_API virtual void SwitchDetails(bool bPrimary) override;
+	RCORE_API virtual void SwitchDetail(bool bPrimary) override;
 	// ~ End of UAssetUI
 
 };

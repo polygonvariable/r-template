@@ -15,6 +15,7 @@
 #include "Library/AscensionLibrary.h"
 #include "Management/Collection/AssetCollectionSimple.h"
 #include "Manager/RAssetManager.inl"
+#include "Storage/InventoryStorage.h"
 #include "Subsystem/InventorySubsystem.h"
 
 
@@ -23,12 +24,22 @@
 void UGrantItemExperience::OnStarted()
 {
 	AssetManager = Cast<URAssetManager>(UAssetManager::GetIfInitialized());
-	InventorySubsystem = UInventorySubsystem::Get(GetWorld());
+
+	UInventorySubsystem* InventorySubsystem = UInventorySubsystem::Get(GetWorld());
 	if (!IsValid(AssetManager) || !IsValid(InventorySubsystem))
 	{
 		Fail(TEXT("AssetManager, InventorySubsystem is invalid"));
 		return;
 	}
+
+	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(UInventorySubsystem::GetStorageId());
+	if (!IsValid(InventoryStorage))
+	{
+		Fail(TEXT("InventoryStorage is invalid"));
+		return;
+	}
+
+	Inventory = InventoryStorage;
 
 	Step_LoadAssets();
 }
@@ -52,7 +63,7 @@ void UGrantItemExperience::OnCleanup()
 	TargetAsset = nullptr;
 	MaterialAsset = nullptr;
 	AssetManager = nullptr;
-	InventorySubsystem = nullptr;
+	Inventory = nullptr;
 }
 
 void UGrantItemExperience::Step_LoadAssets()
@@ -67,7 +78,7 @@ void UGrantItemExperience::Step_LoadAssets()
 	Assets.Add(TargetAssetId);
 	Assets.Add(MaterialAssetId);
 
-	TFuture<FLatentResultAssets<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAssets<URPrimaryDataAsset>(TaskId, Assets);
+	TFuture<FLatentLoadedAssets<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAssets<URPrimaryDataAsset>(TaskId, Assets);
 	if (!Future.IsValid())
 	{
 		Fail(TEXT("Failed to create Future"));
@@ -75,7 +86,7 @@ void UGrantItemExperience::Step_LoadAssets()
 	}
 
 	TWeakObjectPtr<UGrantItemExperience> WeakThis(this);
-	Future.Next([WeakThis](const FLatentResultAssets<URPrimaryDataAsset>& Result)
+	Future.Next([WeakThis](const FLatentLoadedAssets<URPrimaryDataAsset>& Result)
 		{
 			UGrantItemExperience* This = WeakThis.Get();
 			if (!IsValid(This) || !Result.IsValid())
@@ -95,7 +106,7 @@ void UGrantItemExperience::Step_LoadAssets()
 
 void UGrantItemExperience::Step_CheckItemAsset()
 {
-	const FInventoryItem* Item = InventorySubsystem->GetItemById(InventoryId, TargetAssetId, TargetId);
+	const FInventoryItem* Item = Inventory->GetItemById(TargetAssetId, TargetId);
 	if (!Item)
 	{
 		Fail(TEXT("Item not found, TargetAsset is invalid"));
@@ -123,7 +134,7 @@ void UGrantItemExperience::Step_CheckItemAsset()
 		return;
 	}
 
-	const FGameplayTagContainer& ExperienceTags = ExperienceItems->GetCollectionTags();
+	const FGuid& MaterialCollectionId = ExperienceItems->GetCollectionId();
 
 	FAssetDetail MaterialDetail;
 	if (!ExperienceItems->GetAssetDetail(MaterialAssetId, MaterialDetail))
@@ -134,14 +145,14 @@ void UGrantItemExperience::Step_CheckItemAsset()
 
 	MaterialQuantity = MaterialDetail.Quantity;
 	
-	Step_CheckMaterialAsset(ExperienceTags);
+	Step_CheckMaterialAsset(MaterialCollectionId);
 }
 
-void UGrantItemExperience::Step_CheckMaterialAsset(const FGameplayTagContainer& ExperienceTags)
+void UGrantItemExperience::Step_CheckMaterialAsset(const FGuid& MaterialCollectionId)
 {
-	if (!IsValid(MaterialAsset) || !IsValid(InventorySubsystem))
+	if (!IsValid(MaterialAsset) || !IsValid(Inventory))
 	{
-		Fail(TEXT("MaterialAsset, InventorySubsystem is invalid"));
+		Fail(TEXT("MaterialAsset, Inventory is invalid"));
 		return;
 	}
 
@@ -154,7 +165,7 @@ void UGrantItemExperience::Step_CheckMaterialAsset(const FGameplayTagContainer& 
 
 	// Possible items that material can break into
 	// in this case the Material item will break into Exp item
-	const UAssetCollection* BreakdownAssets = MaterialStructure->GetBreakdownAssets(ExperienceTags);
+	const UAssetCollection* BreakdownAssets = MaterialStructure->GetBreakdownAssets(MaterialCollectionId);
 	if (!IsValid(BreakdownAssets))
 	{
 		Fail(TEXT("Invalid BreakdownAssets"));
@@ -177,7 +188,7 @@ void UGrantItemExperience::Step_CheckMaterialAsset(const FGameplayTagContainer& 
 
 void UGrantItemExperience::Step_LoadBreakdownAsset(const FPrimaryAssetId& AssetId, int Quantity)
 {
-	TFuture<FLatentResultAsset<UExperiencePointAsset>> Future = AssetManager->FetchPrimaryAsset<UExperiencePointAsset>(TaskId, AssetId);
+	TFuture<FLatentLoadedAsset<UExperiencePointAsset>> Future = AssetManager->FetchPrimaryAsset<UExperiencePointAsset>(TaskId, AssetId);
 	if (!Future.IsValid())
 	{
 		Fail(TEXT("Failed to create Future"));
@@ -185,7 +196,7 @@ void UGrantItemExperience::Step_LoadBreakdownAsset(const FPrimaryAssetId& AssetI
 	}
 
 	TWeakObjectPtr<UGrantItemExperience> WeakThis(this);
-	Future.Next([WeakThis, Quantity](const FLatentResultAsset<UExperiencePointAsset>& Result)
+	Future.Next([WeakThis, Quantity](const FLatentLoadedAsset<UExperiencePointAsset>& Result)
 		{
 			UGrantItemExperience* This = WeakThis.Get();
 			if (!IsValid(This) || !Result.IsValid())
@@ -204,7 +215,7 @@ void UGrantItemExperience::Step_LoadBreakdownAsset(const FPrimaryAssetId& AssetI
 
 void UGrantItemExperience::Step_RemoveItem()
 {
-	bool bRemoved = InventorySubsystem->RemoveItemById(InventoryId, MaterialAssetId, MaterialId, MaterialQuantity);
+	bool bRemoved = Inventory->RemoveItemById(MaterialAssetId, MaterialId, MaterialQuantity);
 	if (!bRemoved)
 	{
 		Fail(TEXT("Failed to remove material"));
@@ -217,7 +228,7 @@ void UGrantItemExperience::Step_RemoveItem()
 // UE_DISABLE_OPTIMIZATION
 void UGrantItemExperience::Step_AddExperience()
 {
-	const FInventoryItem* Item = InventorySubsystem->GetItemById(InventoryId, TargetAssetId, TargetId);
+	const FInventoryItem* Item = Inventory->GetItemById(TargetAssetId, TargetId);
 	if (!Item)
 	{
 		Fail(TEXT("Item not found"));
@@ -236,7 +247,7 @@ void UGrantItemExperience::Step_AddExperience()
 		return;
 	}
 
-	bool bSuccess = InventorySubsystem->UpdateItemById(InventoryId, TargetAssetId, TargetId, [NewExperience, NewLevel](FInventoryItem* Item)
+	bool bSuccess = Inventory->UpdateItemById(TargetAssetId, TargetId, [NewExperience, NewLevel](FInventoryItem* Item)
 		{
 			if (Item)
 			{

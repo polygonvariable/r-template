@@ -13,7 +13,7 @@
 
 
 
-void UCraftSubsystem::CraftItem(const FGuid& TaskId, const FPrimaryAssetId& CraftAssetId, const FPrimaryAssetId& TargetAssetId, const FGameplayTagContainer& MaterialTags, FTaskCallback Callback)
+void UCraftSubsystem::CraftItem(const FGuid& TaskId, const FPrimaryAssetId& CraftAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId, FTaskCallback Callback)
 {
 	UTaskSubsystem* TaskSubsystem = UTaskSubsystem::Get(GetGameInstance());
 	if (!IsValid(TaskSubsystem))
@@ -32,7 +32,7 @@ void UCraftSubsystem::CraftItem(const FGuid& TaskId, const FPrimaryAssetId& Craf
 	Task->Callback = MoveTemp(Callback);
 	Task->CraftAssetId = CraftAssetId;
 	Task->TargetAssetId = TargetAssetId;
-	Task->MaterialTags = MaterialTags;
+	Task->TradeCollectionId = TradeCollectionId;
 	Task->StartTask();
 }
 

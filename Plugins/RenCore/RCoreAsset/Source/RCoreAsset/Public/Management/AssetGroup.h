@@ -70,7 +70,7 @@ public:
 protected:
 
 	UPROPERTY(EditDefaultsOnly, Instanced)
-	TObjectPtr<UAssetCollection> RuleCollection = nullptr;
+	TObjectPtr<UAssetCollection> Collection = nullptr;
 
 };
 
@@ -96,7 +96,7 @@ public:
 protected:
 
 	UPROPERTY(EditDefaultsOnly, Instanced)
-	TArray<TObjectPtr<UAssetCollection>> RuleCollections;
+	TArray<TObjectPtr<UAssetCollection>> Collections;
 
 };
 

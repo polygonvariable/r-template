@@ -12,7 +12,6 @@
 #include "CraftSubsystem.generated.h"
 
 // Forward Declarations
-struct FGameplayTagContainer;
 
 
 
@@ -27,7 +26,7 @@ class UCraftSubsystem : public UGameInstanceSubsystem
 
 public:
 
-	void CraftItem(const FGuid& TaskId, const FPrimaryAssetId& CraftAssetId, const FPrimaryAssetId& TargetAssetId, const FGameplayTagContainer& MaterialTags, FTaskCallback Callback);
+	void CraftItem(const FGuid& TaskId, const FPrimaryAssetId& CraftAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId, FTaskCallback Callback);
 
 protected:
 

@@ -11,6 +11,11 @@
 
 
 
+int UCraftableAsset::GetCraftingTime() const
+{
+	return 0;
+}
+
 const UAssetCollection* UCraftableAsset::GetCraftingMaterial() const
 {
 	if (!IsValid(CraftingItems))

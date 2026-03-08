@@ -33,14 +33,17 @@ public:
 
 	RCORE_API virtual void SetContainerId(const FGuid& Id);
 
-	RCORE_API virtual void InitializeDetails(const UAssetEntry* Entry);
-	RCORE_API virtual void InitializeDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset);
+	UFUNCTION(BlueprintCallable)
+	RCORE_API virtual void InitializeDetail();
+
+	RCORE_API virtual void InitializeDetail(const UAssetEntry* Entry);
+	RCORE_API virtual void InitializeDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset);
 
 	UFUNCTION(BlueprintCallable)
-	RCORE_API virtual void RefreshDetails();
+	RCORE_API virtual void RefreshDetail();
 
 	UFUNCTION(BlueprintCallable)
-	RCORE_API virtual void ResetDetails();
+	RCORE_API virtual void ResetDetail();
 
 	UFUNCTION(BlueprintCallable)
 	RCORE_API virtual void CloseWidget();
@@ -51,27 +54,27 @@ protected:
 	FGuid ContainerId;
 
 	UPROPERTY()
-	FGuid LatentId;
-
-	UPROPERTY()
-	FPrimaryAssetId ActiveAssetId;
-
-	UPROPERTY()
 	TObjectPtr<URAssetManager> AssetManager;
 
 
-	RCORE_API virtual bool IsPrimaryAssetIdValid(const FPrimaryAssetId& AssetId) const;
+	RCORE_API virtual const FPrimaryAssetId& GetActiveAssetId() const;
 
-	RCORE_API virtual void SetPrimaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset);
-	RCORE_API virtual void SetSecondaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset);
+	RCORE_API virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset);
+	RCORE_API virtual void SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset);
 
 	RCORE_API virtual void CancelInitialization();
-	RCORE_API virtual void SwitchDetails(bool bPrimary);
+	RCORE_API virtual void SwitchDetail(bool bPrimary);
 
 	// ~ UUserWidget
 	RCORE_API virtual void NativeConstruct() override;
 	RCORE_API virtual void NativeDestruct() override;
 	// ~ End of UUserWidget
+
+private:
+
+	TWeakObjectPtr<const URPrimaryDataAsset> _ActiveAsset;
+	FPrimaryAssetId _ActiveAssetId;
+	FGuid _ActiveLoadId;
 
 };
 

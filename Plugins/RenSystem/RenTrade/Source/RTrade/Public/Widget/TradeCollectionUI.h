@@ -32,35 +32,16 @@ class UTradeCollectionUI : public UAssetCollectionUI
 
 public:
 
-	void SetTradeAssetId(FPrimaryAssetId AssetId);
-
-	// ~ UAssetCollectionUI
-	RSYSTEM_API virtual void DisplayEntries() override;
-	// ~ End of UAssetCollectionUI
+	void SetTradeAsset(const UTradeAsset* Asset);
+	void SetTradeCollectionId(FGuid CollectionId);
 
 protected:
 
 	UPROPERTY()
-	URAssetManager* AssetManager = nullptr;
+	TObjectPtr<const UTradeAsset> TradeAsset = nullptr;
 
-	FGuid TradeLoadId;
-
-	UPROPERTY(EditAnywhere)
-	FPrimaryAssetId TradeAssetId;
-
-	UPROPERTY(EditAnywhere)
-	bool bAutoRefresh = false;
-
-	virtual const UAssetCollection* GetAssetCollection(const URPrimaryDataAsset* Asset) const;
-
-	void StartAssetLoad();
-	void CancelAssetLoad();
-	void OnAssetLoaded(UTradeAsset* Asset);
-
-	// ~ UUserWidget
-	RSYSTEM_API virtual void NativeConstruct() override;
-	RSYSTEM_API virtual void NativeDestruct() override;
-	// ~ End of UUserWidget
+	UPROPERTY()
+	FGuid TradeCollectionId;
 
 };
 

@@ -25,10 +25,10 @@ class UShopCollectionUI : public UTradeCollectionUI
 
 	GENERATED_BODY()
 
-protected:
+public:
 
 	// ~ UTradeCollectionUI
-	virtual const UAssetCollection* GetAssetCollection(const URPrimaryDataAsset* Asset) const override;
+	virtual void DisplayEntries() override;
 	// ~ End of UTradeCollectionUI
 
 };

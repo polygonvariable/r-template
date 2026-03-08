@@ -32,67 +32,67 @@ public:
 
 	RCORE_API void CancelFetch(const FGuid& LatentId);
 
-	RCORE_API TFuture<FLatentResultAsset<UClass>> FetchSecondaryClass(const FSoftClassPath& Path, UClass* Type);
-	RCORE_API TFuture<FLatentResultAssets<UClass>> FetchSecondaryClasses(const TArray<FSoftClassPath>& Paths, UClass* Type);
-	RCORE_API TFuture<FLatentResultAsset<UClass>> FetchSecondaryClass(const FGuid& LatentId, const FSoftClassPath& Path, UClass* Type);
-	RCORE_API TFuture<FLatentResultAssets<UClass>> FetchSecondaryClasses(const FGuid& LatentId, const TArray<FSoftClassPath>& Paths, UClass* Type);
+	RCORE_API TFuture<FLatentLoadedAsset<UClass>> FetchSecondaryClass(const FSoftClassPath& Path, UClass* Type);
+	RCORE_API TFuture<FLatentLoadedAssets<UClass>> FetchSecondaryClasses(const TArray<FSoftClassPath>& Paths, UClass* Type);
+	RCORE_API TFuture<FLatentLoadedAsset<UClass>> FetchSecondaryClass(const FGuid& LatentId, const FSoftClassPath& Path, UClass* Type);
+	RCORE_API TFuture<FLatentLoadedAssets<UClass>> FetchSecondaryClasses(const FGuid& LatentId, const TArray<FSoftClassPath>& Paths, UClass* Type);
 
-	RCORE_API TFuture<FLatentResultAsset<UClass>> FetchSecondaryClass(const FSoftObjectPath& Path, UClass* Type);
-	RCORE_API TFuture<FLatentResultAssets<UClass>> FetchSecondaryClasses(const TArray<FSoftObjectPath>& Paths, UClass* Type);
-	RCORE_API TFuture<FLatentResultAsset<UClass>> FetchSecondaryClass(const FGuid& LatentId, const FSoftObjectPath& Path, UClass* Type);
-	RCORE_API TFuture<FLatentResultAssets<UClass>> FetchSecondaryClasses(const FGuid& LatentId, const TArray<FSoftObjectPath>& Paths, UClass* Type);
-
-
-	template<typename T>
-	TFuture<FLatentResultAsset<T>> FetchPrimaryAsset(const FPrimaryAssetId& AssetId);
-
-	template<typename T>
-	TFuture<FLatentResultAssets<T>> FetchPrimaryAssets(const TArray<FPrimaryAssetId>& AssetIds);
-
-	template<typename T>
-	TFuture<FLatentResultAsset<T>> FetchPrimaryAsset(const FGuid& LatentId, const FPrimaryAssetId& AssetId);
-
-	template<typename T>
-	TFuture<FLatentResultAssets<T>> FetchPrimaryAssets(const FGuid& LatentId, const TArray<FPrimaryAssetId>& AssetIds);
+	RCORE_API TFuture<FLatentLoadedAsset<UClass>> FetchSecondaryClass(const FSoftObjectPath& Path, UClass* Type);
+	RCORE_API TFuture<FLatentLoadedAssets<UClass>> FetchSecondaryClasses(const TArray<FSoftObjectPath>& Paths, UClass* Type);
+	RCORE_API TFuture<FLatentLoadedAsset<UClass>> FetchSecondaryClass(const FGuid& LatentId, const FSoftObjectPath& Path, UClass* Type);
+	RCORE_API TFuture<FLatentLoadedAssets<UClass>> FetchSecondaryClasses(const FGuid& LatentId, const TArray<FSoftObjectPath>& Paths, UClass* Type);
 
 
 	template<typename T>
-	TFuture<FLatentResultAsset<T>> FetchSecondaryAsset(const FSoftObjectPath& Path);
+	TFuture<FLatentLoadedAsset<T>> FetchPrimaryAsset(const FPrimaryAssetId& AssetId);
 
 	template<typename T>
-	TFuture<FLatentResultAssets<T>> FetchSecondaryAssets(const TArray<FSoftObjectPath>& Paths);
+	TFuture<FLatentLoadedAssets<T>> FetchPrimaryAssets(const TArray<FPrimaryAssetId>& AssetIds);
 
 	template<typename T>
-	TFuture<FLatentResultAsset<T>> FetchSecondaryAsset(const FGuid& LatentId, const FSoftObjectPath& Path);
+	TFuture<FLatentLoadedAsset<T>> FetchPrimaryAsset(const FGuid& LatentId, const FPrimaryAssetId& AssetId);
 
 	template<typename T>
-	TFuture<FLatentResultAssets<T>> FetchSecondaryAssets(const FGuid& LatentId, const TArray<FSoftObjectPath>& Paths);
+	TFuture<FLatentLoadedAssets<T>> FetchPrimaryAssets(const FGuid& LatentId, const TArray<FPrimaryAssetId>& AssetIds);
+
+
+	template<typename T>
+	TFuture<FLatentLoadedAsset<T>> FetchSecondaryAsset(const FSoftObjectPath& Path);
+
+	template<typename T>
+	TFuture<FLatentLoadedAssets<T>> FetchSecondaryAssets(const TArray<FSoftObjectPath>& Paths);
+
+	template<typename T>
+	TFuture<FLatentLoadedAsset<T>> FetchSecondaryAsset(const FGuid& LatentId, const FSoftObjectPath& Path);
+
+	template<typename T>
+	TFuture<FLatentLoadedAssets<T>> FetchSecondaryAssets(const FGuid& LatentId, const TArray<FSoftObjectPath>& Paths);
 	
 
 	template<typename T>
-	TFuture<FLatentResultAsset<UClass>> FetchSecondaryClass(const FSoftClassPath& Path);
+	TFuture<FLatentLoadedAsset<UClass>> FetchSecondaryClass(const FSoftClassPath& Path);
 
 	template<typename T>
-	TFuture<FLatentResultAssets<UClass>> FetchSecondaryClasses(const TArray<FSoftClassPath>& Paths);
+	TFuture<FLatentLoadedAssets<UClass>> FetchSecondaryClasses(const TArray<FSoftClassPath>& Paths);
 
 	template<typename T>
-	TFuture<FLatentResultAsset<UClass>> FetchSecondaryClass(const FGuid& LatentId, const FSoftClassPath& Path);
+	TFuture<FLatentLoadedAsset<UClass>> FetchSecondaryClass(const FGuid& LatentId, const FSoftClassPath& Path);
 
 	template<typename T>
-	TFuture<FLatentResultAssets<UClass>> FetchSecondaryClasses(const FGuid& LatentId, const TArray<FSoftClassPath>& Paths);
+	TFuture<FLatentLoadedAssets<UClass>> FetchSecondaryClasses(const FGuid& LatentId, const TArray<FSoftClassPath>& Paths);
 
 
 	template<typename T>
-	TFuture<FLatentResultAsset<UClass>> FetchSecondaryClass(const TSoftClassPtr<T>& Path);
+	TFuture<FLatentLoadedAsset<UClass>> FetchSecondaryClass(const TSoftClassPtr<T>& Path);
 
 	template<typename T>
-	TFuture<FLatentResultAssets<UClass>> FetchSecondaryClasses(const TArray<TSoftClassPtr<T>>& Paths);
+	TFuture<FLatentLoadedAssets<UClass>> FetchSecondaryClasses(const TArray<TSoftClassPtr<T>>& Paths);
 
 	template<typename T>
-	TFuture<FLatentResultAsset<UClass>> FetchSecondaryClass(const FGuid& LatentId, const TSoftClassPtr<T>& Path);
+	TFuture<FLatentLoadedAsset<UClass>> FetchSecondaryClass(const FGuid& LatentId, const TSoftClassPtr<T>& Path);
 
 	template<typename T>
-	TFuture<FLatentResultAssets<UClass>> FetchSecondaryClasses(const FGuid& LatentId, const TArray<TSoftClassPtr<T>>& Paths);
+	TFuture<FLatentLoadedAssets<UClass>> FetchSecondaryClasses(const FGuid& LatentId, const TArray<TSoftClassPtr<T>>& Paths);
 
 protected:
 

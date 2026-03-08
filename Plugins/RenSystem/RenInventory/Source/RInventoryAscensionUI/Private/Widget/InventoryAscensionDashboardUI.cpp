@@ -9,6 +9,7 @@
 
 // Project Headers
 #include "Asset/RPrimaryDataAsset.h"
+#include "Definition/AssetDetail.h"
 #include "Definition/AssetFilterProperty.h"
 #include "Definition/Runtime/InventoryItem.h"
 #include "Filter/FilterLeafCriterion.h"
@@ -16,7 +17,8 @@
 #include "Library/AscensionLibrary.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Management/Collection/AssetCollectionSimple.h"
+#include "Management/AssetCollection.h"
+#include "Storage/InventoryStorage.h"
 #include "Subsystem/InventoryAscensionSubsystem.h"
 #include "Subsystem/InventorySubsystem.h"
 #include "Widget/AssetCollectionUI.h"
@@ -26,22 +28,41 @@
 
 
 
-void UInventoryAscensionDashboardUI::SetContainerId(const FGuid& Id)
+void UInventoryAscensionDashboardUI::InitializeDetail()
 {
-	Super::SetContainerId(Id);
+	PrimaryDetail->SetContainerId(ContainerId);
+	PrimaryDetail->InitializeDetail();
 
-	PrimaryCollection->SetContainerId(Id);
-	PrimaryDetail->SetContainerId(Id);
-	SecondaryCollection->SetContainerId(Id);
-}
+	PrimaryCollection->SetContainerId(ContainerId);
+	PrimaryCollection->InitializeCollection();
 
-void UInventoryAscensionDashboardUI::RefreshDetails()
-{
+	SecondaryCollection->SetContainerId(ContainerId);
+	SecondaryCollection->InitializeCollection();
+
+	UInventorySubsystem* InventorySubsystem = UInventorySubsystem::Get(GetGameInstance());
 	if (!IsValid(InventorySubsystem))
 	{
 		return;
 	}
-	const FInventoryItem* Item = InventorySubsystem->GetItemById(ContainerId, ActiveAssetId, ActiveItemId);
+
+	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(ContainerId);
+	if (bAutoRefresh)
+	{
+		InventoryStorage->OnInventoryRefreshed.AddUObject(this, &UInventoryAscensionDashboardUI::HandleOnItemUpdated);
+	}
+
+	Inventory = TWeakObjectPtr<UInventoryStorage>(InventoryStorage);
+}
+
+void UInventoryAscensionDashboardUI::RefreshDetail()
+{
+	UInventoryStorage* InventoryStorage = Inventory.Get();
+	if (!IsValid(InventoryStorage))
+	{
+		return;
+	}
+
+	const FInventoryItem* Item = InventoryStorage->GetItemById(GetActiveAssetId(), ActiveItemId);
 	ToggleAscension(Item);
 }
 
@@ -58,6 +79,8 @@ void UInventoryAscensionDashboardUI::DisableControls()
 	LevelUpButton->SetIsEnabled(false);
 	RankUpButton->SetIsEnabled(false);
 }
+
+
 
 void UInventoryAscensionDashboardUI::ToggleAscension(const FInventoryItem* Item)
 {
@@ -107,7 +130,7 @@ void UInventoryAscensionDashboardUI::ToggleRankUp(const FInventoryItem* Item)
 		const UAssetCollection* ItemCollection = ActiveItemAscension->GetRankItems(AscensionData);
 		if (IsValid(ItemCollection))
 		{
-			TMap<FPrimaryAssetId, int> AssetList;
+			TMap<FPrimaryAssetId, FAssetDetail> AssetList;
 			ItemCollection->GetAssetList(AssetList);
 
 			for (const TPair<FPrimaryAssetId, FAssetDetail>& AssetKv : AssetList)
@@ -124,17 +147,18 @@ void UInventoryAscensionDashboardUI::ToggleRankUp(const FInventoryItem* Item)
 }
 
 
+
 void UInventoryAscensionDashboardUI::HandleTaskCallback(const FTaskResult& Result)
 {
 	if (Result.State == ETaskState::Pending)
 	{
 		DisableControls();
-		UE_LOG(LogInventoryInstance, Log, TEXT("Task Started"));
+		LOG_WARNING(LogInventoryAscension, TEXT("Task Started"));
 	}
 	else
 	{
 		EnableControls();
-		UE_LOG(LogInventoryInstance, Log, TEXT("Task Finished, Message: %s"), *Result.Message);
+		LOG_WARNING(LogInventoryAscension, TEXT("Task Finished, Message: %s"), *Result.Message);
 	}
 }
 
@@ -145,14 +169,14 @@ void UInventoryAscensionDashboardUI::HandleLevelUp()
 	const UInventoryEntry* InventoryEntry = PrimaryCollection->GetSelectedEntry<UInventoryEntry>();
 	if (!IsValid(AscensionSubsystem) || !IsValid(InventoryEntry))
 	{
-		LOG_ERROR(LogInventoryInstance, TEXT("AscensionSubsystem, InventoryEntry is not valid"));
+		LOG_ERROR(LogInventoryAscension, TEXT("AscensionSubsystem, InventoryEntry is not valid"));
 		return;
 	}
 
 	const FInventoryItem* Item = InventoryEntry->Item;
 	if (!Item)
 	{
-		LOG_ERROR(LogInventoryInstance, TEXT("Item is not valid"));
+		LOG_ERROR(LogInventoryAscension, TEXT("Item is not valid"));
 		return;
 	}
 
@@ -160,32 +184,29 @@ void UInventoryAscensionDashboardUI::HandleLevelUp()
 	FPrimaryAssetId MaterialAssetId = InventoryEntry->AssetId;
 	
 	FGuid TaskId = FGuid::NewGuid();
-	AscensionSubsystem->AddExperiencePoints(TaskId, ContainerId, ActiveAssetId, ActiveItemId, MaterialAssetId, MaterialId, FTaskCallback::CreateUObject(this, &UInventoryAscensionDashboardUI::HandleTaskCallback));
+	AscensionSubsystem->AddExperiencePoints(TaskId, ContainerId, GetActiveAssetId(), ActiveItemId, MaterialAssetId, MaterialId, FTaskCallback::CreateUObject(this, &UInventoryAscensionDashboardUI::HandleTaskCallback));
 }
 
 void UInventoryAscensionDashboardUI::HandleRankUp()
 {
 	if (!IsValid(AscensionSubsystem))
 	{
-		LOG_ERROR(LogInventoryInstance, TEXT("AscensionSubsystem is not valid"));
+		LOG_ERROR(LogInventoryAscension, TEXT("AscensionSubsystem is not valid"));
 		return;
 	}
 
 	FGuid TaskId = FGuid::NewGuid();
-	AscensionSubsystem->AddRankPoints(TaskId, ContainerId, ActiveAssetId, ActiveItemId, FTaskCallback::CreateUObject(this, &UInventoryAscensionDashboardUI::HandleTaskCallback));
+	AscensionSubsystem->AddRankPoints(TaskId, ContainerId, GetActiveAssetId(), ActiveItemId, FTaskCallback::CreateUObject(this, &UInventoryAscensionDashboardUI::HandleTaskCallback));
 }
 
-void UInventoryAscensionDashboardUI::HandleOnItemUpdated(const FGuid& InventoryId)
+void UInventoryAscensionDashboardUI::HandleOnItemUpdated()
 {
-	if (ContainerId == InventoryId)
-	{
-		RefreshDetails();
-	}
+	RefreshDetail();
 }
 
 
 
-void UInventoryAscensionDashboardUI::SetSecondaryDetails(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UInventoryAscensionDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	const UInventoryEntry* InventoryEntry = Cast<UInventoryEntry>(Entry);
 	const IAscensionProviderInterface* AscensionProvider = Cast<IAscensionProviderInterface>(Asset);
@@ -237,14 +258,6 @@ void UInventoryAscensionDashboardUI::NativeConstruct()
 	LevelUpButton->OnClicked.AddDynamic(this, &UInventoryAscensionDashboardUI::HandleLevelUp);
 
 	AscensionSubsystem = UInventoryAscensionSubsystem::Get(GetGameInstance());
-	InventorySubsystem = UInventorySubsystem::Get(GetGameInstance());
-	if (IsValid(InventorySubsystem))
-	{
-		if (bAutoRefresh)
-		{
-			InventorySubsystem->OnInventoryRefreshed.AddUObject(this, &UInventoryAscensionDashboardUI::HandleOnItemUpdated);
-		}
-	}
 
 	Super::NativeConstruct();
 }
@@ -254,12 +267,14 @@ void UInventoryAscensionDashboardUI::NativeDestruct()
 	RankUpButton->OnClicked.RemoveAll(this);
 	LevelUpButton->OnClicked.RemoveAll(this);
 
-	if (IsValid(InventorySubsystem))
+	UInventoryStorage* InventoryStorage = Inventory.Get();
+	if (IsValid(InventoryStorage))
 	{
-		InventorySubsystem->OnInventoryRefreshed.RemoveAll(this);
+		InventoryStorage->OnInventoryRefreshed.RemoveAll(this);
 	}
+	Inventory.Reset();
+
 	AscensionSubsystem = nullptr;
-	InventorySubsystem = nullptr;
 	ActiveItemAscension = nullptr;
 
 	Super::NativeDestruct();
