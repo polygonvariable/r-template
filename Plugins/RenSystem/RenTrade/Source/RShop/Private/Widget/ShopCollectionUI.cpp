@@ -39,3 +39,4 @@ void UShopCollectionUI::DisplayEntries()
 		}
 	);
 }
+

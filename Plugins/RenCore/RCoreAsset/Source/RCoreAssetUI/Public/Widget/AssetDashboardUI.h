@@ -15,7 +15,6 @@
 
 // Forward Declarations
 class UButton;
-class URPrimaryDataAsset;
 
 
 
@@ -40,10 +39,6 @@ protected:
 	UFUNCTION(BlueprintNativeEvent)
 	RCORE_API void GetAllAssetUI(TArray<UAssetUI*>& OutAssetUI) const;
 	RCORE_API virtual void GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutAssetUI) const;
-
-	// ~ UAssetUI
-	RCORE_API virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
-	// ~ End of UAssetUI
 
 	// ~ UUserWidget
 	RCORE_API virtual void NativeConstruct() override;

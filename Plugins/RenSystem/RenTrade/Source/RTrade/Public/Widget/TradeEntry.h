@@ -5,14 +5,16 @@
 // Engine Headers
 
 // Project Headers
-#include "Definition/AssetDetailTrade.h"
+#include "Definition/AssetDetail_Trade.h"
 #include "Widget/AssetEntry.h"
 
 // Generated Headers
 #include "TradeEntry.generated.h"
 
+// Module Macros
+#define RSYSTEM_API RTRADE_API
+
 // Forward Declarations
-class UAssetCollection;
 
 
 
@@ -27,15 +29,20 @@ class UTradeEntry : public UAssetEntry
 
 public:
 
-	//FGuid MaterialCollectionId;
 	FAssetDetail_Trade TradeDetail;
 
-	RTRADE_API virtual void ResetData() override
+	// ~ UAssetEntry
+	RSYSTEM_API virtual void ResetData() override
 	{
-		//MaterialCollectionId.Invalidate();
 		TradeDetail.Reset();
 		Super::ResetData();
 	}
+	// ~ End of UAssetEntry
 
 };
+
+
+
+// Module Macros
+#undef RSYSTEM_API
 

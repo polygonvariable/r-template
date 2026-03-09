@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "Management/Collection/AssetCollectionTrade.h"
+#include "Management/Collection/AssetCollection_Trade.h"
 
 // Engine Headers
 #include "UObject/ObjectSaveContext.h"
@@ -13,12 +13,12 @@
 
 
 
-const TMap<URPrimaryDataAsset*, FAssetDetail_Trade>& UAssetCollection_TradeReferenced::GetAssetList() const
+const TMap<URPrimaryDataAsset*, FAssetDetail_Trade>& UAssetCollection_Trade::GetAssetList() const
 {
 	return AssetList;
 }
 
-bool UAssetCollection_TradeReferenced::GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail_Trade& OutDetail) const
+bool UAssetCollection_Trade::GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail_Trade& OutDetail) const
 {
 	for (const TPair<URPrimaryDataAsset*, FAssetDetail_Trade>& Kv : AssetList)
 	{
@@ -37,7 +37,7 @@ bool UAssetCollection_TradeReferenced::GetAssetDetail(const FPrimaryAssetId& Ass
 	return false;
 }
 
-bool UAssetCollection_TradeReferenced::GetRandomAsset(TPair<FPrimaryAssetId, FAssetDetail>& OutAsset) const
+bool UAssetCollection_Trade::GetRandomAsset(TPair<FPrimaryAssetId, FAssetDetail>& OutAsset) const
 {
 	for (const TPair<URPrimaryDataAsset*, FAssetDetail_Trade>& Kv : AssetList)
 	{
@@ -56,7 +56,7 @@ bool UAssetCollection_TradeReferenced::GetRandomAsset(TPair<FPrimaryAssetId, FAs
 	return false;
 }
 
-bool UAssetCollection_TradeReferenced::GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail& OutDetail) const
+bool UAssetCollection_Trade::GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail& OutDetail) const
 {
 	for (const TPair<URPrimaryDataAsset*, FAssetDetail_Trade>& Kv : AssetList)
 	{
@@ -75,7 +75,7 @@ bool UAssetCollection_TradeReferenced::GetAssetDetail(const FPrimaryAssetId& Ass
 	return false;
 }
 
-void UAssetCollection_TradeReferenced::GetAssetList(TMap<FPrimaryAssetId, FAssetDetail>& OutAssets) const
+void UAssetCollection_Trade::GetAssetList(TMap<FPrimaryAssetId, FAssetDetail>& OutAssets) const
 {
 	for (const TPair<URPrimaryDataAsset*, FAssetDetail_Trade>& Kv : AssetList)
 	{
@@ -90,7 +90,7 @@ void UAssetCollection_TradeReferenced::GetAssetList(TMap<FPrimaryAssetId, FAsset
 	}
 }
 
-void UAssetCollection_TradeReferenced::GetAssetList(TMap<FPrimaryAssetId, int>& OutAssets) const
+void UAssetCollection_Trade::GetAssetList(TMap<FPrimaryAssetId, int>& OutAssets) const
 {
 	for (const TPair<URPrimaryDataAsset*, FAssetDetail_Trade>& Kv : AssetList)
 	{
@@ -105,7 +105,7 @@ void UAssetCollection_TradeReferenced::GetAssetList(TMap<FPrimaryAssetId, int>& 
 	}
 }
 
-void UAssetCollection_TradeReferenced::GetAssetIds(TArray<FPrimaryAssetId>& OutAssets) const
+void UAssetCollection_Trade::GetAssetIds(TArray<FPrimaryAssetId>& OutAssets) const
 {
 	for (const TPair<URPrimaryDataAsset*, FAssetDetail_Trade>& Kv : AssetList)
 	{
@@ -120,10 +120,9 @@ void UAssetCollection_TradeReferenced::GetAssetIds(TArray<FPrimaryAssetId>& OutA
 	}
 }
 
-void UAssetCollection_TradeReferenced::PreSave(FObjectPreSaveContext ObjectSaveContext)
+void UAssetCollection_Trade::PreSave(FObjectPreSaveContext ObjectSaveContext)
 {
 	Super::PreSave(ObjectSaveContext);
-
 
 #if WITH_EDITOR
 
@@ -133,14 +132,14 @@ void UAssetCollection_TradeReferenced::PreSave(FObjectPreSaveContext ObjectSaveC
 	for (const FAssetDetail_TradeEd& Item : AssetListEd)
 	{
 		TSoftObjectPtr<URPrimaryDataAsset> Asset = Item.DataAsset;
-		URPrimaryDataAsset* AssetPtr = Asset.LoadSynchronous();
-		if (!IsValid(AssetPtr))
+		URPrimaryDataAsset* DataAsset = Asset.LoadSynchronous();
+		if (!IsValid(DataAsset))
 		{
 			LOG_ERROR(LogAsset, TEXT("Failed to load asset"));
 			continue;
 		}
 
-		FPrimaryAssetId AssetId = AssetPtr->GetPrimaryAssetId();
+		FPrimaryAssetId AssetId = DataAsset->GetPrimaryAssetId();
 		if (AssetType.IsValid() && AssetType != AssetId.PrimaryAssetType)
 		{
 			LOG_ERROR(LogAsset, TEXT("Non-matching asset types found in collection"));
@@ -148,7 +147,7 @@ void UAssetCollection_TradeReferenced::PreSave(FObjectPreSaveContext ObjectSaveC
 		}
 
 		AssetType = AssetId.PrimaryAssetType;
-		AssetList.Add(AssetPtr, Item);
+		AssetList.Add(DataAsset, Item);
 	}
 
 #endif

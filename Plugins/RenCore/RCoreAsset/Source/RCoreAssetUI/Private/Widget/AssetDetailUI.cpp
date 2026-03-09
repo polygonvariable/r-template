@@ -4,6 +4,17 @@
 #include "Widget/AssetDetailUI.h"
 
 // Engine Headers
+#include "Components/WidgetSwitcher.h"
 
 // Project Headers
+
+
+
+void UAssetDetailUI::SwitchDetail(bool bPrimary)
+{
+	if (IsValid(DetailSwitch))
+	{
+		DetailSwitch->SetActiveWidgetIndex(bPrimary ? 1 : 0);
+	}
+}
 

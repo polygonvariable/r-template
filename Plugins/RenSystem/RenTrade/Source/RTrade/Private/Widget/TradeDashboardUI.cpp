@@ -22,10 +22,32 @@
 
 
 
-const UAssetCollection* UTradeDashboardUI::GetMaterialCollection(const URPrimaryDataAsset* Asset) const
+void UTradeDashboardUI::ResetDetail()
+{
+	PrimaryDetail->ResetDetail();
+	SecondaryCollection->ClearEntries(true);
+}
+
+
+const UAssetCollection* UTradeDashboardUI::GetTradeMaterialCollection(const URPrimaryDataAsset* Asset) const
 {
 	return nullptr;
 }
+
+void UTradeDashboardUI::InitializeTradeDetails(const UTradeAsset* Asset)
+{
+	PrimaryCollection->TradeAsset = Asset;
+	PrimaryCollection->TradeCollectionId = TradeCollectionId;
+	PrimaryCollection->InitializeCollection();
+	PrimaryCollection->DisplayEntries();
+
+	PrimaryDetail->TradeCollectionId = TradeCollectionId;
+	PrimaryDetail->TradeAssetId = TradeAssetId;
+	PrimaryDetail->InitializeDetail();
+
+	SecondaryCollection->InitializeCollection();
+}
+
 
 void UTradeDashboardUI::InitializeDetail()
 {
@@ -52,23 +74,16 @@ void UTradeDashboardUI::InitializeDetail()
 			UTradeDashboardUI* This = WeakThis.Get();
 			if (IsValid(This) && Result.IsValid())
 			{
-				This->OnTradeAssetLoaded(Result.Get());
+				This->InitializeTradeDetails(Result.Get());
 			}
 		}
 	);
 }
 
-void UTradeDashboardUI::OnTradeAssetLoaded(const UTradeAsset* Asset)
+void UTradeDashboardUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
-	PrimaryCollection->SetTradeAsset(Asset);
-	PrimaryCollection->SetTradeCollectionId(TradeCollectionId);
-	PrimaryCollection->InitializeCollection();
-	PrimaryCollection->DisplayEntries();
-
-	SecondaryCollection->InitializeCollection();
+	PrimaryDetail->InitializeDetail(Entry, Asset);
 }
-
-
 
 void UTradeDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
@@ -78,7 +93,7 @@ void UTradeDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPri
 		return;
 	}
 
-	const UAssetCollection* MaterialCollection = GetMaterialCollection(Asset);
+	const UAssetCollection* MaterialCollection = GetTradeMaterialCollection(Asset);
 	if (!IsValid(MaterialCollection))
 	{
 		return;
@@ -106,14 +121,11 @@ void UTradeDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPri
 	SecondaryCollection->RefreshEntries();
 }
 
-void UTradeDashboardUI::GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutAssetUI) const
-{
-	OutAssetUI.Add(PrimaryDetail);
-}
 
 void UTradeDashboardUI::NativeConstruct()
 {
-	PrimaryCollection->OnEntrySelected.BindUObject(this, &UAssetDashboardUI::InitializeDetail);
+	PrimaryCollection->OnSelectionChanged.BindUObject(this, &UAssetDashboardUI::InitializeDetail);
+	PrimaryCollection->OnSelectionCleared.BindUObject(this, &UAssetDashboardUI::ResetDetail);
 
 	Super::NativeConstruct();
 }
@@ -125,7 +137,8 @@ void UTradeDashboardUI::NativeDestruct()
 		AssetManager->CancelFetch(_TradeLoadId);
 	}
 
-	PrimaryCollection->OnEntrySelected.Unbind();
+	PrimaryCollection->OnSelectionChanged.Unbind();
+	PrimaryCollection->OnSelectionCleared.Unbind();
 
 	Super::NativeDestruct();
 }

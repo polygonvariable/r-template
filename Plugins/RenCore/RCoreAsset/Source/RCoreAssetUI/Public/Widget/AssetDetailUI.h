@@ -10,9 +10,13 @@
 // Generated Headers
 #include "AssetDetailUI.generated.h"
 
+// Module Macros
+#define RCORE_API RCOREASSETUI_API
+
 // Forward Declarations
 class UImage;
 class UTextBlock;
+class UWidgetSwitcher;
 
 
 
@@ -39,5 +43,18 @@ protected:
 	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UTextBlock> EntryDescription = nullptr;
 
+	UPROPERTY(Meta = (BindWidgetOptional))
+	TObjectPtr<UWidgetSwitcher> DetailSwitch = nullptr;
+
+
+	// ~ UAssetUI
+	RCORE_API virtual void SwitchDetail(bool bPrimary);
+	// ~ End of UAssetUI
+
 };
+
+
+
+// Module Macros
+#undef RCORE_API
 

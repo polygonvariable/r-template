@@ -11,9 +11,9 @@
 #include "CraftDashboardUI.generated.h"
 
 // Forward Declarations
-class UButton;
 class UAssetCollection;
 class URPrimaryDataAsset;
+class UCraftSubsystem;
 
 
 
@@ -21,27 +21,50 @@ class URPrimaryDataAsset;
  *
  */
 UCLASS(Abstract, Blueprintable)
-class UCraftDashboardUI : public UTradeDashboardUI
+class UCraftBuildDashboardUI : public UTradeDashboardUI
 {
 
 	GENERATED_BODY()
 
 protected:
 
-	UPROPERTY(Meta = (BindWidgetOptional))
+	UPROPERTY()
+	TObjectPtr<UCraftSubsystem> CraftSubsystem;
+
+	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UButton> CraftButton = nullptr;
 
+
 	UFUNCTION()
-	void HandleCraft();
+	virtual void HandleCraft();
 
 	// ~ UTradeDashboardUI
-	virtual const UAssetCollection* GetMaterialCollection(const URPrimaryDataAsset* Asset) const override;
+	virtual const UAssetCollection* GetTradeMaterialCollection(const URPrimaryDataAsset* Asset) const override;
 	// ~ End of UTradeDashboardUI
 
 	// ~ UUserWidget
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 	// ~ End of UUserWidget
+
+};
+
+
+
+/**
+ *
+ */
+UCLASS(Abstract, Blueprintable)
+class UCraftClaimDashboardUI : public UCraftBuildDashboardUI
+{
+
+	GENERATED_BODY()
+
+protected:
+
+	// ~ UCraftDashboardUI
+	virtual void HandleCraft() override;
+	// ~ End of UCraftDashboardUI
 
 };
 

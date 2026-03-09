@@ -59,7 +59,7 @@ void UAvatarViewUI::NativeConstruct()
 {
 	if (IsValid(AvatarCollection))
 	{
-		AvatarCollection->OnEntrySelected.BindUObject(this, &UAvatarViewUI::InitializeDetail);
+		AvatarCollection->OnSelectionChanged.BindUObject(this, &UAvatarViewUI::InitializeDetail);
 	}
 
 	if (IsValid(EnhanceButton))
@@ -79,7 +79,7 @@ void UAvatarViewUI::NativeDestruct()
 {
 	if (IsValid(AvatarCollection))
 	{
-		AvatarCollection->OnEntrySelected.Unbind();
+		AvatarCollection->OnSelectionChanged.Unbind();
 	}
 
 	if (IsValid(EnhanceButton))

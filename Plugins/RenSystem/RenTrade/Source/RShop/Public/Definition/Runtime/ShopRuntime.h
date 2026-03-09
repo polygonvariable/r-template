@@ -75,14 +75,11 @@ public:
 	FShopData() {}
 
 	UPROPERTY(SaveGame)
-	int Quota;
-
-	UPROPERTY(SaveGame)
-	FDateTime BatchTime;
+	int PurchaseCount;
 
 	void Sanitize()
 	{
-		Quota = FMath::Max(0, Quota);
+		PurchaseCount = FMath::Max(0, PurchaseCount);
 	}
 
 };

@@ -11,7 +11,7 @@
 #include "Definition/Runtime/InventoryItem.h"
 #include "Interface/AscensionProviderInterface.h"
 #include "Library/AscensionLibrary.h"
-#include "Management/Collection/AssetCollectionSimple.h"
+#include "Management/Collection/AssetCollection_Simple.h"
 #include "Manager/RAssetManager.inl"
 #include "Storage/InventoryStorage.h"
 #include "Subsystem/InventorySubsystem.h"
@@ -150,6 +150,6 @@ void UGrantItemRank::Step_CheckTarget()
 		return;
 	}
 
-	Succeed();
+	Success();
 }
 

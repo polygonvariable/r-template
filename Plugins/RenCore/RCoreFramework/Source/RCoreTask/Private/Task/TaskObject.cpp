@@ -6,17 +6,22 @@
 // Engine Headers
 
 // Project Headers
-
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
 
 
 void UTaskObject::StartTask()
 {
+	LOG_WARNING(LogTask, TEXT("Task started"));
+
 	Callback.ExecuteIfBound(FTaskResult(ETaskState::Pending));
 	OnStarted();
 }
 
 void UTaskObject::StopTask()
 {
+	LOG_WARNING(LogTask, TEXT("Task stopped"));
+
 	OnStopped();
 	Callback.ExecuteIfBound(FTaskResult(ETaskState::Cancelled));
 	OnFinished.ExecuteIfBound(TaskId);
@@ -25,11 +30,8 @@ void UTaskObject::StopTask()
 
 void UTaskObject::Success()
 {
-	Succeed();
-}
+	LOG_INFO(LogTask, TEXT("Task completed"));
 
-void UTaskObject::Succeed()
-{
 	Callback.ExecuteIfBound(FTaskResult(ETaskState::Completed));
 	OnFinished.ExecuteIfBound(TaskId);
 	Cleanup();
@@ -37,6 +39,8 @@ void UTaskObject::Succeed()
 
 void UTaskObject::Fail(const FString& Reason)
 {
+	LOG_ERROR(LogTask, TEXT("%s"), *Reason);
+
 	Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed, Reason));
 	OnFinished.ExecuteIfBound(TaskId);
 	Cleanup();

@@ -8,7 +8,7 @@
 
 // Project Headers
 #include "Asset/ShopAsset.h"
-#include "Definition/AssetDetailTrade.h"
+#include "Definition/AssetDetail_Trade.h"
 #include "Definition/AssetRuleDefinition.h"
 #include "Delegate/LatentDelegate.h"
 #include "Interface/ShopProviderInterface.h"
@@ -16,7 +16,7 @@
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Management/AssetGroup.h"
-#include "Management/Collection/AssetCollectionTrade.h"
+#include "Management/Collection/AssetCollection_Trade.h"
 #include "Storage/ShopStorage.h"
 #include "Subsystem/TaskSubsystem.h"
 #include "Task/PurchaseItem.h"
@@ -62,6 +62,12 @@ UShopStorage* UShopSubsystem::GetShopStorage()
 
 void UShopSubsystem::QueryItems(const UShopAsset* Asset, const FGuid& CollectionId, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&)> Callback)
 {
+	UShopStorage* ShopStorage = GetShopStorage();
+	if (!IsValid(Asset) || !IsValid(ShopStorage))
+	{
+		return;
+	}
+
 	const UAssetGroup* TradeGroup = Asset->TradeGroup;
 	if (!IsValid(TradeGroup))
 	{
@@ -69,18 +75,19 @@ void UShopSubsystem::QueryItems(const UShopAsset* Asset, const FGuid& Collection
 	}
 
 	FInstancedStruct TradeContext = FInstancedStruct::Make(FAssetRuleContext(CollectionId));
-	const UAssetCollection_TradeReferenced* AssetCollection = TradeGroup->GetCollectionRule<UAssetCollection_TradeReferenced>(TradeContext);
+	const UAssetCollection_Trade* AssetCollection = TradeGroup->GetCollectionRule<UAssetCollection_Trade>(TradeContext);
 	if (!IsValid(AssetCollection))
 	{
 		return;
 	}
 
+	FPrimaryAssetId ShopAssetId = Asset->GetPrimaryAssetId();
 	const TMap<URPrimaryDataAsset*, FAssetDetail_Trade>& AssetList = AssetCollection->GetAssetList();
 
 	for (const TPair<URPrimaryDataAsset*, FAssetDetail_Trade>& AssetKv : AssetList)
 	{
 		const URPrimaryDataAsset* ItemDataAsset = AssetKv.Key;
-		const FAssetDetail_Trade& ItemDetail = AssetKv.Value;
+		FAssetDetail_Trade ItemDetail = AssetKv.Value;
 
 		const UAssetCollection* MaterialCollection = GetMaterialCollection(ItemDataAsset, TradeContext);
 		if (!IsValid(MaterialCollection))
@@ -89,6 +96,13 @@ void UShopSubsystem::QueryItems(const UShopAsset* Asset, const FGuid& Collection
 		}
 
 		const FPrimaryAssetId& ItemAssetId = ItemDataAsset->GetPrimaryAssetId();
+
+		FShopKey ShopKey(ShopAssetId, CollectionId, ItemAssetId);
+		FShopData ShopData;
+		if (ShopStorage->GetItem(ShopKey, ShopData))
+		{
+			ItemDetail.Quota = FMath::Max(0, ItemDetail.Quota - ShopData.PurchaseCount);
+		}
 
 		Callback(ItemAssetId, ItemDetail);
 	}

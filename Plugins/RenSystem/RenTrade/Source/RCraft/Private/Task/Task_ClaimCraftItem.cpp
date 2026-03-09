@@ -1,0 +1,172 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+// Parent Header
+#include "Task/Task_ClaimCraftItem.h"
+
+// Engine Headers
+#include "InstancedStruct.h"
+
+// Project Headers
+#include "Asset/RPrimaryDataAsset.h"
+#include "Asset/TradeAsset.h"
+#include "Definition/AssetDetail.h"
+#include "Definition/AssetRuleDefinition.h"
+#include "Definition/Runtime/TradeKey.h"
+#include "Interface/AssetTransactionInterface.h"
+#include "Library/AssetUtil.h"
+#include "Management/AssetGroup.h"
+#include "Management/Collection/AssetCollection_Trade.h"
+#include "Manager/RAssetManager.inl"
+#include "Storage/CraftStorage.h"
+#include "Subsystem/CraftSubsystem.h"
+
+
+
+
+void UTask_ClaimCraftItem::OnStarted()
+{
+	AssetManager = Cast<URAssetManager>(UAssetManager::GetIfInitialized());
+	Step_LoadAsset();
+}
+
+void UTask_ClaimCraftItem::OnStopped()
+{
+	AssetManager->CancelFetch(TaskId);
+}
+
+void UTask_ClaimCraftItem::OnCleanup()
+{
+	AssetManager = nullptr;
+	TradeAsset = nullptr;
+
+	CraftAssetId = FPrimaryAssetId();
+	TargetAssetId = FPrimaryAssetId();
+
+	TargetQuantity = 0;
+	ClaimQuantity = 0;
+}
+
+void UTask_ClaimCraftItem::Step_LoadAsset()
+{
+	if (!IsValid(AssetManager))
+	{
+		Fail(TEXT("AssetManager is invalid"));
+		return;
+	}
+
+	TFuture<FLatentLoadedAsset<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAsset<URPrimaryDataAsset>(TaskId, CraftAssetId);
+	if (!Future.IsValid())
+	{
+		Fail(TEXT("Failed to create Future"));
+		return;
+	}
+
+	TWeakObjectPtr<UTask_ClaimCraftItem> WeakThis(this);
+	Future.Next([WeakThis](const FLatentLoadedAsset<URPrimaryDataAsset>& Result)
+		{
+			UTask_ClaimCraftItem* This = WeakThis.Get();
+			if (!IsValid(This) || !Result.IsValid())
+			{
+				This->Fail(TEXT("Failed to fetch assets"));
+				return;
+			}
+
+			This->TradeAsset = Cast<UTradeAsset>(Result.Get());
+			This->Step_CheckTarget();
+		}
+	);
+}
+
+void UTask_ClaimCraftItem::Step_CheckTarget()
+{
+	if (!IsValid(TradeAsset))
+	{
+		Fail(TEXT("TradeAsset is invalid"));
+		return;
+	}
+
+	const UAssetGroup* TradeGroup = TradeAsset->TradeGroup;
+	if (!IsValid(TradeGroup))
+	{
+		Fail(TEXT("Shop items is invalid"));
+		return;
+	}
+
+	FInstancedStruct TradeContext = FInstancedStruct::Make(FAssetRuleContext(TradeCollectionId));
+	const UAssetCollection_Trade* TradeCollection = TradeGroup->GetCollectionRule<UAssetCollection_Trade>(TradeContext);
+	if (!IsValid(TradeCollection))
+	{
+		Fail(TEXT("Item collection is invalid"));
+		return;
+	}
+
+	FAssetDetail_Trade TargetDetail;
+	if (!TradeCollection->GetAssetDetail(TargetAssetId, TargetDetail))
+	{
+		Fail(TEXT("Item asset not found"));
+		return;
+	}
+
+	TargetQuantity = TargetDetail.Quantity;
+
+	Step_CheckClaimable();
+}
+
+void UTask_ClaimCraftItem::Step_CheckClaimable()
+{
+	UWorld* World = GetWorld();
+	UGameInstance* GameInstance = World->GetGameInstance();
+
+	UCraftSubsystem* CraftSubsystem = UCraftSubsystem::Get(GameInstance);
+	if (!IsValid(CraftSubsystem))
+	{
+		Fail(TEXT("Failed to get CraftSubsystem"));
+		return;
+	}
+
+	UCraftStorage* CraftStorage = CraftSubsystem->GetCraftStorage();
+	if (!IsValid(CraftStorage))
+	{
+		Fail(TEXT("Failed to get CraftStorage"));
+		return;
+	}
+
+	ClaimQuantity = CraftStorage->ClaimCraftedItems(FTradeKey(CraftAssetId, TradeCollectionId, TargetAssetId));
+	if (ClaimQuantity <= 0)
+	{
+		Fail(TEXT("No item to claim"));
+		return;
+	}
+
+	Step_PerformTransaction();
+}
+
+void UTask_ClaimCraftItem::Step_PerformTransaction()
+{
+	UWorld* World = GetWorld();
+	UGameInstance* GameInstance = World->GetGameInstance();
+
+	IAssetInterchangeInterface* TargetInterchange = AssetUtil::GetAssetInterchange(GameInstance, TargetAssetId);
+	if (!TargetInterchange)
+	{
+		Fail(TEXT("Failed to get transaction interface"));
+		return;
+	}
+
+	FGuid TargetId = TargetInterchange->GetDefaultSourceId();
+	IAssetTransactionInterface* TargetTransaction = TargetInterchange->GetTransactionSource(TargetId);
+	if (!TargetTransaction)
+	{
+		Fail(TEXT("Failed to get transaction source"));
+		return;
+	}
+
+	if (!TargetTransaction->AddItem(TargetAssetId, TargetQuantity * ClaimQuantity))
+	{
+		Fail(TEXT("Failed to add item"));
+		return;
+	}
+
+	Success();
+}
+

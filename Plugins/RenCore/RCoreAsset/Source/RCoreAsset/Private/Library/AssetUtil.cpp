@@ -10,9 +10,28 @@
 
 
 
-IAssetInterchangeInterface* AssetUtil::GetAssetInterchange(UGameInstance* Context, const FPrimaryAssetId& HandleType)
+IAssetInterchangeInterface* AssetUtil::GetAssetInterchange(UWorld* Context, const FPrimaryAssetId& HandleAssetId)
 {
-	return GetAssetInterchange(Context, HandleType.PrimaryAssetType);
+	if (!IsValid(Context))
+	{
+		return nullptr;
+	}
+	return GetAssetInterchange(Context->GetGameInstance(), HandleAssetId.PrimaryAssetType);
+}
+
+IAssetInterchangeInterface* AssetUtil::GetAssetInterchange(UGameInstance* Context, const FPrimaryAssetId& HandleAssetId)
+{
+	return GetAssetInterchange(Context, HandleAssetId.PrimaryAssetType);
+}
+
+
+IAssetInterchangeInterface* AssetUtil::GetAssetInterchange(UWorld* Context, const FPrimaryAssetType& HandleType)
+{
+	if (!IsValid(Context))
+	{
+		return nullptr;
+	}
+	return GetAssetInterchange(Context->GetGameInstance(), HandleType);
 }
 
 IAssetInterchangeInterface* AssetUtil::GetAssetInterchange(UGameInstance* Context, const FPrimaryAssetType& HandleType)

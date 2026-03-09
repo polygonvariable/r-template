@@ -16,7 +16,7 @@
 #include "Library/AssetUtil.h"
 #include "Management/AssetCollection.h"
 #include "Management/AssetGroup.h"
-#include "Management/Collection/AssetCollectionTrade.h"
+#include "Management/Collection/AssetCollection_Trade.h"
 #include "Manager/RAssetManager.inl"
 #include "Storage/ShopStorage.h"
 #include "Subsystem/ShopSubsystem.h"
@@ -103,7 +103,7 @@ void UPurchaseItem::Step_CheckTarget()
 	}
 
 	FInstancedStruct TradeContext = FInstancedStruct::Make(FAssetRuleContext(TradeCollectionId));
-	const UAssetCollection_TradeReferenced* TradeCollection = TradeGroup->GetCollectionRule<UAssetCollection_TradeReferenced>(TradeContext);
+	const UAssetCollection_Trade* TradeCollection = TradeGroup->GetCollectionRule<UAssetCollection_Trade>(TradeContext);
 	if (!IsValid(TradeCollection))
 	{
 		Fail(TEXT("Item collection is invalid"));
@@ -177,7 +177,7 @@ void UPurchaseItem::Step_CheckQuota(const TMap<FPrimaryAssetId, int>& MaterialAs
 	FShopData ShopData;
 	if (ShopStorage->GetItem(ShopKey, ShopData))
 	{
-		if (ShopData.Quota >= TargetQuota)
+		if (ShopData.PurchaseCount >= TargetQuota)
 		{
 			Fail(TEXT("Item quota exceeded"));
 			return;

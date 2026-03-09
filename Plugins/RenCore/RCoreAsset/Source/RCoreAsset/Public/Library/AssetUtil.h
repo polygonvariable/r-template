@@ -16,7 +16,10 @@ class AssetUtil
 
 public:
 
-	RCORE_API static IAssetInterchangeInterface* GetAssetInterchange(UGameInstance* Context, const FPrimaryAssetId& HandleType);
+	RCORE_API static IAssetInterchangeInterface* GetAssetInterchange(UWorld* Context, const FPrimaryAssetId& HandleAssetId);
+	RCORE_API static IAssetInterchangeInterface* GetAssetInterchange(UGameInstance* Context, const FPrimaryAssetId& HandleAssetId);
+
+	RCORE_API static IAssetInterchangeInterface* GetAssetInterchange(UWorld* Context, const FPrimaryAssetType& HandleType);
 	RCORE_API static IAssetInterchangeInterface* GetAssetInterchange(UGameInstance* Context, const FPrimaryAssetType& HandleType);
 
 };

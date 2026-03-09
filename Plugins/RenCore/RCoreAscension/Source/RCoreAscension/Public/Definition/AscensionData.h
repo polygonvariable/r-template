@@ -53,5 +53,10 @@ public:
 		Experience = FMath::Max(0, Experience);
 	}
 
+	FString ToString() const
+	{
+		return FString::Printf(TEXT("Experience: %d, Level: %d, Rank: %d"), Experience, Level, Rank);
+	}
+
 };
 

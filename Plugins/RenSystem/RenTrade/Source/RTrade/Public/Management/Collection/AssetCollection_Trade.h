@@ -5,11 +5,11 @@
 // Engine Headers
 
 // Project Headers
-#include "Definition/AssetDetailTrade.h"
+#include "Definition/AssetDetail_Trade.h"
 #include "Management/AssetCollection.h"
 
 // Generated Headers
-#include "AssetCollectionTrade.generated.h"
+#include "AssetCollection_Trade.generated.h"
 
 // Module Macros
 #define RSYSTEM_API RTRADE_API
@@ -24,8 +24,9 @@ class FObjectPreSaveContext;
  *
  */
 UCLASS(MinimalAPI, DisplayName = "Collection (Trade Referenced)")
-class UAssetCollection_TradeReferenced : public UAssetCollection
+class UAssetCollection_Trade : public UAssetCollection
 {
+
 	GENERATED_BODY()
 
 public:
@@ -49,12 +50,12 @@ protected:
 
 #if WITH_EDITORONLY_DATA
 
-	UPROPERTY(EditDefaultsOnly, Meta = (DisplayName = "Asset List"))
+	UPROPERTY(EditDefaultsOnly, Meta = (DisplayName = "Asset List (Editor)"))
 	TArray<FAssetDetail_TradeEd> AssetListEd;
 
 #endif
 
-	UPROPERTY(VisibleAnywhere, Meta = (DisplayName = "Asset List (Debug)"))
+	UPROPERTY(VisibleAnywhere, Meta = (DisplayName = "Asset List"))
 	TMap<URPrimaryDataAsset*, FAssetDetail_Trade> AssetList;
 
 };

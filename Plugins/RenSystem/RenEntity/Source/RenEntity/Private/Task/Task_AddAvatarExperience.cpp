@@ -144,6 +144,6 @@ void UTask_AddAvatarExperience::Step_AddExperience()
 		Fail(TEXT("Failed to update avatar"));
 		return;
 	}
-	Succeed();
+	Success();
 }
 

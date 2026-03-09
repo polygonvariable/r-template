@@ -65,5 +65,13 @@ public:
 		return HashCombine(GetTypeHash(Record.ItemId), GetTypeHash(Record.Quantity));
 	}
 
+	FString ToString() const
+	{
+		FString Detail = TEXT("Item Id: ") + ItemId.ToString();
+		Detail += TEXT("\nQuantity: ") + FString::FromInt(Quantity);
+		Detail += TEXT("\nAscension: ") + Ascension.ToString();
+		return Detail;
+	}
+
 };
 

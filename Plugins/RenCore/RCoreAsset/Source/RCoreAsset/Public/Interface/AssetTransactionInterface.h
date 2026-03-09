@@ -41,6 +41,13 @@ public:
 	virtual bool RemoveItem(const FPrimaryAssetId& AssetId, int Quantity) = 0;
 	virtual bool RemoveItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier) = 0;
 
+	virtual bool RemoveAnyItems(const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) = 0;
+	virtual bool RemoveItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId, int Quantity) = 0;
+
+	virtual bool ContainItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier) const = 0;
+	virtual bool ContainAnyItems(const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const = 0;
+
+
 };
 
 

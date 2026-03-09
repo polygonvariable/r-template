@@ -97,7 +97,7 @@ void UAvatarEnhanceUI::NativeConstruct()
 {
 	if (IsValid(ItemCollection))
 	{
-		ItemCollection->OnEntrySelected.BindUObject(this, &UAvatarEnhanceUI::HandleItemSelected);
+		ItemCollection->OnSelectionChanged.BindUObject(this, &UAvatarEnhanceUI::HandleItemSelected);
 	}
 
 	if (IsValid(CloseButton))
@@ -118,7 +118,7 @@ void UAvatarEnhanceUI::NativeDestruct()
 {
 	if (IsValid(ItemCollection))
 	{
-		ItemCollection->OnEntrySelected.Unbind();
+		ItemCollection->OnSelectionChanged.Unbind();
 	}
 
 	if (IsValid(CloseButton))

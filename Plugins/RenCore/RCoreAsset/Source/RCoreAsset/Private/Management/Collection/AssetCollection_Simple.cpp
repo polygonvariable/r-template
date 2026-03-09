@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "Management/Collection/AssetCollectionSimple.h"
+#include "Management/Collection/AssetCollection_Simple.h"
 
 // Engine Headers
 #include "UObject/ObjectSaveContext.h"
@@ -74,14 +74,14 @@ void UAssetCollection_Simple::PreSave(FObjectPreSaveContext ObjectSaveContext)
 	for (const FAssetDetail_SimpleEd& Item : AssetListEd)
 	{
 		TSoftObjectPtr<URPrimaryDataAsset> Asset = Item.DataAsset;
-		URPrimaryDataAsset* AssetPtr = Asset.LoadSynchronous();
-		if (!IsValid(AssetPtr))
+		URPrimaryDataAsset* DataAsset = Asset.LoadSynchronous();
+		if (!IsValid(DataAsset))
 		{
 			LOG_ERROR(LogAsset, TEXT("Failed to load asset"));
 			continue;
 		}
 
-		FPrimaryAssetId AssetId = AssetPtr->GetPrimaryAssetId();
+		FPrimaryAssetId AssetId = DataAsset->GetPrimaryAssetId();
 		if (AssetType.IsValid() && AssetType != AssetId.PrimaryAssetType)
 		{
 			LOG_ERROR(LogAsset, TEXT("Non-matching asset types found in collection"));

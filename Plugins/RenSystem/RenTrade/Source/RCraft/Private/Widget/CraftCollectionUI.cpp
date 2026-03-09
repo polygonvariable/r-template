@@ -6,25 +6,64 @@
 // Engine Headers
 
 // Project Headers
-#include "Asset/RPrimaryDataAsset.h"
-#include "Interface/CraftProviderInterface.h"
 #include "Asset/TradeAsset.h"
-#include "Log/LogCategory.h"
-#include "Log/LogMacro.h"
-#include "Management/AssetGroup.h"
-#include "Management/Collection/AssetCollectionUnique.h"
-#include "Manager/RAssetManager.inl"
-#include "Widget/TradeEntry.h"
+#include "Storage/CraftStorage.h"
+#include "Subsystem/CraftSubsystem.h"
+#include "Widget/CraftEntry.h"
 
 
 
-//const UAssetCollection* UCraftCollectionUI::GetAssetCollection(const URPrimaryDataAsset* Asset) const
-//{
-//	const ICraftProviderInterface* CraftProvider = Cast<ICraftProviderInterface>(Asset);
-//	if (!CraftProvider)
-//	{
-//		return nullptr;
-//	}
-//	return CraftProvider->GetCraftingMaterial();
-//}
+void UCraftCollectionUI::DisplayEntries()
+{
+	if (!IsValid(CraftSubsystem))
+	{
+		return;
+	}
+
+	FPrimaryAssetId TradeAssetId = TradeAsset->GetPrimaryAssetId();
+
+	CraftSubsystem->QueryItems(TradeAsset, TradeCollectionId, QuerySource,
+		[this, TradeAssetId](const FPrimaryAssetId& ItemAssetId, const FAssetDetail_Trade& ItemDetail, const FCraftData* CraftData) {
+
+			UCraftEntry* Entry = GetEntryFromPool<UCraftEntry>();
+			if (IsValid(Entry))
+			{
+				Entry->CraftData = (CraftData) ? *CraftData : FCraftData();
+				Entry->TradeDetail = ItemDetail;
+				AddEntry(ItemAssetId, Entry);
+			}
+
+		}
+	);
+}
+
+void UCraftCollectionUI::NativeConstruct()
+{
+	CraftSubsystem = UCraftSubsystem::Get(GetGameInstance());
+	if (IsValid(CraftSubsystem))
+	{
+		UCraftStorage* CraftStorage = CraftSubsystem->GetCraftStorage();
+		if (IsValid(CraftStorage))
+		{
+			CraftStorage->OnCraftUpdated.AddUObject(this, &UCraftCollectionUI::RefreshEntries);
+		}
+	}
+
+	Super::NativeConstruct();
+}
+
+void UCraftCollectionUI::NativeDestruct()
+{
+	if (IsValid(CraftSubsystem))
+	{
+		UCraftStorage* CraftStorage = CraftSubsystem->GetCraftStorage();
+		if (IsValid(CraftStorage))
+		{
+			CraftStorage->OnCraftUpdated.RemoveAll(this);
+		}
+	}
+	CraftSubsystem = nullptr;
+
+	Super::NativeDestruct();
+}
 

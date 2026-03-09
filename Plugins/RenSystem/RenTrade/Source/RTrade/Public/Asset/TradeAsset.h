@@ -29,6 +29,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Instanced)
 	TObjectPtr<UAssetGroup> TradeGroup = nullptr;
 
+
 	// ~ UObject
 	RTRADE_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 	// ~ End of UObject

@@ -11,8 +11,6 @@
 #include "ShopCollectionUI.generated.h"
 
 // Forward Declarations
-class UAssetCollection;
-class URPrimaryDataAsset;
 
 
 

@@ -7,77 +7,68 @@
 #include "Components/Button.h"
 
 // Project Headers
-#include "Asset/RPrimaryDataAsset.h"
-#include "Definition/AssetRuleDefinition.h"
-#include "Interface/CraftProviderInterface.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Management/AssetCollection.h"
 #include "Subsystem/CraftSubsystem.h"
 #include "Widget/TradeCollectionUI.h"
 #include "Widget/TradeEntry.h"
 
 
 
-void UCraftDashboardUI::HandleCraft()
+void UCraftBuildDashboardUI::HandleCraft()
 {
-	const UTradeEntry* ShopEntry = PrimaryCollection->GetSelectedEntry<UTradeEntry>();
-	if (!IsValid(ShopEntry))
+	const UTradeEntry* Entry = PrimaryCollection->GetSelectedEntry<UTradeEntry>();
+	if (!IsValid(Entry) || !IsValid(CraftSubsystem))
 	{
-		LOG_ERROR(LogCraft, TEXT("ShopEntry is invalid"));
+		LOG_ERROR(LogCraft, TEXT("Entry, CraftSubsystem is invalid"));
 		return;
 	}
 
-	UGameInstance* GameInstance = GetGameInstance();
-	UCraftSubsystem* CraftSubsystem = GameInstance->GetSubsystem<UCraftSubsystem>();
-	if (!IsValid(CraftSubsystem))
-	{
-		LOG_ERROR(LogCraft, TEXT("CraftSubsystem is invalid"));
-		return;
-	}
-
-	const FPrimaryAssetId& TargetAssetId = ShopEntry->AssetId;
+	const FPrimaryAssetId& TargetAssetId = Entry->AssetId;
 
 	FGuid TaskId = FGuid::NewGuid();
-	CraftSubsystem->CraftItem(TaskId, TradeAssetId, TradeCollectionId, TargetAssetId, FTaskCallback::CreateWeakLambda(this,
-		[](const FTaskResult& Result)
-		{
-			if (Result.State == ETaskState::Pending)
-			{
-				UE_LOG(LogCraft, Log, TEXT("Task Started"));
-			}
-			else
-			{
-				UE_LOG(LogCraft, Log, TEXT("Task Finished, Message: %s"), *Result.Message);
-			}
-		}
-	));
+	CraftSubsystem->CraftItem(TaskId, TradeAssetId, TradeCollectionId, TargetAssetId, FTaskCallback::CreateWeakLambda(this, [](const FTaskResult& Result) {}));
 }
 
-const UAssetCollection* UCraftDashboardUI::GetMaterialCollection(const URPrimaryDataAsset* Asset) const
+const UAssetCollection* UCraftBuildDashboardUI::GetTradeMaterialCollection(const URPrimaryDataAsset* Asset) const
 {
-	FInstancedStruct Context = FInstancedStruct::Make(FAssetRuleContext(TradeCollectionId));
-
-	const ICraftProviderInterface* CraftProvider = Cast<ICraftProviderInterface>(Asset);
-	if (!CraftProvider)
+	if (!IsValid(CraftSubsystem))
 	{
 		return nullptr;
 	}
-
-	return CraftProvider->GetCraftingMaterial(Context);
+	return CraftSubsystem->GetMaterialCollection(Asset, TradeCollectionId);
 }
 
-void UCraftDashboardUI::NativeConstruct()
+void UCraftBuildDashboardUI::NativeConstruct()
 {
-	if (IsValid(CraftButton)) CraftButton->OnClicked.AddDynamic(this, &UCraftDashboardUI::HandleCraft);
+	CraftButton->OnClicked.AddDynamic(this, &UCraftBuildDashboardUI::HandleCraft);
+	CraftSubsystem = UCraftSubsystem::Get(GetGameInstance());
 
 	Super::NativeConstruct();
 }
 
-void UCraftDashboardUI::NativeDestruct()
+void UCraftBuildDashboardUI::NativeDestruct()
 {
-	if (IsValid(CraftButton)) CraftButton->OnClicked.RemoveAll(this);
+	CraftButton->OnClicked.RemoveAll(this);
+	CraftSubsystem = nullptr;
 
 	Super::NativeDestruct();
+}
+
+
+
+void UCraftClaimDashboardUI::HandleCraft()
+{
+	const UTradeEntry* Entry = PrimaryCollection->GetSelectedEntry<UTradeEntry>();
+	if (!IsValid(Entry) || !IsValid(CraftSubsystem))
+	{
+		LOG_ERROR(LogCraft, TEXT("Entry, CraftSubsystem is invalid"));
+		return;
+	}
+
+	const FPrimaryAssetId& TargetAssetId = Entry->AssetId;
+
+	FGuid TaskId = FGuid::NewGuid();
+	CraftSubsystem->ClaimCraftItem(TaskId, TradeAssetId, TradeCollectionId, TargetAssetId, FTaskCallback::CreateWeakLambda(this, [](const FTaskResult& Result) {}));
 }
 

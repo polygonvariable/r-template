@@ -34,6 +34,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UTextBlock> TradeQuantity = nullptr;
 
+
 	// ~ UInventoryUI
 	virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
 	// ~ End of UInventoryUI

@@ -186,7 +186,14 @@ void UAssetCollectionUI::HandleOnItemSelectionChanged(UObject* Object)
 	if (IsValid(Entry))
 	{
 		_SelectedEntry = TWeakObjectPtr<const UAssetEntry>(Entry);
-		OnEntrySelected.ExecuteIfBound(Entry);
+		OnSelectionChanged.ExecuteIfBound(Entry);
+	}
+	else
+	{
+		OnSelectionCleared.ExecuteIfBound();
+
+		_SelectedEntry.Reset();
+		_SelectedAssetId = FPrimaryAssetId();
 	}
 }
 

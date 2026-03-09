@@ -33,8 +33,12 @@ class UAssetCollectionUI : public UUserWidget
 
 public:
 
-	DECLARE_DELEGATE_OneParam(FOnEntrySelected, const UAssetEntry* /* Entry */);
-	FOnEntrySelected OnEntrySelected;
+	DECLARE_DELEGATE_OneParam(FOnSelectionChanged, const UAssetEntry* /* Entry */);
+	FOnSelectionChanged OnSelectionChanged;
+
+	DECLARE_DELEGATE(FOnSelectionCleared);
+	FOnSelectionCleared OnSelectionCleared;
+
 
 	RCORE_API virtual void InitializeCollection();
 

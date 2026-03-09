@@ -15,9 +15,6 @@
 
 // Forward Declarations
 class UTradeAsset;
-class URAssetManager;
-class UAssetCollection;
-class URPrimaryDataAsset;
 
 
 
@@ -31,11 +28,6 @@ class UTradeCollectionUI : public UAssetCollectionUI
 	GENERATED_BODY()
 
 public:
-
-	void SetTradeAsset(const UTradeAsset* Asset);
-	void SetTradeCollectionId(FGuid CollectionId);
-
-protected:
 
 	UPROPERTY()
 	TObjectPtr<const UTradeAsset> TradeAsset = nullptr;

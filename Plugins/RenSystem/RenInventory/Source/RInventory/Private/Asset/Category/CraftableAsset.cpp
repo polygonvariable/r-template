@@ -11,9 +11,9 @@
 
 
 
-int UCraftableAsset::GetCraftingTime() const
+FTimespan UCraftableAsset::GetCraftingTime() const
 {
-	return 0;
+	return CraftingTime;
 }
 
 const UAssetCollection* UCraftableAsset::GetCraftingMaterial() const

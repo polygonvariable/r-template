@@ -8,7 +8,7 @@
 #include "Task/TaskObject.h"
 
 // Generated Headers
-#include "CraftItem.generated.h"
+#include "Task_ClaimCraftItem.generated.h"
 
 // Forward Declarations
 class URAssetManager;
@@ -23,7 +23,7 @@ class URPrimaryDataAsset;
  *
  */
 UCLASS(NotBlueprintType)
-class UCraftItem : public UTaskObject
+class UTask_ClaimCraftItem : public UTaskObject
 {
 
 	GENERATED_BODY()
@@ -37,6 +37,7 @@ public:
 protected:
 
 	int TargetQuantity = 1;
+	int ClaimQuantity = 0;
 
 	UPROPERTY()
 	TObjectPtr<URAssetManager> AssetManager = nullptr;
@@ -44,14 +45,11 @@ protected:
 	UPROPERTY()
 	TObjectPtr<const UTradeAsset> TradeAsset = nullptr;
 
-	UPROPERTY()
-	TObjectPtr<const URPrimaryDataAsset> TargetAsset = nullptr;
-
 
 	void Step_LoadAsset();
 	void Step_CheckTarget();
-	void Step_CheckMaterial();
-	void Step_PerformTransaction(const TMap<FPrimaryAssetId, int>& MaterialAssetList, FPrimaryAssetType MaterialAssetType);
+	void Step_CheckClaimable();
+	void Step_PerformTransaction();
 
 	// ~ UTaskObject
 	void OnStarted() override;

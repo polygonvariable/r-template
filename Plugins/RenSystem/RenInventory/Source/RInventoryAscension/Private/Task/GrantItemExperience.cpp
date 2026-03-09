@@ -13,7 +13,7 @@
 #include "Interface/AscensionProviderInterface.h"
 #include "Interface/AssetStructureInterface.h"
 #include "Library/AscensionLibrary.h"
-#include "Management/Collection/AssetCollectionSimple.h"
+#include "Management/Collection/AssetCollection_Simple.h"
 #include "Manager/RAssetManager.inl"
 #include "Storage/InventoryStorage.h"
 #include "Subsystem/InventorySubsystem.h"
@@ -263,7 +263,7 @@ void UGrantItemExperience::Step_AddExperience()
 		Fail(TEXT("Failed to update"));
 		return;
 	}
-	Succeed();
+	Success();
 }
 // UE_ENABLE_OPTIMIZATION
 

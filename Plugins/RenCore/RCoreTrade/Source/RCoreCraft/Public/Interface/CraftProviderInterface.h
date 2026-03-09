@@ -37,7 +37,7 @@ class RCORE_API ICraftProviderInterface
 
 public:
 
-	virtual int GetCraftingTime() const = 0;
+	virtual FTimespan GetCraftingTime() const = 0;
 	virtual const UAssetCollection* GetCraftingMaterial() const = 0;
 	virtual const UAssetCollection* GetCraftingMaterial(const FInstancedStruct& Context) const = 0;
 

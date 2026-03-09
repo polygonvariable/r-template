@@ -33,12 +33,15 @@ class UCraftableAsset : public UPurchasableAsset, public ICraftProviderInterface
 public:
 
 	// ~ ICraftProviderInterface
-	RSYSTEM_API virtual int GetCraftingTime() const override;
+	RSYSTEM_API virtual FTimespan GetCraftingTime() const override;
 	RSYSTEM_API virtual const UAssetCollection* GetCraftingMaterial() const override;
 	RSYSTEM_API virtual const UAssetCollection* GetCraftingMaterial(const FInstancedStruct& Context) const override;
 	// ~ End of ICraftProviderInterface
 
 protected:
+
+	UPROPERTY(EditDefaultsOnly)
+	FTimespan CraftingTime;
 
 	UPROPERTY(EditDefaultsOnly, Instanced)
 	TObjectPtr<UAssetGroup> CraftingItems = nullptr;

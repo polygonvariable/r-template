@@ -9,7 +9,7 @@
 #include "Management/AssetCollection.h"
 
 // Generated Headers
-#include "AssetCollectionSimple.generated.h"
+#include "AssetCollection_Simple.generated.h"
 
 // Module Macros
 #define RCORE_API RCOREASSET_API
@@ -49,12 +49,12 @@ protected:
 
 #if WITH_EDITORONLY_DATA
 
-	UPROPERTY(EditDefaultsOnly, Meta = (DisplayName = "Asset List"))
+	UPROPERTY(EditDefaultsOnly, Meta = (DisplayName = "Asset List (Editor)"))
 	TArray<FAssetDetail_SimpleEd> AssetListEd;
 
 #endif
 
-	UPROPERTY(VisibleAnywhere, Meta = (DisplayName = "Asset List (Debug)"))
+	UPROPERTY(VisibleAnywhere, Meta = (DisplayName = "Asset List"))
 	TMap<FPrimaryAssetId, FAssetDetail> AssetList;
 
 };

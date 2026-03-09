@@ -27,15 +27,12 @@ bool UShopStorage::AddItem(const FShopKey& ShopKey)
 	if (!FoundData)
 	{
 		FShopData ShopData;
-		ShopData.Quota = 1;
-		ShopData.BatchTime = FDateTime::Now();
-
+		ShopData.PurchaseCount = 1;
 		ShopItems.Add(ShopKey, ShopData);
-
 		return true;
 	}
 
-	FoundData->Quota++;
+	FoundData->PurchaseCount++;
 	return true;
 }
 

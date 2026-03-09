@@ -21,20 +21,14 @@
 
 void UShopDashboardUI::HandlePurchase()
 {
-	const UTradeEntry* ShopEntry = PrimaryCollection->GetSelectedEntry<UTradeEntry>();
-	if (!IsValid(ShopEntry))
+	const UTradeEntry* Entry = PrimaryCollection->GetSelectedEntry<UTradeEntry>();
+	if (!IsValid(Entry) || !IsValid(ShopSubsystem))
 	{
-		LOG_ERROR(LogShop, TEXT("ShopEntry is invalid"));
+		LOG_ERROR(LogShop, TEXT("Entry, ShopSubsystem is invalid"));
 		return;
 	}
 
-	if (!IsValid(ShopSubsystem))
-	{
-		LOG_ERROR(LogShop, TEXT("ShopSubsystem is invalid"));
-		return;
-	}
-
-	const FPrimaryAssetId& TargetAssetId = ShopEntry->AssetId;
+	const FPrimaryAssetId& TargetAssetId = Entry->AssetId;
 
 	FGuid TaskId = FGuid::NewGuid();
 	ShopSubsystem->PurchaseItem(TaskId, TradeAssetId, TradeCollectionId, TargetAssetId, FTaskCallback::CreateWeakLambda(this,
@@ -47,13 +41,12 @@ void UShopDashboardUI::HandlePurchase()
 			else
 			{
 				UE_LOG(LogShop, Log, TEXT("Task Finished, Message: %s"), *Result.Message);
-				PrimaryCollection->RefreshEntries();
 			}
 		}
 	));
 }
 
-const UAssetCollection* UShopDashboardUI::GetMaterialCollection(const URPrimaryDataAsset* Asset) const
+const UAssetCollection* UShopDashboardUI::GetTradeMaterialCollection(const URPrimaryDataAsset* Asset) const
 {
 	if (!IsValid(ShopSubsystem))
 	{
@@ -64,8 +57,7 @@ const UAssetCollection* UShopDashboardUI::GetMaterialCollection(const URPrimaryD
 
 void UShopDashboardUI::NativeConstruct()
 {
-	PurchaseButton->OnClicked.AddDynamic(this, &UShopDashboardUI::HandlePurchase);
-
+	ShopButton->OnClicked.AddDynamic(this, &UShopDashboardUI::HandlePurchase);
 	ShopSubsystem = UShopSubsystem::Get(GetGameInstance());
 
 	Super::NativeConstruct();
@@ -73,7 +65,8 @@ void UShopDashboardUI::NativeConstruct()
 
 void UShopDashboardUI::NativeDestruct()
 {
-	PurchaseButton->OnClicked.RemoveAll(this);
+	ShopButton->OnClicked.RemoveAll(this);
+	ShopSubsystem = nullptr;
 
 	Super::NativeDestruct();
 }

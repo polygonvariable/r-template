@@ -49,14 +49,14 @@ void UInventoryDashboardUI::GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutA
 
 void UInventoryDashboardUI::NativeConstruct()
 {
-	PrimaryCollection->OnEntrySelected.BindUObject(this, &UAssetDashboardUI::InitializeDetail);
+	PrimaryCollection->OnSelectionChanged.BindUObject(this, &UAssetDashboardUI::InitializeDetail);
 	
 	Super::NativeConstruct();
 }
 
 void UInventoryDashboardUI::NativeDestruct()
 {
-	PrimaryCollection->OnEntrySelected.Unbind();
+	PrimaryCollection->OnSelectionChanged.Unbind();
 
 	Super::NativeDestruct();
 }

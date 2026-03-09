@@ -33,14 +33,14 @@ protected:
 	TObjectPtr<UShopSubsystem> ShopSubsystem;
 
 	UPROPERTY(Meta = (BindWidget))
-	TObjectPtr<UButton> PurchaseButton = nullptr;
+	TObjectPtr<UButton> ShopButton = nullptr;
 
 
 	UFUNCTION()
 	void HandlePurchase();
 
 	// ~ UTradeDashboardUI
-	virtual const UAssetCollection* GetMaterialCollection(const URPrimaryDataAsset* Asset) const override;
+	virtual const UAssetCollection* GetTradeMaterialCollection(const URPrimaryDataAsset* Asset) const override;
 	// ~ End of UTradeDashboardUI
 
 	// ~ UUserWidget

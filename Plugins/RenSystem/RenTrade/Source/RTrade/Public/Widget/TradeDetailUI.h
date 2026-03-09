@@ -10,6 +10,9 @@
 // Generated Headers
 #include "TradeDetailUI.generated.h"
 
+// Module Macros
+#define RSYSTEM_API RTRADE_API
+
 // Forward Declarations
 class UAssetEntry;
 class URPrimaryDataAsset;
@@ -25,17 +28,25 @@ class UTradeDetailUI : public UAssetDetailUI
 
 	GENERATED_BODY()
 
+public:
+
+	FPrimaryAssetId TradeAssetId;
+	FGuid TradeCollectionId;
+
+	// ~ UAssetDetailUI
+	RSYSTEM_API virtual void ResetDetail() override;
+	// ~ End of UAssetDetailUI
+
 protected:
 
 	// ~ UAssetDetailUI
-	virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
-	virtual void SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	RSYSTEM_API virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
 	// ~ End of UAssetDetailUI
 
-	// ~ End of UUserWidget
-	virtual void NativeConstruct() override;
-	virtual void NativeDestruct() override;
-	// ~ End of UUserWidget
-
 };
+
+
+
+// Module Macros
+#undef RSYSTEM_API
 

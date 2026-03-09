@@ -8,7 +8,7 @@
 #include "Definition/AssetDetail.h"
 
 // Generated Headers
-#include "AssetDetailTrade.generated.h"
+#include "AssetDetail_Trade.generated.h"
 
 // Forward Declarations
 class URPrimaryDataAsset;
@@ -32,6 +32,7 @@ public:
 
 	void Reset()
 	{
+		Quota = 0;
 		FAssetDetail::Reset();
 	}
 

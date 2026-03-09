@@ -33,6 +33,12 @@ class UTradeDashboardUI : public UAssetDashboardUI
 
 	GENERATED_BODY()
 
+public:
+
+	// ~ UAssetDashboardUI
+	RSYSTEM_API virtual void ResetDetail() override;
+	// ~ End of UAssetDashboardUI
+
 protected:
 
 	UPROPERTY(EditAnywhere)
@@ -51,13 +57,13 @@ protected:
 	TObjectPtr<UAssetCollectionUI> SecondaryCollection = nullptr;
 
 
-	RSYSTEM_API virtual void OnTradeAssetLoaded(const UTradeAsset* Asset);
-	RSYSTEM_API virtual const UAssetCollection* GetMaterialCollection(const URPrimaryDataAsset* Asset) const;
+	RSYSTEM_API virtual void InitializeTradeDetails(const UTradeAsset* Asset);
+	RSYSTEM_API virtual const UAssetCollection* GetTradeMaterialCollection(const URPrimaryDataAsset* Asset) const;
 
 	// ~ UAssetDashboardUI
 	RSYSTEM_API virtual void InitializeDetail() override;
+	RSYSTEM_API virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
 	RSYSTEM_API virtual void SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
-	RSYSTEM_API virtual void GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutAssetUI) const override;
 	// ~ End of UAssetDashboardUI
 	
 	// ~ UUserWidget

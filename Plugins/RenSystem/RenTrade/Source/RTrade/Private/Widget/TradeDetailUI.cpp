@@ -12,30 +12,23 @@
 
 
 
+void UTradeDetailUI::ResetDetail()
+{
+	SwitchDetail(false);
+}
+
 void UTradeDetailUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	if (!IsValid(Asset))
 	{
+		SwitchDetail(false);
 		return;
 	}
+
+	SwitchDetail(true);
 
 	EntryName->SetText(Asset->DisplayName);
 	EntryDescription->SetText(Asset->Description);
 	EntryIcon->SetBrushFromSoftTexture(Asset->Icon);
-}
-
-void UTradeDetailUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
-{
-
-}
-
-void UTradeDetailUI::NativeConstruct()
-{
-	Super::NativeConstruct();
-}
-
-void UTradeDetailUI::NativeDestruct()
-{
-	Super::NativeDestruct();
 }
 

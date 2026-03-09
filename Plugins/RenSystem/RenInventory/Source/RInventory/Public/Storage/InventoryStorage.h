@@ -44,15 +44,15 @@ public:
 	FOnInventoryRefreshed OnInventoryRefreshed;
 
 
-	RSYSTEM_API bool AddItem(const FPrimaryAssetId& AssetId, int Quantity);
-	RSYSTEM_API bool AddItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier);
+	RSYSTEM_API virtual bool AddItem(const FPrimaryAssetId& AssetId, int Quantity) override;
+	RSYSTEM_API virtual bool AddItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier) override;
 
 	/*
 	 * Removes an item from the stack within the specified container.
 	 * Useful when the exact itemId is not required.
 	 */
-	RSYSTEM_API bool RemoveItem(const FPrimaryAssetId& AssetId, int Quantity);
-	RSYSTEM_API bool RemoveItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier);
+	RSYSTEM_API virtual bool RemoveItem(const FPrimaryAssetId& AssetId, int Quantity) override;
+	RSYSTEM_API virtual bool RemoveItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier) override;
 
 	/** Removes any first valid item from the item list.
 	 *
@@ -60,14 +60,14 @@ public:
 	 * and for non-stackable items, the number of item will be removed from the stack.
 	 * Useful when the exact itemId is not required.
 	 */
-	RSYSTEM_API bool RemoveAnyItems(const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity);
-	RSYSTEM_API bool RemoveItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId, int Quantity);
+	RSYSTEM_API virtual bool RemoveAnyItems(const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) override;
+	RSYSTEM_API virtual bool RemoveItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId, int Quantity) override;
 
 	RSYSTEM_API bool UpdateItem(const FPrimaryAssetId& AssetId, TFunctionRef<void(FInventoryItem*)> Callback);
 	RSYSTEM_API bool UpdateItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId, TFunctionRef<void(FInventoryItem*)> Callback);
 
-	RSYSTEM_API bool ContainItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier) const;
-	RSYSTEM_API bool ContainAnyItems(const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const;
+	RSYSTEM_API virtual bool ContainItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier) const override;
+	RSYSTEM_API virtual bool ContainAnyItems(const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const override;
 
 	RSYSTEM_API int GetTotalQuantity(const FPrimaryAssetId& AssetId) const;
 	RSYSTEM_API const FInventoryItem* GetItem(const FPrimaryAssetId& AssetId) const;

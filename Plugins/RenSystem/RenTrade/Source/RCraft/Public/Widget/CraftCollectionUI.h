@@ -5,14 +5,14 @@
 // Engine Headers
 
 // Project Headers
+#include "Definition/CraftQuery.h"
 #include "Widget/TradeCollectionUI.h"
 
 // Generated Headers
 #include "CraftCollectionUI.generated.h"
 
 // Forward Declarations
-class UAssetCollection;
-class URPrimaryDataAsset;
+class UCraftSubsystem;
 
 
 
@@ -27,9 +27,21 @@ class UCraftCollectionUI : public UTradeCollectionUI
 
 protected:
 
+	UPROPERTY()
+	TObjectPtr<UCraftSubsystem> CraftSubsystem;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	ECraftQuerySource QuerySource;
+
+
 	// ~ UTradeCollectionUI
-	//virtual const UAssetCollection* GetAssetCollection(const URPrimaryDataAsset* Asset) const override;
+	virtual void DisplayEntries() override;
 	// ~ End of UTradeCollectionUI
+
+	// ~ UUserWidget
+	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
+	// ~ End of UUserWidget
 
 };
 

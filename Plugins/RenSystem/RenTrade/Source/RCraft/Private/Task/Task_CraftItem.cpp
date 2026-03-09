@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "Task/CraftItem.h"
+#include "Task/Task_CraftItem.h"
 
 // Engine Headers
 #include "InstancedStruct.h"
@@ -11,32 +11,38 @@
 #include "Asset/TradeAsset.h"
 #include "Definition/AssetDetail.h"
 #include "Definition/AssetRuleDefinition.h"
+#include "Definition/Runtime/CraftData.h"
+#include "Definition/Runtime/TradeKey.h"
 #include "Interface/AssetTransactionInterface.h"
 #include "Interface/CraftProviderInterface.h"
 #include "Library/AssetUtil.h"
 #include "Management/AssetCollection.h"
 #include "Management/AssetGroup.h"
+#include "Management/Collection/AssetCollection_Trade.h"
 #include "Manager/RAssetManager.inl"
+#include "Storage/CraftStorage.h"
+#include "Subsystem/CraftSubsystem.h"
 
 
 
 
-void UCraftItem::OnStarted()
+void UTask_CraftItem::OnStarted()
 {
 	AssetManager = Cast<URAssetManager>(UAssetManager::GetIfInitialized());
 	Step_LoadAsset();
 }
 
-void UCraftItem::OnStopped()
+void UTask_CraftItem::OnStopped()
 {
 	AssetManager->CancelFetch(TaskId);
 }
 
-void UCraftItem::OnCleanup()
+void UTask_CraftItem::OnCleanup()
 {
 	AssetManager = nullptr;
 	TradeAsset = nullptr;
 	TargetAsset = nullptr;
+	MaterialTransaction = nullptr;
 
 	CraftAssetId = FPrimaryAssetId();
 	TargetAssetId = FPrimaryAssetId();
@@ -44,7 +50,7 @@ void UCraftItem::OnCleanup()
 	TargetQuantity = 0;
 }
 
-void UCraftItem::Step_LoadAsset()
+void UTask_CraftItem::Step_LoadAsset()
 {
 	if (!IsValid(AssetManager))
 	{
@@ -63,10 +69,10 @@ void UCraftItem::Step_LoadAsset()
 		return;
 	}
 
-	TWeakObjectPtr<UCraftItem> WeakThis(this);
+	TWeakObjectPtr<UTask_CraftItem> WeakThis(this);
 	Future.Next([WeakThis](const FLatentLoadedAssets<URPrimaryDataAsset>& Result)
 		{
-			UCraftItem* This = WeakThis.Get();
+			UTask_CraftItem* This = WeakThis.Get();
 			if (!IsValid(This) || !Result.IsValid())
 			{
 				This->Fail(TEXT("Failed to fetch assets"));
@@ -78,12 +84,12 @@ void UCraftItem::Step_LoadAsset()
 			This->TradeAsset = Cast<UTradeAsset>(Assets[0]);
 			This->TargetAsset = Assets[1];
 
-			This->Step_CheckTarget();
+			This->Step_CheckTargetAsset();
 		}
 	);
 }
 
-void UCraftItem::Step_CheckTarget()
+void UTask_CraftItem::Step_CheckTargetAsset()
 {
 	if (!IsValid(TradeAsset))
 	{
@@ -99,14 +105,14 @@ void UCraftItem::Step_CheckTarget()
 	}
 
 	FInstancedStruct TradeContext = FInstancedStruct::Make(FAssetRuleContext(TradeCollectionId));
-	const UAssetCollection* TradeCollection = TradeGroup->GetCollectionRule(TradeContext);
+	const UAssetCollection_Trade* TradeCollection = TradeGroup->GetCollectionRule<UAssetCollection_Trade>(TradeContext);
 	if (!IsValid(TradeCollection))
 	{
 		Fail(TEXT("Item collection is invalid"));
 		return;
 	}
 
-	FAssetDetail TargetDetail;
+	FAssetDetail_Trade TargetDetail;
 	if (!TradeCollection->GetAssetDetail(TargetAssetId, TargetDetail))
 	{
 		Fail(TEXT("Item asset not found"));
@@ -114,11 +120,12 @@ void UCraftItem::Step_CheckTarget()
 	}
 
 	TargetQuantity = TargetDetail.Quantity;
+	TargetQuota = TargetDetail.Quota;
 
-	Step_CheckMaterial();
+	Step_CheckMaterialAsset();
 }
 
-void UCraftItem::Step_CheckMaterial()
+void UTask_CraftItem::Step_CheckMaterialAsset()
 {
 	const ICraftProviderInterface* CraftProvider = Cast<ICraftProviderInterface>(TargetAsset);
 	if (!CraftProvider)
@@ -126,6 +133,8 @@ void UCraftItem::Step_CheckMaterial()
 		Fail(TEXT("Item asset does not implement ICraftProviderInterface"));
 		return;
 	}
+
+	CraftingTime = CraftProvider->GetCraftingTime();
 
 	FInstancedStruct MaterialContext = FInstancedStruct::Make(FAssetRuleContext(TradeCollectionId));
 	const UAssetCollection* MaterialCollection = CraftProvider->GetCraftingMaterial(MaterialContext);
@@ -140,29 +149,86 @@ void UCraftItem::Step_CheckMaterial()
 
 	FPrimaryAssetType MaterialAssetType = MaterialCollection->GetCollectionType();
 
-	Step_PerformTransaction(MaterialAssetList, MaterialAssetType);
+	Step_CheckMaterialTransaction(MoveTemp(MaterialAssetList), MaterialAssetType);
 }
 
-void UCraftItem::Step_PerformTransaction(const TMap<FPrimaryAssetId, int>& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
+void UTask_CraftItem::Step_CheckMaterialTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
 {
-	UWorld* World = GetWorld();
-	UGameInstance* GameInstance = World->GetGameInstance();
-
-	IAssetInterchangeInterface* TargetInterchange = AssetUtil::GetAssetInterchange(GameInstance, TargetAssetId);
-	IAssetInterchangeInterface* MaterialInterchange = AssetUtil::GetAssetInterchange(GameInstance, MaterialAssetType);
-
-	if (!TargetInterchange || !MaterialInterchange)
+	IAssetInterchangeInterface* MaterialInterchange = AssetUtil::GetAssetInterchange(GetWorld(), MaterialAssetType);
+	if (!MaterialInterchange)
 	{
 		Fail(TEXT("Failed to get transaction interface"));
 		return;
 	}
 
-	FGuid TargetId = TargetInterchange->GetDefaultSourceId();
 	FGuid MaterialId = MaterialInterchange->GetDefaultSourceId();
+	MaterialTransaction = MaterialInterchange->GetTransactionSource(MaterialId);
+	if (!MaterialTransaction)
+	{
+		Fail(TEXT("Failed to get transaction source"));
+		return;
+	}
 
+	if (!MaterialTransaction->ContainItems(MaterialAssetList, 1))
+	{
+		Fail(TEXT("Material not enough"));
+		return;
+	}
+
+	Step_CheckCraftQuota(MoveTemp(MaterialAssetList), MaterialAssetType);
+}
+
+void UTask_CraftItem::Step_CheckCraftQuota(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
+{
+	int CraftingSeconds = CraftingTime.GetSeconds();
+	if (TargetQuota <= 0 || CraftingSeconds <= 0)
+	{
+		Step_PerformTransaction(MoveTemp(MaterialAssetList), MaterialAssetType);
+		return;
+	}
+
+	UCraftSubsystem* CraftSubsystem = UCraftSubsystem::Get(GetWorld());
+	if (!IsValid(CraftSubsystem))
+	{
+		Fail(TEXT("Failed to get CraftSubsystem"));
+		return;
+	}
+
+	UCraftStorage* CraftStorage = CraftSubsystem->GetCraftStorage();
+	if (!IsValid(CraftStorage))
+	{
+		Fail(TEXT("Failed to get CraftStorage"));
+		return;
+	}
+
+	FTradeKey TradeKey(CraftAssetId, TradeCollectionId, TargetAssetId);
+	const FCraftData* CraftData = CraftStorage->GetItem(TradeKey);
+	if (CraftData && CraftData->PendingQuantity >= TargetQuota)
+	{
+		Fail(TEXT("Item quota exceeded"));
+		return;
+	}
+
+	if (!CraftStorage->AddItem(TradeKey, CraftingTime))
+	{
+		Fail(TEXT("Failed to add craft item"));
+		return;
+	}
+
+	Success();
+}
+
+void UTask_CraftItem::Step_PerformTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
+{
+	IAssetInterchangeInterface* TargetInterchange = AssetUtil::GetAssetInterchange(GetWorld(), TargetAssetId);
+	if (!TargetInterchange)
+	{
+		Fail(TEXT("Failed to get target transaction interface"));
+		return;
+	}
+
+	FGuid TargetId = TargetInterchange->GetDefaultSourceId();
 	IAssetTransactionInterface* TargetTransaction = TargetInterchange->GetTransactionSource(TargetId);
-	IAssetTransactionInterface* MaterialTransaction = MaterialInterchange->GetTransactionSource(MaterialId);
-
 	if (!TargetTransaction || !MaterialTransaction)
 	{
 		Fail(TEXT("Failed to get transaction source"));
@@ -174,7 +240,7 @@ void UCraftItem::Step_PerformTransaction(const TMap<FPrimaryAssetId, int>& Mater
 		Fail(TEXT("Failed to remove item"));
 		return;
 	}
-	
+
 	if (!TargetTransaction->AddItem(TargetAssetId, TargetQuantity))
 	{
 		Fail(TEXT("Failed to add item"));
@@ -183,4 +249,3 @@ void UCraftItem::Step_PerformTransaction(const TMap<FPrimaryAssetId, int>& Mater
 
 	Success();
 }
-

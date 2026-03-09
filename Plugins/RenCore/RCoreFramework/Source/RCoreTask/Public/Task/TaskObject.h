@@ -55,7 +55,6 @@ protected:
 	RCORE_API virtual void OnCleanup() {};
 
 	RCORE_API void Success();
-	RCORE_API void Succeed();
 	RCORE_API void Fail(const FString& Reason);
 
 };

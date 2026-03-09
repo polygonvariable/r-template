@@ -29,6 +29,7 @@ protected:
 
 	void AddItem(const TArray<FString>& Args, UWorld* World);
 	void RemoveItem(const TArray<FString>& Args, UWorld* World);
+	void GetItem(const TArray<FString>& Args, UWorld* World);
 
 };
 

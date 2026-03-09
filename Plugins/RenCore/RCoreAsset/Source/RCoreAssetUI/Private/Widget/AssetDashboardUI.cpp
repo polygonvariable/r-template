@@ -7,8 +7,6 @@
 #include "Components/Button.h"
 
 // Project Headers
-#include "Asset/RPrimaryDataAsset.h"
-#include "Widget/AssetEntry.h"
 
 
 
@@ -19,20 +17,6 @@ void UAssetDashboardUI::RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetCl
 void UAssetDashboardUI::GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutAssetUI) const
 {
 
-}
-
-void UAssetDashboardUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
-{
-	TArray<UAssetUI*> AssetUI;
-	GetAllAssetUI(AssetUI);
-
-	for (UAssetUI* Catalog : AssetUI)
-	{
-		if (IsValid(Catalog) && Catalog != this)
-		{
-			Catalog->InitializeDetail(Entry, Asset);
-		}
-	}
 }
 
 void UAssetDashboardUI::NativeConstruct()
