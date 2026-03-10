@@ -88,20 +88,15 @@ void UTradeDashboardUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrima
 void UTradeDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	const UTradeEntry* TradeEntry = Cast<UTradeEntry>(Entry);
-	if (!IsValid(TradeEntry))
-	{
-		return;
-	}
-
 	const UAssetCollection* MaterialCollection = GetTradeMaterialCollection(Asset);
-	if (!IsValid(MaterialCollection))
+	if (!IsValid(TradeEntry) || !IsValid(MaterialCollection))
 	{
 		return;
 	}
 
 	SecondaryCollection->ClearSubDetails();
 
-	UFilterAssetCriterion* AssetCriterion = SecondaryCollection->GetCriterionByName<UFilterAssetCriterion>(AssetFilterProperty::AssetId);
+	UFilterAssetCriterion* AssetCriterion = SecondaryCollection->GetCriterionByName<UFilterAssetCriterion>(FAssetFilterProperty::AssetId);
 	if (IsValid(AssetCriterion))
 	{
 		AssetCriterion->Included.Empty();

@@ -9,6 +9,9 @@
 // Generated Headers
 #include "CraftData.generated.h"
 
+// Module Macros
+#define RSYSTEM_API RCRAFT_API
+
 
 
 /**
@@ -23,12 +26,8 @@ struct FCraftData
 public:
 
 	FCraftData() {}
-	FCraftData(int InPendingQuantity, FDateTime InBatchStartTimestamp, FTimespan InBatchProcessingTime)
-	{
-		PendingQuantity = InPendingQuantity;
-		BatchStartTimestamp = InBatchStartTimestamp;
-		BatchProcessingTime = InBatchProcessingTime;
-	}
+	FCraftData(int InPendingQuantity, FDateTime InBatchStartTimestamp, FTimespan InBatchProcessingTime);
+
 
 	UPROPERTY(SaveGame)
 	int PendingQuantity = 0;
@@ -40,12 +39,17 @@ public:
 	FTimespan BatchProcessingTime;
 
 
-	void Reset();
-	bool IsValid() const;
-	void Sanitize();
+	RSYSTEM_API bool IsValid() const;
+	RSYSTEM_API void Reset();
+	RSYSTEM_API void Sanitize();
 
-	FTimespan GetRemainingTime() const;
-	int GetCompletedQuantity() const;
+	RSYSTEM_API int GetCompletedQuantity() const;
+	RSYSTEM_API FTimespan GetRemainingTime() const;
 
 };
+
+
+
+// Module Macros
+#undef RSYSTEM_API
 

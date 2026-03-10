@@ -8,12 +8,13 @@
 #include "Task/TaskObject.h"
 
 // Generated Headers
-#include "PurchaseItem.generated.h"
+#include "Task_PurchaseItem.generated.h"
 
 // Forward Declarations
 class URAssetManager;
 class UShopAsset;
 class URPrimaryDataAsset;
+class IAssetTransactionInterface;
 
 
 
@@ -23,7 +24,7 @@ class URPrimaryDataAsset;
  *
  */
 UCLASS(NotBlueprintType)
-class UPurchaseItem : public UTaskObject
+class UTask_PurchaseItem : public UTaskObject
 {
 
 	GENERATED_BODY()
@@ -48,12 +49,15 @@ protected:
 	UPROPERTY()
 	TObjectPtr<const URPrimaryDataAsset> TargetAsset = nullptr;
 
+	IAssetTransactionInterface* MaterialTransaction = nullptr;
+
 
 	void Step_LoadAsset();
 	void Step_CheckTarget();
 	void Step_CheckMaterial();
-	void Step_CheckQuota(const TMap<FPrimaryAssetId, int>& MaterialAssetList, FPrimaryAssetType MaterialAssetType);
-	void Step_PerformTransaction(const TMap<FPrimaryAssetId, int>& MaterialAssetList, FPrimaryAssetType MaterialAssetType);
+	void Step_CheckMaterialTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType);
+	void Step_CheckShopQuota(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType);
+	void Step_PerformTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType);
 
 	// ~ UTaskObject
 	void OnStarted() override;

@@ -21,12 +21,27 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "RTradeUI",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "RShop",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "RShopUI",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "RCraft",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RCraftUI",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}

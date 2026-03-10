@@ -11,7 +11,6 @@
 #include "ShopDashboardUI.generated.h"
 
 // Forward Declarations
-class UButton;
 class UAssetCollection;
 class URPrimaryDataAsset;
 class UShopSubsystem;

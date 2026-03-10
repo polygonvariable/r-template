@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "Task/PurchaseItem.h"
+#include "Task/Task_PurchaseItem.h"
 
 // Engine Headers
 #include "InstancedStruct.h"
@@ -23,22 +23,23 @@
 
 
 
-void UPurchaseItem::OnStarted()
+void UTask_PurchaseItem::OnStarted()
 {
 	AssetManager = Cast<URAssetManager>(UAssetManager::GetIfInitialized());
 	Step_LoadAsset();
 }
 
-void UPurchaseItem::OnStopped()
+void UTask_PurchaseItem::OnStopped()
 {
 	AssetManager->CancelFetch(TaskId);
 }
 
-void UPurchaseItem::OnCleanup()
+void UTask_PurchaseItem::OnCleanup()
 {
 	AssetManager = nullptr;
 	ShopAsset = nullptr;
 	TargetAsset = nullptr;
+	MaterialTransaction = nullptr;
 
 	ShopAssetId = FPrimaryAssetId();
 	TargetAssetId = FPrimaryAssetId();
@@ -48,7 +49,7 @@ void UPurchaseItem::OnCleanup()
 	TargetQuantity = 0;
 }
 
-void UPurchaseItem::Step_LoadAsset()
+void UTask_PurchaseItem::Step_LoadAsset()
 {
 	if (!IsValid(AssetManager))
 	{
@@ -67,10 +68,10 @@ void UPurchaseItem::Step_LoadAsset()
 		return;
 	}
 
-	TWeakObjectPtr<UPurchaseItem> WeakThis(this);
+	TWeakObjectPtr<UTask_PurchaseItem> WeakThis(this);
 	Future.Next([WeakThis](const FLatentLoadedAssets<URPrimaryDataAsset>& Result)
 		{
-			UPurchaseItem* This = WeakThis.Get();
+			UTask_PurchaseItem* This = WeakThis.Get();
 			if (!IsValid(This) || !Result.IsValid())
 			{
 				This->Fail(TEXT("Failed to fetch assets"));
@@ -87,7 +88,7 @@ void UPurchaseItem::Step_LoadAsset()
 	);
 }
 
-void UPurchaseItem::Step_CheckTarget()
+void UTask_PurchaseItem::Step_CheckTarget()
 {
 	if (!IsValid(ShopAsset))
 	{
@@ -123,7 +124,7 @@ void UPurchaseItem::Step_CheckTarget()
 	Step_CheckMaterial();
 }
 
-void UPurchaseItem::Step_CheckMaterial()
+void UTask_PurchaseItem::Step_CheckMaterial()
 {
 	const IShopProviderInterface* ShopProvider = Cast<IShopProviderInterface>(TargetAsset);
 	if (!ShopProvider)
@@ -145,21 +146,44 @@ void UPurchaseItem::Step_CheckMaterial()
 
 	FPrimaryAssetType MaterialAssetType = MaterialCollection->GetCollectionType();
 
-	Step_CheckQuota(MaterialAssetList, MaterialAssetType);
+	Step_CheckMaterialTransaction(MoveTemp(MaterialAssetList), MaterialAssetType);
 }
 
-void UPurchaseItem::Step_CheckQuota(const TMap<FPrimaryAssetId, int>& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
+void UTask_PurchaseItem::Step_CheckMaterialTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
 {
-	if (TargetQuota <= 0)
+	IAssetInterchangeInterface* MaterialInterchange = FAssetUtil::GetAssetInterchange(GetWorld(), MaterialAssetType);
+	if (!MaterialInterchange)
 	{
-		Step_PerformTransaction(MaterialAssetList, MaterialAssetType);
+		Fail(TEXT("Failed to get transaction interface"));
 		return;
 	}
 
-	UWorld* World = GetWorld();
-	UGameInstance* GameInstance = World->GetGameInstance();
+	FGuid MaterialId = MaterialInterchange->GetDefaultSourceId();
+	MaterialTransaction = MaterialInterchange->GetTransactionSource(MaterialId);
+	if (!MaterialTransaction)
+	{
+		Fail(TEXT("Failed to get transaction source"));
+		return;
+	}
 
-	UShopSubsystem* ShopSubsystem = UShopSubsystem::Get(GameInstance);
+	if (!MaterialTransaction->ContainItems(MaterialAssetList, 1))
+	{
+		Fail(TEXT("Material not enough"));
+		return;
+	}
+
+	Step_CheckShopQuota(MoveTemp(MaterialAssetList), MaterialAssetType);
+}
+
+void UTask_PurchaseItem::Step_CheckShopQuota(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
+{
+	if (TargetQuota <= 0)
+	{
+		Step_PerformTransaction(MoveTemp(MaterialAssetList), MaterialAssetType);
+		return;
+	}
+
+	UShopSubsystem* ShopSubsystem = UShopSubsystem::Get(GetWorld());
 	if (!IsValid(ShopSubsystem))
 	{
 		Fail(TEXT("Failed to get ShopSubsystem"));
@@ -173,45 +197,45 @@ void UPurchaseItem::Step_CheckQuota(const TMap<FPrimaryAssetId, int>& MaterialAs
 		return;
 	}
 
-	FShopKey ShopKey(ShopAssetId, TradeCollectionId, TargetAssetId);
-	FShopData ShopData;
-	if (ShopStorage->GetItem(ShopKey, ShopData))
+	FTradeKey TradeKey(ShopAssetId, TradeCollectionId, TargetAssetId);
+	const FShopData* ShopData = ShopStorage->GetItem(TradeKey);
+	if (!ShopData)
 	{
-		if (ShopData.PurchaseCount >= TargetQuota)
-		{
-			Fail(TEXT("Item quota exceeded"));
-			return;
-		}
+		Fail(TEXT("Failed to get ShopData"));
+		return;
 	}
 
-	if (!ShopStorage->AddItem(ShopKey))
+	if (ShopData->PurchaseCount >= TargetQuota)
+	{
+		Fail(TEXT("Item quota exceeded"));
+		return;
+	}
+
+	if (!ShopStorage->AddItem(TradeKey))
 	{
 		Fail(TEXT("Failed to add item"));
 		return;
 	}
 
-	Step_PerformTransaction(MaterialAssetList, MaterialAssetType);
+	Step_PerformTransaction(MoveTemp(MaterialAssetList), MaterialAssetType);
 }
 
-void UPurchaseItem::Step_PerformTransaction(const TMap<FPrimaryAssetId, int>& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
+void UTask_PurchaseItem::Step_PerformTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
 {
-	UWorld* World = GetWorld();
-	UGameInstance* GameInstance = World->GetGameInstance();
-
-	IAssetInterchangeInterface* TargetInterchange = AssetUtil::GetAssetInterchange(GameInstance, TargetAssetId);
-	IAssetInterchangeInterface* MaterialInterchange = AssetUtil::GetAssetInterchange(GameInstance, MaterialAssetType);
-
-	if (!TargetInterchange || !MaterialInterchange)
+	IAssetInterchangeInterface* TargetInterchange = FAssetUtil::GetAssetInterchange(GetWorld(), TargetAssetId);
+	if (!TargetInterchange)
 	{
 		Fail(TEXT("Failed to get transaction interface"));
 		return;
 	}
 
 	FGuid TargetId = TargetInterchange->GetDefaultSourceId();
-	FGuid MaterialId = MaterialInterchange->GetDefaultSourceId();
-
 	IAssetTransactionInterface* TargetTransaction = TargetInterchange->GetTransactionSource(TargetId);
-	IAssetTransactionInterface* MaterialTransaction = MaterialInterchange->GetTransactionSource(MaterialId);
+	if (!TargetTransaction || !MaterialTransaction)
+	{
+		Fail(TEXT("Failed to get transaction source"));
+		return;
+	}
 
 	if (!MaterialTransaction->RemoveItems(MaterialAssetList, 1))
 	{

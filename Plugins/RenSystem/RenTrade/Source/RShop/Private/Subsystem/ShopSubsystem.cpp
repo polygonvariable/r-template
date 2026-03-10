@@ -7,9 +7,10 @@
 #include "InstancedStruct.h"
 
 // Project Headers
-#include "Asset/ShopAsset.h"
+#include "Asset/TradeAsset.h"
 #include "Definition/AssetDetail_Trade.h"
 #include "Definition/AssetRuleDefinition.h"
+#include "Definition/Runtime/TradeKey.h"
 #include "Delegate/LatentDelegate.h"
 #include "Interface/ShopProviderInterface.h"
 #include "Interface/StorageProviderInterface.h"
@@ -19,8 +20,19 @@
 #include "Management/Collection/AssetCollection_Trade.h"
 #include "Storage/ShopStorage.h"
 #include "Subsystem/TaskSubsystem.h"
-#include "Task/PurchaseItem.h"
+#include "Task/Task_PurchaseItem.h"
 
+
+
+UShopStorage* UShopSubsystem::GetShopStorage()
+{
+	IStorageProviderInterface* StorageInterface = StorageProvider.Get();
+	if (!StorageInterface)
+	{
+		return nullptr;
+	}
+	return StorageInterface->GetStorage<UShopStorage>(UShopSubsystem::GetStorageId());
+}
 
 
 void UShopSubsystem::PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& ShopAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId, FTaskCallback Callback)
@@ -33,7 +45,7 @@ void UShopSubsystem::PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& Sh
 		return;
 	}
 
-	UPurchaseItem* Task = TaskSubsystem->CreateTask<UPurchaseItem>(TaskId);
+	UTask_PurchaseItem* Task = TaskSubsystem->CreateTask<UTask_PurchaseItem>(TaskId);
 	if (!IsValid(Task))
 	{
 		LOG_ERROR(LogShop, TEXT("Failed to create task"));
@@ -49,65 +61,6 @@ void UShopSubsystem::PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& Sh
 }
 
 
-UShopStorage* UShopSubsystem::GetShopStorage()
-{
-	IStorageProviderInterface* StorageInterface = StorageProvider.Get();
-	if (!StorageInterface)
-	{
-		return nullptr;
-	}
-	return StorageInterface->GetStorage<UShopStorage>(UShopSubsystem::GetStorageId());
-}
-
-
-void UShopSubsystem::QueryItems(const UShopAsset* Asset, const FGuid& CollectionId, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&)> Callback)
-{
-	UShopStorage* ShopStorage = GetShopStorage();
-	if (!IsValid(Asset) || !IsValid(ShopStorage))
-	{
-		return;
-	}
-
-	const UAssetGroup* TradeGroup = Asset->TradeGroup;
-	if (!IsValid(TradeGroup))
-	{
-		return;
-	}
-
-	FInstancedStruct TradeContext = FInstancedStruct::Make(FAssetRuleContext(CollectionId));
-	const UAssetCollection_Trade* AssetCollection = TradeGroup->GetCollectionRule<UAssetCollection_Trade>(TradeContext);
-	if (!IsValid(AssetCollection))
-	{
-		return;
-	}
-
-	FPrimaryAssetId ShopAssetId = Asset->GetPrimaryAssetId();
-	const TMap<URPrimaryDataAsset*, FAssetDetail_Trade>& AssetList = AssetCollection->GetAssetList();
-
-	for (const TPair<URPrimaryDataAsset*, FAssetDetail_Trade>& AssetKv : AssetList)
-	{
-		const URPrimaryDataAsset* ItemDataAsset = AssetKv.Key;
-		FAssetDetail_Trade ItemDetail = AssetKv.Value;
-
-		const UAssetCollection* MaterialCollection = GetMaterialCollection(ItemDataAsset, TradeContext);
-		if (!IsValid(MaterialCollection))
-		{
-			continue;
-		}
-
-		const FPrimaryAssetId& ItemAssetId = ItemDataAsset->GetPrimaryAssetId();
-
-		FShopKey ShopKey(ShopAssetId, CollectionId, ItemAssetId);
-		FShopData ShopData;
-		if (ShopStorage->GetItem(ShopKey, ShopData))
-		{
-			ItemDetail.Quota = FMath::Max(0, ItemDetail.Quota - ShopData.PurchaseCount);
-		}
-
-		Callback(ItemAssetId, ItemDetail);
-	}
-}
-
 const UAssetCollection* UShopSubsystem::GetMaterialCollection(const URPrimaryDataAsset* Asset, const FInstancedStruct& Context) const
 {
 	const IShopProviderInterface* ShopProvider = Cast<IShopProviderInterface>(Asset);
@@ -121,6 +74,55 @@ const UAssetCollection* UShopSubsystem::GetMaterialCollection(const URPrimaryDat
 const UAssetCollection* UShopSubsystem::GetMaterialCollection(const URPrimaryDataAsset* Asset, const FGuid& CollectionId) const
 {
 	return GetMaterialCollection(Asset, FInstancedStruct::Make(FAssetRuleContext(CollectionId)));
+}
+
+
+void UShopSubsystem::QueryItems(const UTradeAsset* Asset, const FGuid& CollectionId, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&)> Callback)
+{
+	UShopStorage* ShopStorage = GetShopStorage();
+	if (!IsValid(Asset) || !IsValid(ShopStorage))
+	{
+		return;
+	}
+
+	const UAssetGroup* TradeGroup = Asset->TradeGroup;
+	if (!IsValid(TradeGroup))
+	{
+		return;
+	}
+
+	FInstancedStruct Context = FInstancedStruct::Make(FAssetRuleContext(CollectionId));
+	const UAssetCollection_Trade* AssetCollection = TradeGroup->GetCollectionRule<UAssetCollection_Trade>(Context);
+	if (!IsValid(AssetCollection))
+	{
+		return;
+	}
+
+	FPrimaryAssetId ShopAssetId = Asset->GetPrimaryAssetId();
+	const TMap<URPrimaryDataAsset*, FAssetDetail_Trade>& AssetList = AssetCollection->GetAssetList();
+
+	for (const TPair<URPrimaryDataAsset*, FAssetDetail_Trade>& AssetKv : AssetList)
+	{
+		const URPrimaryDataAsset* ItemDataAsset = AssetKv.Key;
+		FAssetDetail_Trade ItemDetail = AssetKv.Value;
+
+		const UAssetCollection* MaterialCollection = GetMaterialCollection(ItemDataAsset, Context);
+		if (!IsValid(MaterialCollection))
+		{
+			continue;
+		}
+
+		const FPrimaryAssetId& ItemAssetId = ItemDataAsset->GetPrimaryAssetId();
+
+		FTradeKey ShopKey(ShopAssetId, CollectionId, ItemAssetId);
+		const FShopData* ShopData = ShopStorage->GetItem(ShopKey);
+		if (ShopData)
+		{
+			ItemDetail.Quota = FMath::Max(0, ItemDetail.Quota - ShopData->PurchaseCount);
+		}
+
+		Callback(ItemAssetId, ItemDetail);
+	}
 }
 
 

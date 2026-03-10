@@ -93,10 +93,10 @@ UInventoryInstance* UInventoryInstanceSubsystem::CreateItem_Internal(const FGuid
 	//AssetManager->GetPrimaryAssetData(AssetId, AssetData);
 
 	//bool bPersistWhenEmpty = false;
-	//InventoryPrimaryAsset::GetPersistWhenEmpty(AssetData, bPersistWhenEmpty);
+	//FInventoryPrimaryAsset::GetPersistWhenEmpty(AssetData, bPersistWhenEmpty);
 
 	//bool bStackable = false;
-	//InventoryPrimaryAsset::GetStackable(AssetData, bStackable);
+	//FInventoryPrimaryAsset::GetStackable(AssetData, bStackable);
 
 	//if (!bPersistWhenEmpty || !bStackable)
 	//{

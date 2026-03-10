@@ -151,7 +151,7 @@ bool UInventoryStorage::ContainItems(const TMap<FPrimaryAssetId, int>& Items, in
 		const FPrimaryAssetId& AssetId = Kv.Key;
 		int RequiredQuantity = Kv.Value * Multiplier;
 
-		if (!InventoryPrimaryAsset::IsValid(AssetId) || RequiredQuantity <= 0)
+		if (!FInventoryPrimaryAsset::IsValid(AssetId) || RequiredQuantity <= 0)
 		{
 			bResult = false;
 			break;
@@ -201,7 +201,7 @@ bool UInventoryStorage::ContainAnyItems(const TMap<FPrimaryAssetId, int>& InItem
 		const FPrimaryAssetId& AssetId = Kv.Key;
 		int RequiredQuantity = Kv.Value * InMultiplier;
 
-		if (!InventoryPrimaryAsset::IsValid(AssetId) || RequiredQuantity <= 0)
+		if (!FInventoryPrimaryAsset::IsValid(AssetId) || RequiredQuantity <= 0)
 		{
 			continue;
 		}
@@ -395,7 +395,7 @@ void UInventoryStorage::HandleGlossaryItems(UAssetManager* AssetManager, const U
 {
 	TArray<FPrimaryAssetId> AssetIds;
 
-	AssetManager->GetPrimaryAssetIdList(InventoryPrimaryAsset::GetAssetType(), AssetIds);
+	AssetManager->GetPrimaryAssetIdList(FInventoryPrimaryAsset::GetAssetType(), AssetIds);
 
 	TArray<FInventorySortEntry> SortedItems;
 	SortedItems.Reserve(AssetIds.Num());
@@ -412,16 +412,16 @@ void UInventoryStorage::HandleGlossaryItems(UAssetManager* AssetManager, const U
 		FName ItemType = NAME_None;
 		FName ItemRarity = NAME_None;
 
-		InventoryPrimaryAsset::GetDisplayName(AssetData, DisplayName);
-		InventoryPrimaryAsset::GetType(AssetData, ItemType);
-		InventoryPrimaryAsset::GetRarity(AssetData, ItemRarity);
+		FInventoryPrimaryAsset::GetDisplayName(AssetData, DisplayName);
+		FInventoryPrimaryAsset::GetType(AssetData, ItemType);
+		FInventoryPrimaryAsset::GetRarity(AssetData, ItemRarity);
 
 		if (IsValid(FilterCriterion))
 		{
 			FFilterContext Context;
-			Context.SetValue(AssetFilterProperty::AssetId, AssetId);
-			Context.SetValue(InventoryFilterProperty::ItemType, ItemType);
-			Context.SetValue(InventoryFilterProperty::ItemRarity, ItemRarity);
+			Context.SetValue(FAssetFilterProperty::AssetId, AssetId);
+			Context.SetValue(FInventoryFilterProperty::ItemType, ItemType);
+			Context.SetValue(FInventoryFilterProperty::ItemRarity, ItemRarity);
 
 			if (!FilterCriterion->Evaluate(Context))
 			{
@@ -450,7 +450,7 @@ void UInventoryStorage::HandleInventoryItems(UAssetManager* AssetManager, const 
 	{
 		const FPrimaryAssetId& AssetId = Kv.Key;
 		const FInventoryStack* Stack = &Kv.Value;
-		if (!InventoryPrimaryAsset::IsValid(AssetId) || !Stack)
+		if (!FInventoryPrimaryAsset::IsValid(AssetId) || !Stack)
 		{
 			continue;
 		}
@@ -465,9 +465,9 @@ void UInventoryStorage::HandleInventoryItems(UAssetManager* AssetManager, const 
 		FName ItemType = TEXT_EMPTY;
 		FName ItemRarity = TEXT_EMPTY;
 
-		bool bNameValid = InventoryPrimaryAsset::GetDisplayName(AssetData, DisplayName);
-		bool bTypeValid = InventoryPrimaryAsset::GetType(AssetData, ItemType);
-		bool bRarityValid = InventoryPrimaryAsset::GetRarity(AssetData, ItemRarity);
+		bool bNameValid = FInventoryPrimaryAsset::GetDisplayName(AssetData, DisplayName);
+		bool bTypeValid = FInventoryPrimaryAsset::GetType(AssetData, ItemType);
+		bool bRarityValid = FInventoryPrimaryAsset::GetRarity(AssetData, ItemRarity);
 		if (!bNameValid || !bTypeValid || !bRarityValid)
 		{
 			continue;
@@ -480,11 +480,11 @@ void UInventoryStorage::HandleInventoryItems(UAssetManager* AssetManager, const 
 			if (IsValid(FilterCriterion))
 			{
 				FFilterContext Context;
-				Context.SetValue(AssetFilterProperty::AssetId, AssetId);
-				Context.SetValue(InventoryFilterProperty::ItemType, ItemType);
-				Context.SetValue(InventoryFilterProperty::ItemRarity, ItemRarity);
-				Context.SetValue(InventoryFilterProperty::ItemId, FName(*Item.ItemId.ToString()));
-				Context.SetValue(InventoryFilterProperty::ItemQuantity, ItemQuantity);
+				Context.SetValue(FAssetFilterProperty::AssetId, AssetId);
+				Context.SetValue(FInventoryFilterProperty::ItemType, ItemType);
+				Context.SetValue(FInventoryFilterProperty::ItemRarity, ItemRarity);
+				Context.SetValue(FInventoryFilterProperty::ItemId, FName(*Item.ItemId.ToString()));
+				Context.SetValue(FInventoryFilterProperty::ItemQuantity, ItemQuantity);
 
 				if (!FilterCriterion->Evaluate(Context))
 				{
@@ -535,8 +535,8 @@ FInventoryStack* UInventoryStorage::FindOrAddStack(const FPrimaryAssetId& AssetI
 	bool bStackable = false;
 	bool bPersistWhenEmpty = false;
 
-	bool bFoundStackable = InventoryPrimaryAsset::GetStackable(AssetData, bStackable);
-	bool bFoundPersist = InventoryPrimaryAsset::GetPersistWhenEmpty(AssetData, bPersistWhenEmpty);
+	bool bFoundStackable = FInventoryPrimaryAsset::GetStackable(AssetData, bStackable);
+	bool bFoundPersist = FInventoryPrimaryAsset::GetPersistWhenEmpty(AssetData, bPersistWhenEmpty);
 	if (!bFoundStackable || !bFoundPersist)
 	{
 		return nullptr;
@@ -576,7 +576,7 @@ int UInventoryStorage::GetItemQuantity_Internal(const FPrimaryAssetId& AssetId) 
 
 bool UInventoryStorage::AddItem_Internal(const FPrimaryAssetId& AssetId, int Quantity, FInventoryStack* Stack)
 {
-	if (!InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0 || !Stack)
+	if (!FInventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0 || !Stack)
 	{
 		LOG_ERROR(LogInventory, TEXT("AssetId, Stack is invalid or Quantity less than or equal to 0"));
 		return false;
@@ -634,7 +634,7 @@ void UInventoryStorage::AddItem_InternalUpdate(const FPrimaryAssetId& AssetId, F
 
 bool UInventoryStorage::RemoveItem_Internal(const FPrimaryAssetId& AssetId, int Quantity, FInventoryStack* Stack)
 {
-	if (!InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0 || !Stack)
+	if (!FInventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0 || !Stack)
 	{
 		LOG_ERROR(LogInventory, TEXT("AssetId, Stack is invalid or Quantity less than or equal to 0"));
 		return false;
@@ -664,7 +664,7 @@ bool UInventoryStorage::RemoveItem_Internal(const FPrimaryAssetId& AssetId, int 
 
 bool UInventoryStorage::RemoveItemById_Internal(const FPrimaryAssetId& AssetId, const FGuid& ItemId, int Quantity, FInventoryStack* Stack)
 {
-	if (!InventoryPrimaryAsset::IsValid(AssetId) || !ItemId.IsValid() || Quantity <= 0 || !Stack)
+	if (!FInventoryPrimaryAsset::IsValid(AssetId) || !ItemId.IsValid() || Quantity <= 0 || !Stack)
 	{
 		LOG_ERROR(LogInventory, TEXT("AssetId, ItemId, Stack is invalid or Quantity less than or equal to 0"));
 		return false;

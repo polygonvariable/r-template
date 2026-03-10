@@ -146,7 +146,7 @@ void UTask_ClaimCraftItem::Step_PerformTransaction()
 	UWorld* World = GetWorld();
 	UGameInstance* GameInstance = World->GetGameInstance();
 
-	IAssetInterchangeInterface* TargetInterchange = AssetUtil::GetAssetInterchange(GameInstance, TargetAssetId);
+	IAssetInterchangeInterface* TargetInterchange = FAssetUtil::GetAssetInterchange(GameInstance, TargetAssetId);
 	if (!TargetInterchange)
 	{
 		Fail(TEXT("Failed to get transaction interface"));

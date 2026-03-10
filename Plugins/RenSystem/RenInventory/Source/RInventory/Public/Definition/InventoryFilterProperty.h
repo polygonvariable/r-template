@@ -18,7 +18,7 @@
 /**
  *
  */
-class RSYSTEM_API InventoryFilterProperty
+class RSYSTEM_API FInventoryFilterProperty
 {
 
 public:

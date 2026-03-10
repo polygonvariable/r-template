@@ -27,8 +27,6 @@ public class RCraft : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-                "UMG",
-                "GameplayTags",
                 "RCoreTask",
                 "RCoreStorage",
                 "RTrade",
@@ -47,7 +45,6 @@ public class RCraft : ModuleRules
 				"StructUtils",
                 "RCoreDelegate",
                 "RCoreAsset",
-				"RCoreAssetUI",
 				"RCoreAssetManager",
                 "RCoreCraft",
                 "RCoreLibrary",

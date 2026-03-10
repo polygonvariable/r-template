@@ -65,7 +65,6 @@ void UAssetCollection_Simple::PreSave(FObjectPreSaveContext ObjectSaveContext)
 {
 	Super::PreSave(ObjectSaveContext);
 
-
 #if WITH_EDITOR
 
 	AssetType = FPrimaryAssetType();

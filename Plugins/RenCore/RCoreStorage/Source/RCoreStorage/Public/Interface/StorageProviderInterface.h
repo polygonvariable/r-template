@@ -11,6 +11,9 @@
 // Generated Headers
 #include "StorageProviderInterface.generated.h"
 
+// Module Macros
+#define RCORE_API RCORESTORAGE_API
+
 // Forward Declarations
 class UStorage;
 
@@ -27,7 +30,7 @@ class UStorageProviderInterface : public UInterface
 /**
  * 
  */
-class RCORESTORAGE_API IStorageProviderInterface
+class RCORE_API IStorageProviderInterface
 {
 
 	GENERATED_BODY()
@@ -51,4 +54,9 @@ public:
 	static IStorageProviderInterface* Get(UGameInstance* GameInstance);
 
 };
+
+
+
+// Module Macros
+#undef RCORE_API
 

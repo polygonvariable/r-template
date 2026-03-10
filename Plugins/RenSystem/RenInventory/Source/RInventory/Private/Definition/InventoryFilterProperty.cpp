@@ -9,11 +9,11 @@
 
 
 
-const FName InventoryFilterProperty::ItemId(TEXT("ItemId"));
-const FName InventoryFilterProperty::ItemType(TEXT("ItemType"));
-const FName InventoryFilterProperty::ItemRarity(TEXT("ItemRarity"));
-const FName InventoryFilterProperty::ItemQuantity(TEXT("ItemQuantity"));
-const FName InventoryFilterProperty::ItemExperience(TEXT("ItemExperience"));
-const FName InventoryFilterProperty::ItemLevel(TEXT("ItemLevel"));
-const FName InventoryFilterProperty::ItemRank(TEXT("ItemRank"));
+const FName FInventoryFilterProperty::ItemId(TEXT("ItemId"));
+const FName FInventoryFilterProperty::ItemType(TEXT("ItemType"));
+const FName FInventoryFilterProperty::ItemRarity(TEXT("ItemRarity"));
+const FName FInventoryFilterProperty::ItemQuantity(TEXT("ItemQuantity"));
+const FName FInventoryFilterProperty::ItemExperience(TEXT("ItemExperience"));
+const FName FInventoryFilterProperty::ItemLevel(TEXT("ItemLevel"));
+const FName FInventoryFilterProperty::ItemRank(TEXT("ItemRank"));
 

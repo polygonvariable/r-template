@@ -10,27 +10,27 @@
 
 
 
-FPrimaryAssetType InventoryPrimaryAsset::GetAssetType()
+FPrimaryAssetType FInventoryPrimaryAsset::GetAssetType()
 {
 	return UInventoryAsset::GetPrimaryAssetType();
 }
 
-FPrimaryAssetId InventoryPrimaryAsset::GetPrimaryAssetId(const FName& AssetName)
+FPrimaryAssetId FInventoryPrimaryAsset::GetPrimaryAssetId(const FName& AssetName)
 {
 	return FPrimaryAssetId(UInventoryAsset::GetPrimaryAssetType(), AssetName);
 }
 
-bool InventoryPrimaryAsset::IsValid(const FPrimaryAssetId& AssetId)
+bool FInventoryPrimaryAsset::IsValid(const FPrimaryAssetId& AssetId)
 {
 	return AssetId.PrimaryAssetType == UInventoryAsset::GetPrimaryAssetType();
 }
 
-bool InventoryPrimaryAsset::GetType(const FAssetData& AssetData, FName& Type)
+bool FInventoryPrimaryAsset::GetType(const FAssetData& AssetData, FName& Type)
 {
 	return AssetData.GetTagValue<FName>(GET_MEMBER_NAME_CHECKED(UInventoryAsset, Type), Type);
 }
 
-bool InventoryPrimaryAsset::GetType(const FAssetData& AssetData, EInventoryItemType& Type)
+bool FInventoryPrimaryAsset::GetType(const FAssetData& AssetData, EInventoryItemType& Type)
 {
 	FName TypeText;
 	GetType(AssetData, TypeText);
@@ -47,12 +47,12 @@ bool InventoryPrimaryAsset::GetType(const FAssetData& AssetData, EInventoryItemT
 	return true;
 }
 
-bool InventoryPrimaryAsset::GetRarity(const FAssetData& AssetData, FName& Rarity)
+bool FInventoryPrimaryAsset::GetRarity(const FAssetData& AssetData, FName& Rarity)
 {
 	return AssetData.GetTagValue<FName>(GET_MEMBER_NAME_CHECKED(UInventoryAsset, Rarity), Rarity);
 }
 
-bool InventoryPrimaryAsset::GetRarity(const FAssetData& AssetData, EInventoryItemRarity& Rarity)
+bool FInventoryPrimaryAsset::GetRarity(const FAssetData& AssetData, EInventoryItemRarity& Rarity)
 {
 	FName RarityText;
 	GetRarity(AssetData, RarityText);
@@ -69,17 +69,17 @@ bool InventoryPrimaryAsset::GetRarity(const FAssetData& AssetData, EInventoryIte
 	return true;
 }
 
-bool InventoryPrimaryAsset::GetDisplayName(const FAssetData& AssetData, FText& DisplayName)
+bool FInventoryPrimaryAsset::GetDisplayName(const FAssetData& AssetData, FText& DisplayName)
 {
 	return AssetData.GetTagValue<FText>(GET_MEMBER_NAME_CHECKED(UInventoryAsset, DisplayName), DisplayName);
 }
 
-bool InventoryPrimaryAsset::GetStackable(const FAssetData& AssetData, bool& bStackable)
+bool FInventoryPrimaryAsset::GetStackable(const FAssetData& AssetData, bool& bStackable)
 {
 	return AssetData.GetTagValue<bool>(GET_MEMBER_NAME_CHECKED(UInventoryAsset, bStackable), bStackable);
 }
 
-bool InventoryPrimaryAsset::GetPersistWhenEmpty(const FAssetData& AssetData, bool& bPersistWhenEmpty)
+bool FInventoryPrimaryAsset::GetPersistWhenEmpty(const FAssetData& AssetData, bool& bPersistWhenEmpty)
 {
 	return AssetData.GetTagValue<bool>(GET_MEMBER_NAME_CHECKED(UInventoryAsset, bPersistWhenEmpty), bPersistWhenEmpty);
 }

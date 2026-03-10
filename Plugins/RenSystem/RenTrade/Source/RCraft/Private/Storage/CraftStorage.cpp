@@ -31,6 +31,12 @@ bool UCraftStorage::AddItem(const FTradeKey& TradeKey, FTimespan BatchProcessing
 	return true;
 }
 
+void UCraftStorage::ResetItems()
+{
+	CraftItems.Empty();
+	OnCraftUpdated.Broadcast();
+}
+
 int UCraftStorage::ClaimCraftedItems(const FTradeKey& TradeKey)
 {
 	FCraftData* FoundData = CraftItems.Find(TradeKey);
@@ -75,14 +81,3 @@ int UCraftStorage::ClaimCraftedItems(const FTradeKey& TradeKey)
 
 	return AvailableQuantity;
 }
-
-
-
-
-
-
-void UCraftStorage::ResetItems()
-{
-	CraftItems.Empty();
-}
-

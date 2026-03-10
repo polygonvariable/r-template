@@ -9,79 +9,30 @@
 
 
 
-bool UShopStorage::GetItem(const FShopKey& ShopKey, FShopData& OutShopData)
+const FShopData* UShopStorage::GetItem(const FTradeKey& TradeKey) const
 {
-	FShopData* FoundData = ShopItems.Find(ShopKey);
-	if (!FoundData)
-	{
-		return false;
-	}
-
-	OutShopData = *FoundData;
-	return true;
+	return ShopItems.Find(TradeKey);
 }
 
-bool UShopStorage::AddItem(const FShopKey& ShopKey)
+bool UShopStorage::AddItem(const FTradeKey& TradeKey)
 {
-	FShopData* FoundData = ShopItems.Find(ShopKey);
+	FShopData* FoundData = ShopItems.Find(TradeKey);
 	if (!FoundData)
 	{
-		FShopData ShopData;
-		ShopData.PurchaseCount = 1;
-		ShopItems.Add(ShopKey, ShopData);
-		return true;
+		ShopItems.Add(TradeKey, FShopData(1));
+	}
+	else
+	{
+		FoundData->PurchaseCount++;
 	}
 
-	FoundData->PurchaseCount++;
+	OnShopUpdated.Broadcast();
 	return true;
 }
-
-//int UShopStorage::RemoveAvailableItems(FShopKey ShopKey)
-//{
-//	FShopData* FoundData = ShopItems.Find(ShopKey);
-//	if (!FoundData)
-//	{
-//		return 0;
-//	}
-//
-//	int TotalQuantity = FoundData->Quantity;
-//	FDateTime BatchTime = FoundData->BatchTime;
-//	FTimespan BatchDuration = FoundData->BatchDuration;
-//
-//	FDateTime CurrentTime = FDateTime::Now();
-//
-//	FTimespan Elapsed = CurrentTime - BatchTime;
-//
-//	int Completed = 0;
-//
-//	if (BatchDuration.GetTicks() > 0)
-//	{
-//		Completed = Elapsed.GetTicks() / BatchDuration.GetTicks();
-//	}
-//
-//	int AvailableQuantity = FMath::Clamp(Completed, 0, TotalQuantity);
-//	if (AvailableQuantity > 0)
-//	{
-//		FoundData->BatchTime = BatchTime + (BatchDuration * AvailableQuantity);
-//	}
-//
-//	FoundData->Quantity -= AvailableQuantity;
-//	FoundData->Sanitize();
-//
-//	if (FoundData->Quantity <= 0)
-//	{
-//		ShopItems.Remove(ShopKey);
-//	}
-//
-//	return AvailableQuantity;
-//}
-
-
-
-
 
 void UShopStorage::ResetItems()
 {
 	ShopItems.Empty();
+	OnShopUpdated.Broadcast();
 }
 

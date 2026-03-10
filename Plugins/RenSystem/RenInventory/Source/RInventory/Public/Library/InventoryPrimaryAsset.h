@@ -20,7 +20,7 @@
 /**
  *
  */
-class RSYSTEM_API InventoryPrimaryAsset
+class RSYSTEM_API FInventoryPrimaryAsset
 {
 
 public:

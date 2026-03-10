@@ -9,5 +9,5 @@
 
 
 
-const FName AssetFilterProperty::AssetId(TEXT("AssetId"));
+const FName FAssetFilterProperty::AssetId(TEXT("AssetId"));
 

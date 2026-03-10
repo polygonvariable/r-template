@@ -11,6 +11,7 @@
 #include "ShopCollectionUI.generated.h"
 
 // Forward Declarations
+class UShopSubsystem;
 
 
 
@@ -25,9 +26,18 @@ class UShopCollectionUI : public UTradeCollectionUI
 
 public:
 
+	UPROPERTY()
+	TObjectPtr<UShopSubsystem> ShopSubsystem;
+
+
 	// ~ UTradeCollectionUI
 	virtual void DisplayEntries() override;
 	// ~ End of UTradeCollectionUI
+
+	// ~ UUserWidget
+	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
+	// ~ End of UUserWidget
 
 };
 

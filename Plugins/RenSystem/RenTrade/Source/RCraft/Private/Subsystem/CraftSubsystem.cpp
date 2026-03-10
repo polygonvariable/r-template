@@ -25,12 +25,25 @@
 
 
 
+UCraftStorage* UCraftSubsystem::GetCraftStorage()
+{
+	IStorageProviderInterface* StorageInterface = StorageProvider.Get();
+	if (!StorageInterface)
+	{
+		return nullptr;
+	}
+	return StorageInterface->GetStorage<UCraftStorage>(UCraftSubsystem::GetStorageId());
+}
+
+
+
 void UCraftSubsystem::ClaimCraftItem(const FGuid& TaskId, const FPrimaryAssetId& CraftAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId, FTaskCallback Callback)
 {
 	UTaskSubsystem* TaskSubsystem = UTaskSubsystem::Get(GetGameInstance());
 	if (!IsValid(TaskSubsystem))
 	{
 		LOG_ERROR(LogCraft, TEXT("Task subsystem is invalid"));
+		Callback.ExecuteIfBound(ETaskState::Failed);
 		return;
 	}
 
@@ -38,6 +51,7 @@ void UCraftSubsystem::ClaimCraftItem(const FGuid& TaskId, const FPrimaryAssetId&
 	if (!IsValid(Task))
 	{
 		LOG_ERROR(LogCraft, TEXT("Failed to create task"));
+		Callback.ExecuteIfBound(ETaskState::Failed);
 		return;
 	}
 
@@ -54,6 +68,7 @@ void UCraftSubsystem::CraftItem(const FGuid& TaskId, const FPrimaryAssetId& Craf
 	if (!IsValid(TaskSubsystem))
 	{
 		LOG_ERROR(LogCraft, TEXT("Task subsystem is invalid"));
+		Callback.ExecuteIfBound(ETaskState::Failed);
 		return;
 	}
 
@@ -61,6 +76,7 @@ void UCraftSubsystem::CraftItem(const FGuid& TaskId, const FPrimaryAssetId& Craf
 	if (!IsValid(Task))
 	{
 		LOG_ERROR(LogCraft, TEXT("Failed to create task"));
+		Callback.ExecuteIfBound(ETaskState::Failed);
 		return;
 	}
 
@@ -71,15 +87,24 @@ void UCraftSubsystem::CraftItem(const FGuid& TaskId, const FPrimaryAssetId& Craf
 	Task->StartTask();
 }
 
-UCraftStorage* UCraftSubsystem::GetCraftStorage()
+
+
+const UAssetCollection* UCraftSubsystem::GetMaterialCollection(const URPrimaryDataAsset* Asset, const FInstancedStruct& Context) const
 {
-	IStorageProviderInterface* StorageInterface = StorageProvider.Get();
-	if (!StorageInterface)
+	const ICraftProviderInterface* Provider = Cast<ICraftProviderInterface>(Asset);
+	if (!Provider)
 	{
 		return nullptr;
 	}
-	return StorageInterface->GetStorage<UCraftStorage>(UCraftSubsystem::GetStorageId());
+	return Provider->GetCraftingMaterial(Context);
 }
+
+const UAssetCollection* UCraftSubsystem::GetMaterialCollection(const URPrimaryDataAsset* Asset, const FGuid& CollectionId) const
+{
+	return GetMaterialCollection(Asset, FInstancedStruct::Make(FAssetRuleContext(CollectionId)));
+}
+
+
 
 void UCraftSubsystem::QueryItems(const UTradeAsset* Asset, const FGuid& CollectionId, ECraftQuerySource QuerySource, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftData*)> Callback)
 {
@@ -114,26 +139,6 @@ void UCraftSubsystem::QueryItems(const UTradeAsset* Asset, const FGuid& Collecti
 		HandleStorageItems(AssetList, CraftAssetId, CollectionId, Context, CraftStorage, MoveTemp(Callback));
 	}
 }
-
-
-
-const UAssetCollection* UCraftSubsystem::GetMaterialCollection(const URPrimaryDataAsset* Asset, const FInstancedStruct& Context) const
-{
-	const ICraftProviderInterface* Provider = Cast<ICraftProviderInterface>(Asset);
-	if (!Provider)
-	{
-		return nullptr;
-	}
-	return Provider->GetCraftingMaterial(Context);
-}
-
-const UAssetCollection* UCraftSubsystem::GetMaterialCollection(const URPrimaryDataAsset* Asset, const FGuid& CollectionId) const
-{
-	return GetMaterialCollection(Asset, FInstancedStruct::Make(FAssetRuleContext(CollectionId)));
-}
-
-
-
 
 void UCraftSubsystem::HandleGlossaryItems(const TMap<URPrimaryDataAsset*, FAssetDetail_Trade>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorage* CraftStorage, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftData*)>&& Callback)
 {
@@ -190,6 +195,7 @@ void UCraftSubsystem::HandleStorageItems(const TMap<URPrimaryDataAsset*, FAssetD
 }
 
 
+
 void UCraftSubsystem::OnPreGameInitialized()
 {
 	IStorageProviderInterface* StorageInterface = IStorageProviderInterface::Get(GetGameInstance());
@@ -208,8 +214,6 @@ void UCraftSubsystem::OnPreGameInitialized()
 
 	StorageProvider = TWeakInterfacePtr<IStorageProviderInterface>(StorageInterface);
 }
-
-
 
 bool UCraftSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 {

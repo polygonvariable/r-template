@@ -9,6 +9,13 @@
 
 
 
+FCraftData::FCraftData(int InPendingQuantity, FDateTime InBatchStartTimestamp, FTimespan InBatchProcessingTime)
+{
+	PendingQuantity = InPendingQuantity;
+	BatchStartTimestamp = InBatchStartTimestamp;
+	BatchProcessingTime = InBatchProcessingTime;
+}
+
 void FCraftData::Reset()
 {
 	PendingQuantity = 0;
@@ -26,6 +33,19 @@ void FCraftData::Sanitize()
 	PendingQuantity = FMath::Max(0, PendingQuantity);
 }
 
+int FCraftData::GetCompletedQuantity() const
+{
+	if (BatchProcessingTime.GetTicks() <= 0)
+	{
+		return 0;
+	}
+
+	FTimespan Elapsed = FDateTime::Now() - BatchStartTimestamp;
+	int Completed = Elapsed.GetTicks() / BatchProcessingTime.GetTicks();
+
+	return FMath::Clamp(Completed, 0, PendingQuantity);
+}
+
 FTimespan FCraftData::GetRemainingTime() const
 {
 	FDateTime EndTime = BatchStartTimestamp + (BatchProcessingTime * PendingQuantity);
@@ -39,15 +59,3 @@ FTimespan FCraftData::GetRemainingTime() const
 	return Result;
 }
 
-int FCraftData::GetCompletedQuantity() const
-{
-	if (BatchProcessingTime.GetTicks() <= 0)
-	{
-		return 0;
-	}
-
-	FTimespan Elapsed = FDateTime::Now() - BatchStartTimestamp;
-	int Completed = Elapsed.GetTicks() / BatchProcessingTime.GetTicks();
-
-	return FMath::Clamp(Completed, 0, PendingQuantity);
-}

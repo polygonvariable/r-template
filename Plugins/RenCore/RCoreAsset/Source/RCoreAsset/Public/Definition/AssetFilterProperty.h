@@ -18,7 +18,7 @@
 /**
  *
  */
-class RCORE_API AssetFilterProperty
+class RCORE_API FAssetFilterProperty
 {
 
 public:

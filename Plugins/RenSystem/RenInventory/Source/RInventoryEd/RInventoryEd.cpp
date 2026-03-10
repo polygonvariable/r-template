@@ -81,7 +81,7 @@ void FRInventoryEdModule::AddItem(const TArray<FString>& Args, UWorld* World)
 		return;
 	}
 
-	FPrimaryAssetId AssetId = InventoryPrimaryAsset::GetPrimaryAssetId(FName(*Args[0]));
+	FPrimaryAssetId AssetId = FInventoryPrimaryAsset::GetPrimaryAssetId(FName(*Args[0]));
 	int Quantity = FCString::Atoi(*Args[1]);
 
 	Inventory->AddItem(AssetId, Quantity);
@@ -109,7 +109,7 @@ void FRInventoryEdModule::RemoveItem(const TArray<FString>& Args, UWorld* World)
 		return;
 	}
 
-	FPrimaryAssetId AssetId = InventoryPrimaryAsset::GetPrimaryAssetId(FName(*Args[0]));
+	FPrimaryAssetId AssetId = FInventoryPrimaryAsset::GetPrimaryAssetId(FName(*Args[0]));
 	int Quantity = FCString::Atoi(*Args[1]);
 
 	Inventory->RemoveItem(AssetId, Quantity);
@@ -137,7 +137,7 @@ void FRInventoryEdModule::GetItem(const TArray<FString>& Args, UWorld* World)
 		return;
 	}
 
-	FPrimaryAssetId AssetId = InventoryPrimaryAsset::GetPrimaryAssetId(FName(*Args[0]));
+	FPrimaryAssetId AssetId = FInventoryPrimaryAsset::GetPrimaryAssetId(FName(*Args[0]));
 	const FInventoryItem* Item = Inventory->GetItem(AssetId);
 	if (!Item)
 	{

@@ -33,15 +33,15 @@ void UInventoryFilterUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrim
 	}
 
 	FName ItemType = TEXT_EMPTY;
-	InventoryPrimaryAsset::GetType(AssetData, ItemType);
+	FInventoryPrimaryAsset::GetType(AssetData, ItemType);
 
 	FName ItemRarity = TEXT_EMPTY;
-	InventoryPrimaryAsset::GetRarity(AssetData, ItemRarity);
+	FInventoryPrimaryAsset::GetRarity(AssetData, ItemRarity);
 
 	FFilterContext Context;
-	Context.SetValue(AssetFilterProperty::AssetId, GetActiveAssetId());
-	Context.SetValue(InventoryFilterProperty::ItemType, ItemType);
-	Context.SetValue(InventoryFilterProperty::ItemRarity, ItemRarity);
+	Context.SetValue(FAssetFilterProperty::AssetId, GetActiveAssetId());
+	Context.SetValue(FInventoryFilterProperty::ItemType, ItemType);
+	Context.SetValue(FInventoryFilterProperty::ItemRarity, ItemRarity);
 
 	UFilterCriterion* FilterRoot = FilterRule->CriterionRoot;
 	if (IsValid(FilterRoot))

@@ -121,7 +121,7 @@ void UInventoryAscensionDashboardUI::ToggleRankUp(const FInventoryItem* Item)
 
 	SecondaryCollection->ClearSubDetails();
 
-	UFilterAssetCriterion* AssetFilter = SecondaryCollection->GetCriterionByName<UFilterAssetCriterion>(AssetFilterProperty::AssetId);
+	UFilterAssetCriterion* AssetFilter = SecondaryCollection->GetCriterionByName<UFilterAssetCriterion>(FAssetFilterProperty::AssetId);
 	if (IsValid(AssetFilter))
 	{
 		AssetFilter->Included.Empty();
@@ -224,7 +224,7 @@ void UInventoryAscensionDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry
 	ActiveItemId = Item->ItemId;
 	ActiveItemAscension = AscensionProvider;
 
-	UFilterAssetCriterion* AssetIdFilter = PrimaryCollection->GetCriterionByName<UFilterAssetCriterion>(AssetFilterProperty::AssetId);
+	UFilterAssetCriterion* AssetIdFilter = PrimaryCollection->GetCriterionByName<UFilterAssetCriterion>(FAssetFilterProperty::AssetId);
 	if (IsValid(AssetIdFilter))
 	{
 		AssetIdFilter->Included.Empty();

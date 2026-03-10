@@ -3,20 +3,26 @@
 #pragma once
 
 // Engine Headers
-#include "SaveGame/Storage.h"
 
 // Project Headers
-#include "Definition/Runtime/ShopRuntime.h"
+#include "Definition/Runtime/ShopData.h"
+#include "Definition/Runtime/TradeKey.h"
+#include "SaveGame/Storage.h"
 
 // Generated Headers
 #include "ShopStorage.generated.h"
+
+// Module Macros
+#define RSYSTEM_API RSHOP_API
+
+// Forward Declarations
 
 
 
 /**
  *
  */
-UCLASS()
+UCLASS(MinimalAPI)
 class UShopStorage : public UStorage
 {
 
@@ -24,16 +30,23 @@ class UShopStorage : public UStorage
 
 public:
 
-	bool GetItem(const FShopKey& ShopKey, FShopData& OutShopData);
-	bool AddItem(const FShopKey& ShopKey);
-	//int RemoveAvailableItems(FTradeKey TradeKey);
+	DECLARE_MULTICAST_DELEGATE(FOnShopUpdated);
+	FOnShopUpdated OnShopUpdated;
 
-	void ResetItems();
+
+	RSYSTEM_API const FShopData* GetItem(const FTradeKey& TradeKey) const;
+	RSYSTEM_API bool AddItem(const FTradeKey& TradeKey);
+	RSYSTEM_API void ResetItems();
 
 protected:
 
 	UPROPERTY(SaveGame)
-	TMap<FShopKey, FShopData> ShopItems;
+	TMap<FTradeKey, FShopData> ShopItems;
 
 };
+
+
+
+// Module Macros
+#undef RSYSTEM_API
 

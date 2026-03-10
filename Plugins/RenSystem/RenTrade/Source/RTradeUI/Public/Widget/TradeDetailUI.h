@@ -11,7 +11,7 @@
 #include "TradeDetailUI.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RTRADE_API
+#define RSYSTEM_API RTRADEUI_API
 
 // Forward Declarations
 class UAssetEntry;

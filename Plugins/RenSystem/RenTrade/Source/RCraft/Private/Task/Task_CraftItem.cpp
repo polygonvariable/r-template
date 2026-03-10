@@ -154,7 +154,7 @@ void UTask_CraftItem::Step_CheckMaterialAsset()
 
 void UTask_CraftItem::Step_CheckMaterialTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
 {
-	IAssetInterchangeInterface* MaterialInterchange = AssetUtil::GetAssetInterchange(GetWorld(), MaterialAssetType);
+	IAssetInterchangeInterface* MaterialInterchange = FAssetUtil::GetAssetInterchange(GetWorld(), MaterialAssetType);
 	if (!MaterialInterchange)
 	{
 		Fail(TEXT("Failed to get transaction interface"));
@@ -203,7 +203,13 @@ void UTask_CraftItem::Step_CheckCraftQuota(TMap<FPrimaryAssetId, int>&& Material
 
 	FTradeKey TradeKey(CraftAssetId, TradeCollectionId, TargetAssetId);
 	const FCraftData* CraftData = CraftStorage->GetItem(TradeKey);
-	if (CraftData && CraftData->PendingQuantity >= TargetQuota)
+	if (!CraftData)
+	{
+		Fail(TEXT("Failed to get craft data"));
+		return;
+	}
+
+	if (CraftData->PendingQuantity >= TargetQuota)
 	{
 		Fail(TEXT("Item quota exceeded"));
 		return;
@@ -220,7 +226,7 @@ void UTask_CraftItem::Step_CheckCraftQuota(TMap<FPrimaryAssetId, int>&& Material
 
 void UTask_CraftItem::Step_PerformTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
 {
-	IAssetInterchangeInterface* TargetInterchange = AssetUtil::GetAssetInterchange(GetWorld(), TargetAssetId);
+	IAssetInterchangeInterface* TargetInterchange = FAssetUtil::GetAssetInterchange(GetWorld(), TargetAssetId);
 	if (!TargetInterchange)
 	{
 		Fail(TEXT("Failed to get target transaction interface"));

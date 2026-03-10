@@ -11,13 +11,17 @@
 // Generated Headers
 #include "ShopSubsystem.generated.h"
 
+// Module Macros
+#define RSYSTEM_API RSHOP_API
+
 // Forward Declarations
 class UAssetCollection;
 class UStorage;
-class IStorageProviderInterface;
 class UShopStorage;
-class UShopAsset;
+class UTradeAsset;
 class URPrimaryDataAsset;
+class IStorageProviderInterface;
+
 struct FAssetDetail_Trade;
 struct FInstancedStruct;
 
@@ -26,7 +30,7 @@ struct FInstancedStruct;
 /**
  *
  */
-UCLASS(NotBlueprintType)
+UCLASS(MinimalAPI, NotBlueprintType)
 class UShopSubsystem : public UGameInstanceSubsystem
 {
 
@@ -34,14 +38,14 @@ class UShopSubsystem : public UGameInstanceSubsystem
 
 public:
 
-	void PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& ShopAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId, FTaskCallback Callback);
+	RSYSTEM_API UShopStorage* GetShopStorage();
 
-	UShopStorage* GetShopStorage();
+	RSYSTEM_API void PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& ShopAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId, FTaskCallback Callback);
 
-	void QueryItems(const UShopAsset* Asset, const FGuid& CollectionId, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&)> Callback);
+	RSYSTEM_API const UAssetCollection* GetMaterialCollection(const URPrimaryDataAsset* Asset, const FInstancedStruct& Context) const;
+	RSYSTEM_API const UAssetCollection* GetMaterialCollection(const URPrimaryDataAsset* Asset, const FGuid& CollectionId) const;
 
-	const UAssetCollection* GetMaterialCollection(const URPrimaryDataAsset* Asset, const FInstancedStruct& Context) const;
-	const UAssetCollection* GetMaterialCollection(const URPrimaryDataAsset* Asset, const FGuid& CollectionId) const;
+	RSYSTEM_API void QueryItems(const UTradeAsset* Asset, const FGuid& CollectionId, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&)> Callback);
 
 protected:
 
@@ -57,8 +61,8 @@ protected:
 
 public:
 
-	static UShopSubsystem* Get(UWorld* World);
-	static UShopSubsystem* Get(UGameInstance* GameInstance);
+	RSYSTEM_API static UShopSubsystem* Get(UWorld* World);
+	RSYSTEM_API static UShopSubsystem* Get(UGameInstance* GameInstance);
 
 
 	static FGuid GetStorageId();
@@ -66,4 +70,9 @@ public:
 	static TSubclassOf<UStorage> GetStorageClass();
 
 };
+
+
+
+// Module Macros
+#undef RSYSTEM_API
 
