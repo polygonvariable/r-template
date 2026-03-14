@@ -291,13 +291,21 @@ void UInventoryStorage::QueryItems(const UFilterCriterion* FilterCriterion, cons
 		return;
 	}
 
-	if (QueryRule.QuerySource == EInventoryQuerySource::Glossary)
+	TArray<FInventorySortEntry> SortedItems;
+	if (QueryRule.QuerySource == EAssetQuerySource::Asset)
 	{
-		HandleGlossaryItems(AssetManager, FilterCriterion, QueryRule, MoveTemp(Callback));
+		QueryAssetItems(AssetManager, FilterCriterion, SortedItems);
 	}
 	else
 	{
-		HandleInventoryItems(AssetManager, FilterCriterion, QueryRule, MoveTemp(Callback));
+		QueryInstanceItems(AssetManager, FilterCriterion, SortedItems);
+	}
+
+	HandleItemSorting(SortedItems, QueryRule);
+
+	for (const FInventorySortEntry& Item : SortedItems)
+	{
+		Callback(Item);
 	}
 }
 
@@ -391,14 +399,13 @@ void UInventoryStorage::HandleItemSorting(TArray<FInventorySortEntry>& SortedIte
 	}
 }
 
-void UInventoryStorage::HandleGlossaryItems(UAssetManager* AssetManager, const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback) const
+void UInventoryStorage::QueryAssetItems(UAssetManager* AssetManager, const UFilterCriterion* FilterCriterion, TArray<FInventorySortEntry>& OutSortedItems) const
 {
 	TArray<FPrimaryAssetId> AssetIds;
 
 	AssetManager->GetPrimaryAssetIdList(FInventoryPrimaryAsset::GetAssetType(), AssetIds);
 
-	TArray<FInventorySortEntry> SortedItems;
-	SortedItems.Reserve(AssetIds.Num());
+	OutSortedItems.Reserve(AssetIds.Num());
 
 	for (const FPrimaryAssetId& AssetId : AssetIds)
 	{
@@ -431,21 +438,12 @@ void UInventoryStorage::HandleGlossaryItems(UAssetManager* AssetManager, const U
 
 		int ItemQuantity = GetItemQuantity_Internal(AssetId);
 
-		SortedItems.Emplace(AssetId, DisplayName, ItemQuantity);
-	}
-
-	HandleItemSorting(SortedItems, QueryRule);
-
-	for (const FInventorySortEntry& Item : SortedItems)
-	{
-		Callback(Item);
+		OutSortedItems.Emplace(AssetId, DisplayName, ItemQuantity);
 	}
 }
 
-void UInventoryStorage::HandleInventoryItems(UAssetManager* AssetManager, const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback) const
+void UInventoryStorage::QueryInstanceItems(UAssetManager* AssetManager, const UFilterCriterion* FilterCriterion, TArray<FInventorySortEntry>& OutSortedItems) const
 {
-	TArray<FInventorySortEntry> SortedItems;
-
 	for (const TPair<FPrimaryAssetId, FInventoryStack>& Kv : InventoryStack)
 	{
 		const FPrimaryAssetId& AssetId = Kv.Key;
@@ -492,15 +490,8 @@ void UInventoryStorage::HandleInventoryItems(UAssetManager* AssetManager, const 
 				}
 			}
 
-			SortedItems.Emplace(AssetId, DisplayName, ItemQuantity, &Item);
+			OutSortedItems.Emplace(AssetId, DisplayName, ItemQuantity, &Item);
 		}
-	}
-
-	HandleItemSorting(SortedItems, QueryRule);
-
-	for (const FInventorySortEntry& Item : SortedItems)
-	{
-		Callback(Item);
 	}
 }
 

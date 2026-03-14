@@ -12,27 +12,28 @@
 #include "Definition/AssetRuleDefinition.h"
 #include "Definition/Runtime/TradeKey.h"
 #include "Delegate/LatentDelegate.h"
-#include "Interface/CraftProviderInterface.h"
-#include "Interface/StorageProviderInterface.h"
+#include "Interface/ICraftProvider.h"
+#include "Interface/IStorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Management/AssetGroup.h"
 #include "Management/Collection/AssetCollection_Trade.h"
+#include "Settings/CraftSettings.h"
 #include "Storage/CraftStorage.h"
 #include "Subsystem/TaskSubsystem.h"
-#include "Task/Task_CraftItem.h"
 #include "Task/Task_ClaimCraftItem.h"
+#include "Task/Task_CraftItem.h"
 
 
 
-UCraftStorage* UCraftSubsystem::GetCraftStorage()
+UCraftStorage* UCraftSubsystem::GetCraft(const FName& CraftId)
 {
-	IStorageProviderInterface* StorageInterface = StorageProvider.Get();
+	IStorageProvider* StorageInterface = StorageProvider.Get();
 	if (!StorageInterface)
 	{
 		return nullptr;
 	}
-	return StorageInterface->GetStorage<UCraftStorage>(UCraftSubsystem::GetStorageId());
+	return StorageInterface->GetStorage<UCraftStorage>(CraftId);
 }
 
 
@@ -91,7 +92,7 @@ void UCraftSubsystem::CraftItem(const FGuid& TaskId, const FPrimaryAssetId& Craf
 
 const UAssetCollection* UCraftSubsystem::GetMaterialCollection(const URPrimaryDataAsset* Asset, const FInstancedStruct& Context) const
 {
-	const ICraftProviderInterface* Provider = Cast<ICraftProviderInterface>(Asset);
+	const ICraftProvider* Provider = Cast<ICraftProvider>(Asset);
 	if (!Provider)
 	{
 		return nullptr;
@@ -106,9 +107,9 @@ const UAssetCollection* UCraftSubsystem::GetMaterialCollection(const URPrimaryDa
 
 
 
-void UCraftSubsystem::QueryItems(const UTradeAsset* Asset, const FGuid& CollectionId, ECraftQuerySource QuerySource, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftData*)> Callback)
+void UCraftSubsystem::QueryItems(const FName& CraftId, const UTradeAsset* Asset, const FGuid& CollectionId, ECraftQuerySource QuerySource, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftData*)> Callback)
 {
-	UCraftStorage* CraftStorage = GetCraftStorage();
+	UCraftStorage* CraftStorage = GetCraft(CraftId);
 	if (!IsValid(Asset) || !IsValid(CraftStorage))
 	{
 		return;
@@ -132,7 +133,7 @@ void UCraftSubsystem::QueryItems(const UTradeAsset* Asset, const FGuid& Collecti
 
 	if (QuerySource == ECraftQuerySource::Glossary)
 	{
-		HandleGlossaryItems(AssetList, CraftAssetId, CollectionId, Context, CraftStorage, MoveTemp(Callback));
+		QueryAssetItems(AssetList, CraftAssetId, CollectionId, Context, CraftStorage, MoveTemp(Callback));
 	}
 	else
 	{
@@ -140,7 +141,7 @@ void UCraftSubsystem::QueryItems(const UTradeAsset* Asset, const FGuid& Collecti
 	}
 }
 
-void UCraftSubsystem::HandleGlossaryItems(const TMap<URPrimaryDataAsset*, FAssetDetail_Trade>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorage* CraftStorage, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftData*)>&& Callback)
+void UCraftSubsystem::QueryAssetItems(const TMap<URPrimaryDataAsset*, FAssetDetail_Trade>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorage* CraftStorage, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftData*)>&& Callback)
 {
 	for (const TPair<URPrimaryDataAsset*, FAssetDetail_Trade>& AssetKv : AssetList)
 	{
@@ -198,26 +199,28 @@ void UCraftSubsystem::HandleStorageItems(const TMap<URPrimaryDataAsset*, FAssetD
 
 void UCraftSubsystem::OnPreGameInitialized()
 {
-	IStorageProviderInterface* StorageInterface = IStorageProviderInterface::Get(GetGameInstance());
+	IStorageProvider* StorageInterface = IStorageProvider::Get(GetGameInstance());
 	if (!StorageInterface)
 	{
 		LOG_ERROR(LogShop, TEXT("Storage subsystem not found"));
 		return;
 	}
 
+	const UCraftSettings* Settings = UCraftSettings::Get();
+
 	FStorageHandle Handle;
-	Handle.StorageClass = UCraftSubsystem::GetStorageClass();
-	Handle.StorageId = UCraftSubsystem::GetStorageId();
-	Handle.Url = UCraftSubsystem::GetStorageUrl();
+	Handle.StorageClass = Settings->StorageClass;
+	Handle.StorageId = Settings->StorageId;
+	Handle.Url = Settings->StorageUrl;
 
 	StorageInterface->LoadStorage(MoveTemp(Handle));
 
-	StorageProvider = TWeakInterfacePtr<IStorageProviderInterface>(StorageInterface);
+	StorageProvider = TWeakInterfacePtr<IStorageProvider>(StorageInterface);
 }
 
 bool UCraftSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 {
-	return true;
+	return GetClass() == UCraftSettings::Get()->SubsystemClass;
 }
 
 void UCraftSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -255,22 +258,5 @@ UCraftSubsystem* UCraftSubsystem::Get(UGameInstance* GameInstance)
 		return nullptr;
 	}
 	return GameInstance->GetSubsystem<UCraftSubsystem>();
-}
-
-
-
-FGuid UCraftSubsystem::GetStorageId()
-{
-	return FGuid(TEXT("953B0E29-3DE3-494B-8580-0D868D22D360"));
-}
-
-FString UCraftSubsystem::GetStorageUrl()
-{
-	return TEXT("/api/get/craft");
-}
-
-TSubclassOf<UStorage> UCraftSubsystem::GetStorageClass()
-{
-	return UCraftStorage::StaticClass();
 }
 

@@ -6,11 +6,12 @@
 // Engine Headers
 
 // Project Headers
-#include "Interface/AssetTransactionInterface.h"
+#include "Interface/IAssetInstance.h"
+#include "Settings/AssetSettings.h"
 
 
 
-IAssetInterchangeInterface* FAssetUtil::GetAssetInterchange(UWorld* Context, const FPrimaryAssetId& HandleAssetId)
+IAssetInstanceCollectionProvider* FAssetUtil::GetAssetInterchange(UWorld* Context, const FPrimaryAssetId& HandleAssetId)
 {
 	if (!IsValid(Context))
 	{
@@ -19,13 +20,13 @@ IAssetInterchangeInterface* FAssetUtil::GetAssetInterchange(UWorld* Context, con
 	return GetAssetInterchange(Context->GetGameInstance(), HandleAssetId.PrimaryAssetType);
 }
 
-IAssetInterchangeInterface* FAssetUtil::GetAssetInterchange(UGameInstance* Context, const FPrimaryAssetId& HandleAssetId)
+IAssetInstanceCollectionProvider* FAssetUtil::GetAssetInterchange(UGameInstance* Context, const FPrimaryAssetId& HandleAssetId)
 {
 	return GetAssetInterchange(Context, HandleAssetId.PrimaryAssetType);
 }
 
 
-IAssetInterchangeInterface* FAssetUtil::GetAssetInterchange(UWorld* Context, const FPrimaryAssetType& HandleType)
+IAssetInstanceCollectionProvider* FAssetUtil::GetAssetInterchange(UWorld* Context, const FPrimaryAssetType& HandleType)
 {
 	if (!IsValid(Context))
 	{
@@ -34,23 +35,18 @@ IAssetInterchangeInterface* FAssetUtil::GetAssetInterchange(UWorld* Context, con
 	return GetAssetInterchange(Context->GetGameInstance(), HandleType);
 }
 
-IAssetInterchangeInterface* FAssetUtil::GetAssetInterchange(UGameInstance* Context, const FPrimaryAssetType& HandleType)
+IAssetInstanceCollectionProvider* FAssetUtil::GetAssetInterchange(UGameInstance* Context, const FPrimaryAssetType& HandleType)
 {
-	if (!IsValid(Context))
-	{
-		return nullptr;
-	}
-
 	const TArray<UGameInstanceSubsystem*>& Subsystems = Context->GetSubsystemArray<UGameInstanceSubsystem>();
 
 	for (UGameInstanceSubsystem* Subsystem : Subsystems)
 	{
-		if (!IsValid(Subsystem) || !Subsystem->Implements<UAssetInterchangeInterface>())
+		if (!IsValid(Subsystem) || !Subsystem->Implements<UAssetInstanceCollectionProvider>())
 		{
 			continue;
 		}
 
-		IAssetInterchangeInterface* TransactionInterface = Cast<IAssetInterchangeInterface>(Subsystem);
+		IAssetInstanceCollectionProvider* TransactionInterface = Cast<IAssetInstanceCollectionProvider>(Subsystem);
 		if (!TransactionInterface)
 		{
 			continue;

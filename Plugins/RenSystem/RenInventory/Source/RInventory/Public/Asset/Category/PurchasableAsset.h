@@ -6,7 +6,7 @@
 
 // Project Headers
 #include "Asset/InventoryAsset.h"
-#include "Interface/ShopProviderInterface.h"
+#include "Interface/IShopProvider.h"
 
 // Generated Headers
 #include "PurchasableAsset.generated.h"
@@ -26,17 +26,17 @@ struct FInstancedStruct;
  * 
  */
 UCLASS(MinimalAPI, Abstract)
-class UPurchasableAsset : public UInventoryAsset, public IShopProviderInterface
+class UPurchasableAsset : public UInventoryAsset, public IShopProvider
 {
 
 	GENERATED_BODY()
 
 public:
 
-	// ~ IShopProviderInterface
+	// ~ IShopProvider
 	RSYSTEM_API virtual const UAssetCollection* GetPurchaseCost() const override;
 	RSYSTEM_API virtual const UAssetCollection* GetPurchaseCost(const FInstancedStruct& Context) const override;
-	// ~ End of IShopProviderInterface
+	// ~ End of IShopProvider
 
 protected:
 

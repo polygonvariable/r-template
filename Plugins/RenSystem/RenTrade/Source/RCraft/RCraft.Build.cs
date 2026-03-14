@@ -27,6 +27,7 @@ public class RCraft : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
+                "DeveloperSettings",
                 "RCoreTask",
                 "RCoreStorage",
                 "RTrade",

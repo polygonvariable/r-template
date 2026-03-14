@@ -34,7 +34,6 @@ public:
 
 	RCORE_API virtual FPrimaryAssetId GetAssetId() const;
 	RCORE_API virtual FGuid GetAssetInstanceId() const;
-
 	RCORE_API virtual void ResetData();
 
 	// ~ UObject

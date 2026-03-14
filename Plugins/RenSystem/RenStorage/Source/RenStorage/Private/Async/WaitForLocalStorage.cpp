@@ -13,7 +13,7 @@
 
 
 
-UWaitForLocalStorage* UWaitForLocalStorage::WaitForLocalStorage(const UObject* InWorldContext, TSubclassOf<UStorage> InStorageClass, FGuid InStorageId)
+UWaitForLocalStorage* UWaitForLocalStorage::WaitForLocalStorage(const UObject* InWorldContext, TSubclassOf<UStorage> InStorageClass, FName InStorageId)
 {
 	UWaitForLocalStorage* NewTask = NewObject<UWaitForLocalStorage>();
 	NewTask->WorldContext = InWorldContext;

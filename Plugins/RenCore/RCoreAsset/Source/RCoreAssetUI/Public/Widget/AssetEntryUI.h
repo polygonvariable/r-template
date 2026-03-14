@@ -49,7 +49,6 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void GetAssetSubDetail(FInstancedStruct& SubDetail) const;
 
-
 	// ~ IUserObjectListEntry
 	RCORE_API virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 	RCORE_API virtual void NativeOnItemSelectionChanged(bool bSelected) override;

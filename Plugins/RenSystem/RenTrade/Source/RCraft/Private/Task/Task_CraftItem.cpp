@@ -13,13 +13,14 @@
 #include "Definition/AssetRuleDefinition.h"
 #include "Definition/Runtime/CraftData.h"
 #include "Definition/Runtime/TradeKey.h"
-#include "Interface/AssetTransactionInterface.h"
-#include "Interface/CraftProviderInterface.h"
+#include "Interface/IAssetInstance.h"
+#include "Interface/ICraftProvider.h"
 #include "Library/AssetUtil.h"
 #include "Management/AssetCollection.h"
 #include "Management/AssetGroup.h"
 #include "Management/Collection/AssetCollection_Trade.h"
 #include "Manager/RAssetManager.inl"
+#include "Settings/CraftSettings.h"
 #include "Storage/CraftStorage.h"
 #include "Subsystem/CraftSubsystem.h"
 
@@ -127,10 +128,10 @@ void UTask_CraftItem::Step_CheckTargetAsset()
 
 void UTask_CraftItem::Step_CheckMaterialAsset()
 {
-	const ICraftProviderInterface* CraftProvider = Cast<ICraftProviderInterface>(TargetAsset);
+	const ICraftProvider* CraftProvider = Cast<ICraftProvider>(TargetAsset);
 	if (!CraftProvider)
 	{
-		Fail(TEXT("Item asset does not implement ICraftProviderInterface"));
+		Fail(TEXT("Item asset does not implement ICraftProvider"));
 		return;
 	}
 
@@ -154,15 +155,15 @@ void UTask_CraftItem::Step_CheckMaterialAsset()
 
 void UTask_CraftItem::Step_CheckMaterialTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
 {
-	IAssetInterchangeInterface* MaterialInterchange = FAssetUtil::GetAssetInterchange(GetWorld(), MaterialAssetType);
+	IAssetInstanceCollectionProvider* MaterialInterchange = FAssetUtil::GetAssetInterchange(GetWorld(), MaterialAssetType);
 	if (!MaterialInterchange)
 	{
 		Fail(TEXT("Failed to get transaction interface"));
 		return;
 	}
 
-	FGuid MaterialId = MaterialInterchange->GetDefaultSourceId();
-	MaterialTransaction = MaterialInterchange->GetTransactionSource(MaterialId);
+	FName MaterialSourceId = MaterialInterchange->GetDefaultCollectionId();
+	MaterialTransaction = MaterialInterchange->GetInstanceCollection(MaterialSourceId);
 	if (!MaterialTransaction)
 	{
 		Fail(TEXT("Failed to get transaction source"));
@@ -194,7 +195,8 @@ void UTask_CraftItem::Step_CheckCraftQuota(TMap<FPrimaryAssetId, int>&& Material
 		return;
 	}
 
-	UCraftStorage* CraftStorage = CraftSubsystem->GetCraftStorage();
+	FName CraftSourceId = UCraftSettings::Get()->StorageId;
+	UCraftStorage* CraftStorage = CraftSubsystem->GetCraft(CraftSourceId);
 	if (!IsValid(CraftStorage))
 	{
 		Fail(TEXT("Failed to get CraftStorage"));
@@ -226,15 +228,15 @@ void UTask_CraftItem::Step_CheckCraftQuota(TMap<FPrimaryAssetId, int>&& Material
 
 void UTask_CraftItem::Step_PerformTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
 {
-	IAssetInterchangeInterface* TargetInterchange = FAssetUtil::GetAssetInterchange(GetWorld(), TargetAssetId);
+	IAssetInstanceCollectionProvider* TargetInterchange = FAssetUtil::GetAssetInterchange(GetWorld(), TargetAssetId);
 	if (!TargetInterchange)
 	{
 		Fail(TEXT("Failed to get target transaction interface"));
 		return;
 	}
 
-	FGuid TargetId = TargetInterchange->GetDefaultSourceId();
-	IAssetTransactionInterface* TargetTransaction = TargetInterchange->GetTransactionSource(TargetId);
+	FName TargetSourceId = TargetInterchange->GetDefaultCollectionId();
+	IAssetInstanceCollection* TargetTransaction = TargetInterchange->GetInstanceCollection(TargetSourceId);
 	if (!TargetTransaction || !MaterialTransaction)
 	{
 		Fail(TEXT("Failed to get transaction source"));

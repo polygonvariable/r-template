@@ -10,8 +10,6 @@
 // Project Headers
 #include "Asset/RPrimaryDataAsset.h"
 #include "Definition/Runtime/InventoryItem.h"
-#include "Log/LogCategory.h"
-#include "Log/LogMacro.h"
 #include "Storage/InventoryStorage.h"
 #include "Subsystem/InventorySubsystem.h"
 #include "Widget/AscensionDetailUI.h"
@@ -27,7 +25,7 @@ void UInventoryDetailUI::InitializeDetail()
 		return;
 	}
 
-	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(ContainerId);
+	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(AssetSourceId);
 	if (IsValid(InventoryStorage) && bAutoRefresh)
 	{
 		InventoryStorage->OnInventoryRefreshed.AddUObject(this, &UInventoryDetailUI::RefreshDetail);
@@ -41,14 +39,12 @@ void UInventoryDetailUI::RefreshDetail()
 	UInventoryStorage* InventoryStorage = Inventory.Get();
 	if (!IsValid(InventoryStorage))
 	{
-		LOG_ERROR(LogInventory, TEXT("InventoryStorage is invalid"));
 		return;
 	}
 
 	const FInventoryItem* Item = InventoryStorage->GetItemById(GetActiveAssetId(), ActiveItemId);
 	if (!Item)
 	{
-		LOG_ERROR(LogInventory, TEXT("Item is invalid"));
 		return;
 	}
 
@@ -60,8 +56,12 @@ void UInventoryDetailUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrim
 {
 	if (!IsValid(Asset))
 	{
+		SwitchDetail(false);
 		return;
 	}
+
+	SwitchDetail(true);
+
 	EntryName->SetText(Asset->DisplayName);
 	EntryDescription->SetText(Asset->Description);
 	EntryIcon->SetBrushFromSoftTexture(Asset->Icon);
@@ -89,9 +89,8 @@ void UInventoryDetailUI::SetCustomDetails(const FInventoryItem* Item, int Quanti
 
 	ActiveItemId = Item->ItemId;
 
-	EntryQuantity->SetText(FText::AsNumber(Quantity));
-
-	if (IsValid(AscensionDetail)) AscensionDetail->InitializeDetail(Item->Ascension);
+	ItemQuantity->SetText(FText::AsNumber(Quantity));
+	AscensionDetail->InitializeDetail(Item->Ascension);
 }
 
 void UInventoryDetailUI::NativeDestruct()

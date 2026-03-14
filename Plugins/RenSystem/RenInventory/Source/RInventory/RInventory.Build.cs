@@ -27,9 +27,8 @@ public class RInventory : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-                "UMG",
+				"DeveloperSettings",
                 "RCoreAscension",
-                "RCoreTask",
                 "RCoreAsset",
 				"RCoreAssetManager",
                 "RCoreStorage",
@@ -51,7 +50,6 @@ public class RInventory : ModuleRules
                 "RCoreDelegate",
                 "RCoreLibrary",
                 "RCoreFilter",
-                "GameplayTags",
                 "StructUtils",
             }
             );

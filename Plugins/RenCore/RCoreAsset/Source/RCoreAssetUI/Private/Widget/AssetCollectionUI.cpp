@@ -8,8 +8,8 @@
 
 // Project Headers
 #include "Filter/FilterGroup.h"
-#include "Widget/AssetEntry.h"
 #include "Log/LogMacro.h"
+#include "Widget/AssetEntry.h"
 
 
 
@@ -18,22 +18,12 @@ void UAssetCollectionUI::InitializeCollection()
 
 }
 
-void UAssetCollectionUI::SetContainerId(const FGuid& Id)
-{
-	ContainerId = Id;
-}
-
 void UAssetCollectionUI::DisplayEntries()
 {
 }
 
 void UAssetCollectionUI::ClearEntries(bool bRegenerate)
 {
-	if (!IsValid(EntryList))
-	{
-		return;
-	}
-
 	const TArray<UObject*>& Items = EntryList->GetListItems();
 	for (UObject* Item : Items)
 	{
@@ -67,10 +57,6 @@ void UAssetCollectionUI::RefreshEntries()
 
 UAssetEntry* UAssetCollectionUI::GetSelectedEntry()
 {
-	if (!IsValid(EntryList))
-	{
-		return nullptr;
-	}
 	return EntryList->GetSelectedItem<UAssetEntry>();
 }
 
@@ -132,7 +118,7 @@ bool UAssetCollectionUI::AutoSelectCondition(UAssetEntry* Item) const
 
 void UAssetCollectionUI::AddEntry(const FPrimaryAssetId& AssetId, UAssetEntry* Entry)
 {
-	if (!IsValid(Entry) || !IsValid(EntryList))
+	if (!IsValid(Entry))
 	{
 		return;
 	}
@@ -186,23 +172,21 @@ void UAssetCollectionUI::HandleOnItemSelectionChanged(UObject* Object)
 	if (IsValid(Entry))
 	{
 		_SelectedEntry = TWeakObjectPtr<const UAssetEntry>(Entry);
+
 		OnSelectionChanged.ExecuteIfBound(Entry);
 	}
 	else
 	{
-		OnSelectionCleared.ExecuteIfBound();
-
 		_SelectedEntry.Reset();
 		_SelectedAssetId = FPrimaryAssetId();
+
+		OnSelectionCleared.ExecuteIfBound();
 	}
 }
 
 void UAssetCollectionUI::NativeConstruct()
 {
-	if (IsValid(EntryList))
-	{
-		EntryList->OnItemSelectionChanged().AddUObject(this, &UAssetCollectionUI::HandleOnItemSelectionChanged);
-	}
+	EntryList->OnItemSelectionChanged().AddUObject(this, &UAssetCollectionUI::HandleOnItemSelectionChanged);
 
 	Super::NativeConstruct();
 }
@@ -211,10 +195,7 @@ void UAssetCollectionUI::NativeDestruct()
 {
 	ClearEntries(false);
 
-	if (IsValid(EntryList))
-	{
-		EntryList->OnItemSelectionChanged().RemoveAll(this);
-	}
+	EntryList->OnItemSelectionChanged().RemoveAll(this);
 
 	Super::NativeDestruct();
 }

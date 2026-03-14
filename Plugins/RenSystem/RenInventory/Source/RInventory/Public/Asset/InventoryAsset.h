@@ -8,7 +8,7 @@
 #include "Asset/TransactionalAsset.h"
 #include "Definition/InventoryItemRarity.h"
 #include "Definition/InventoryItemType.h"
-#include "Interface/AssetStructureInterface.h"
+#include "Interface/IAssetComposition.h"
 
 // Generated Headers
 #include "InventoryAsset.generated.h"
@@ -24,17 +24,17 @@
  *
  */
 UCLASS(Abstract, MinimalAPI)
-class UInventoryAsset : public UTransactionalAsset, public IAssetStructureInterface
+class UInventoryAsset : public UTransactionalAsset, public IAssetCompositionInterface
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(EditDefaultsOnly, AssetRegistrySearchable)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, AssetRegistrySearchable)
 	EInventoryItemType Type = EInventoryItemType::Default;
 
-	UPROPERTY(EditDefaultsOnly, AssetRegistrySearchable)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, AssetRegistrySearchable)
 	EInventoryItemRarity Rarity = EInventoryItemRarity::Default;
 
 	UPROPERTY(EditDefaultsOnly, AssetRegistrySearchable)
@@ -55,10 +55,10 @@ public:
 	FTimespan ExpirationDuration = FTimespan::Zero();
 
 
-	// ~ IAssetStructureInterface
+	// ~ IAssetCompositionInterface
 	RSYSTEM_API virtual const UAssetCollection* GetBreakdownAssets(const FGuid& InId) const override;
 	RSYSTEM_API virtual const UAssetCollection* GetRebuildAssets(const FGuid& InId) const override;
-	// ~ End of IAssetStructureInterface
+	// ~ End of IAssetCompositionInterface
 
 	// ~ UPrimaryDataAsset
 	RSYSTEM_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;

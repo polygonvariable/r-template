@@ -1,0 +1,62 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+// Engine Headers
+#include "UObject/Interface.h"
+
+// Project Headers
+#include "Definition/StorageHandle.h"
+
+// Generated Headers
+#include "IStorageProvider.generated.h"
+
+// Module Macros
+#define RCORE_API RCORESTORAGE_API
+
+// Forward Declarations
+class UStorage;
+
+
+
+UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
+class UStorageProvider : public UInterface
+{
+
+	GENERATED_BODY()
+
+};
+
+/**
+ * 
+ */
+class RCORE_API IStorageProvider
+{
+
+	GENERATED_BODY()
+
+public:
+
+	virtual UStorage* GetStorage(const FName& StorageId) = 0;
+
+	template<typename T>
+	T* GetStorage(const FName& StorageId)
+	{
+		return Cast<T>(GetStorage(StorageId));
+	}
+
+	virtual void LoadStorage(FStorageHandle&& Handle) = 0;
+	virtual void SaveStorage(const FName& StorageId) = 0;
+
+public:
+
+	static IStorageProvider* Get(UWorld* World);
+	static IStorageProvider* Get(UGameInstance* GameInstance);
+
+};
+
+
+
+// Module Macros
+#undef RCORE_API
+

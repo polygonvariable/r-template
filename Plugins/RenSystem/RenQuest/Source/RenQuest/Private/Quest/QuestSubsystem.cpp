@@ -7,7 +7,7 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
-#include "Interface/StorageProviderInterface.h"
+#include "Interface/IStorageProvider.h"
 
 #include "Util/AssetManagerUtil.h"
 #include "Log/LogMacro.h"
@@ -318,7 +318,7 @@ void UQuestSubsystem::LoadQuestProvider(UWorld& InWorld)
 {/*
 	LOG_INFO(LogTemp, TEXT("QuestSubsystem storage load started"));
 
-	IStorageProviderInterface* StorageInterface = SubsystemUtil::GetSubsystemInterface<UGameInstance, UGameInstanceSubsystem, IStorageProviderInterface>(InWorld.GetGameInstance());
+	IStorageProvider* StorageInterface = SubsystemUtil::GetSubsystemInterface<UGameInstance, UGameInstanceSubsystem, IStorageProvider>(InWorld.GetGameInstance());
 	if (!StorageInterface)
 	{
 		LOG_ERROR(LogTemp, TEXT("StorageInterface is invalid"));

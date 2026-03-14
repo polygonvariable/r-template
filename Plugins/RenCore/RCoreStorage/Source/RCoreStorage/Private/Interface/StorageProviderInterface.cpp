@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "Interface/StorageProviderInterface.h"
+#include "Interface/IStorageProvider.h"
 
 // Engine Headers
 
@@ -10,17 +10,17 @@
 
 
 
-IStorageProviderInterface* IStorageProviderInterface::Get(UWorld* World)
+IStorageProvider* IStorageProvider::Get(UWorld* World)
 {
 	if (!IsValid(World))
 	{
 		return nullptr;
 	}
-	return SubsystemUtil::GetSubsystemInterface<IStorageProviderInterface>(World->GetGameInstance());
+	return SubsystemUtil::GetSubsystemInterface<IStorageProvider>(World->GetGameInstance());
 }
 
-IStorageProviderInterface* IStorageProviderInterface::Get(UGameInstance* GameInstance)
+IStorageProvider* IStorageProvider::Get(UGameInstance* GameInstance)
 {
-	return SubsystemUtil::GetSubsystemInterface<IStorageProviderInterface>(GameInstance);
+	return SubsystemUtil::GetSubsystemInterface<IStorageProvider>(GameInstance);
 }
 

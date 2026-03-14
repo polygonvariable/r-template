@@ -25,6 +25,6 @@ void UInventoryEntryUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrima
 
 	EntryName->SetText(InventoryAsset->DisplayName);
 	EntryIcon->SetBrushFromSoftTexture(InventoryAsset->Icon);
-	EntryQuantity->SetText(FText::AsNumber(InventoryEntry->Quantity));
+	ItemQuantity->SetText(FText::AsNumber(InventoryEntry->Quantity));
 }
 

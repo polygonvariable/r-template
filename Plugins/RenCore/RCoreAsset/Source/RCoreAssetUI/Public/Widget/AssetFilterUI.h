@@ -3,6 +3,7 @@
 #pragma once
 
 // Engine Headers
+#include "Components/PanelWidget.h"
 
 // Project Headers
 #include "Widget/AssetUI.h"
@@ -45,6 +46,32 @@ protected:
 	// ~ End of UAssetUI
 
 };
+
+
+
+
+//UCLASS(BlueprintType, MinimalAPI)
+//class UAssetFilter2UI : public UPanelWidget
+//{
+//
+//	GENERATED_BODY()
+//
+//public:
+//
+//    UAssetFilter2UI(const FObjectInitializer& ObjectInitializer);
+//
+//protected:
+//
+//	virtual TSharedRef<SWidget> RebuildWidget() override;
+//	virtual void OnSlotAdded(UPanelSlot* InSlot) override;
+//	virtual void OnSlotRemoved(UPanelSlot* InSlot) override;
+//	virtual void ReleaseSlateResources(bool bReleaseChildren) override;
+//
+//private:
+//
+//	TSharedPtr<SVerticalBox> BasePanel;
+//
+//};
 
 
 

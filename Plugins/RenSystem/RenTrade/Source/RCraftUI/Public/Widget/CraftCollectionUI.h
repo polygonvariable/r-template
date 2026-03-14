@@ -13,6 +13,7 @@
 
 // Forward Declarations
 class UCraftSubsystem;
+class UCraftStorage;
 
 
 
@@ -29,6 +30,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UCraftSubsystem> CraftSubsystem;
+
+	UPROPERTY()
+	TWeakObjectPtr<UCraftStorage> CraftStorage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	ECraftQuerySource QuerySource;

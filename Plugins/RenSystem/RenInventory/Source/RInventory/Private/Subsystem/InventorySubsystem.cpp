@@ -8,17 +8,18 @@
 // Project Headers
 #include "Asset/InventoryAsset.h"
 #include "Delegate/LatentDelegate.h"
-#include "Interface/StorageProviderInterface.h"
+#include "Interface/IStorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
+#include "Settings/InventorySettings.h"
 #include "Storage/InventoryStorage.h"
 
 
 
 
-UInventoryStorage* UInventorySubsystem::GetInventory(const FGuid& InventoryId) const
+UInventoryStorage* UInventorySubsystem::GetInventory(const FName& InventoryId) const
 {
-	IStorageProviderInterface* StorageInterface = StorageProvider.Get();
+	IStorageProvider* StorageInterface = StorageProvider.Get();
 	if (!StorageInterface)
 	{
 		return nullptr;
@@ -26,12 +27,9 @@ UInventoryStorage* UInventorySubsystem::GetInventory(const FGuid& InventoryId) c
 	return StorageInterface->GetStorage<UInventoryStorage>(InventoryId);
 }
 
-IAssetTransactionInterface* UInventorySubsystem::GetTransactionSource(const FGuid& SourceId) const
+IAssetInstanceCollection* UInventorySubsystem::GetInstanceCollection(const FName& SourceId) const
 {
-	UInventoryStorage* Storage = GetInventory(SourceId);
-	IAssetTransactionInterface* Source = Cast<IAssetTransactionInterface>(Storage);
-
-	return Source;
+	return Cast<IAssetInstanceCollection>(GetInventory(SourceId));
 }
 
 FPrimaryAssetType UInventorySubsystem::GetSupportedAssetType() const
@@ -39,35 +37,37 @@ FPrimaryAssetType UInventorySubsystem::GetSupportedAssetType() const
 	return UInventoryAsset::GetPrimaryAssetType();
 }
 
-FGuid UInventorySubsystem::GetDefaultSourceId() const
+FName UInventorySubsystem::GetDefaultCollectionId() const
 {
-	return UInventorySubsystem::GetStorageId();
+	return UInventorySettings::Get()->StorageId;
 }
 
 
 
 void UInventorySubsystem::OnPreGameInitialized()
 {
-	IStorageProviderInterface* StorageInterface = IStorageProviderInterface::Get(GetGameInstance());
+	IStorageProvider* StorageInterface = IStorageProvider::Get(GetGameInstance());
 	if (!StorageInterface)
 	{
 		LOG_ERROR(LogInventory, TEXT("Storage subsystem not found"));
 		return;
 	}
 
+	const UInventorySettings* Settings = UInventorySettings::Get();
+
 	FStorageHandle Handle;
-	Handle.StorageClass = UInventorySubsystem::GetStorageClass();
-	Handle.StorageId = UInventorySubsystem::GetStorageId();
-	Handle.Url = UInventorySubsystem::GetStorageUrl();
+	Handle.StorageClass = Settings->StorageClass;
+	Handle.StorageId = Settings->StorageId;
+	Handle.Url = Settings->StorageUrl;
 
 	StorageInterface->LoadStorage(MoveTemp(Handle));
 
-	StorageProvider = TWeakInterfacePtr<IStorageProviderInterface>(StorageInterface);
+	StorageProvider = TWeakInterfacePtr<IStorageProvider>(StorageInterface);
 }
 
 bool UInventorySubsystem::ShouldCreateSubsystem(UObject* Outer) const
 {
-	return true;
+	return GetClass() == UInventorySettings::Get()->SubsystemClass;
 }
 
 void UInventorySubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -106,20 +106,5 @@ UInventorySubsystem* UInventorySubsystem::Get(UGameInstance* GameInstance)
 		return nullptr;
 	}
 	return GameInstance->GetSubsystem<UInventorySubsystem>();
-}
-
-FGuid UInventorySubsystem::GetStorageId()
-{
-	return FGuid(TEXT("24D61E46-5B41-49A4-BDFB-B1E39BF54665"));
-}
-
-FString UInventorySubsystem::GetStorageUrl()
-{
-	return TEXT("/api/get/inventory");
-}
-
-TSubclassOf<UStorage> UInventorySubsystem::GetStorageClass()
-{
-	return UInventoryStorage::StaticClass();
 }
 

@@ -2,14 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
-// Project Headers
-
-// Generated Headers
-
-// Forward Declarations
-
 // Module Macros
 #define RSYSTEM_API RINVENTORY_API
 
@@ -32,7 +24,6 @@ public:
 	static const FName ItemRank;
 
 };
-
 
 
 // Module Macros

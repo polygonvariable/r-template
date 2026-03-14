@@ -22,7 +22,7 @@ void UInventoryCollectionUI::InitializeCollection()
 		return;
 	}
 
-	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(ContainerId);
+	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(AssetSourceId);
 	if (IsValid(InventoryStorage) && bAutoRefresh)
 	{
 		InventoryStorage->OnInventoryRefreshed.AddUObject(this, &UInventoryCollectionUI::RefreshEntries);
@@ -40,9 +40,7 @@ void UInventoryCollectionUI::DisplayEntries()
 		return;
 	}
 
-	const UFilterCriterion* FilterRoot = GetFilterRoot();
-	
-	InventoryStorage->QueryItems(FilterRoot, QueryRule,
+	InventoryStorage->QueryItems(GetFilterRoot(), QueryRule,
 		[this](const FInventorySortEntry& SortEntry)
 		{
 			UInventoryEntry* Entry = GetEntryFromPool<UInventoryEntry>();

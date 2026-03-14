@@ -8,6 +8,8 @@
 #include "Definition/Runtime/CraftData.h"
 #include "Definition/Runtime/TradeKey.h"
 #include "SaveGame/Storage.h"
+#include "Definition/CraftQuery.h"
+#include "Definition/TaskType.h"
 
 // Generated Headers
 #include "CraftStorage.generated.h"
@@ -16,6 +18,16 @@
 #define RSYSTEM_API RCRAFT_API
 
 // Forward Declarations
+class UAssetCollection;
+class UStorage;
+class IStorageProvider;
+class UCraftStorage;
+class UTradeAsset;
+class URPrimaryDataAsset;
+
+struct FAssetDetail_Trade;
+struct FInstancedStruct;
+struct FCraftData;
 
 
 

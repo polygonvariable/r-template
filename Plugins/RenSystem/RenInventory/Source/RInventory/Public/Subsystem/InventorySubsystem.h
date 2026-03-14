@@ -6,7 +6,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 
 // Project Headers
-#include "Interface/AssetTransactionInterface.h"
+#include "Interface/IAssetInstance.h"
 
 // Generated Headers
 #include "InventorySubsystem.generated.h"
@@ -17,7 +17,7 @@
 // Forward Declarations
 class UStorage;
 class UInventoryStorage;
-class IStorageProviderInterface;
+class IStorageProvider;
 
 
 
@@ -26,24 +26,25 @@ class IStorageProviderInterface;
  *
  */
 UCLASS(MinimalAPI)
-class UInventorySubsystem : public UGameInstanceSubsystem, public IAssetInterchangeInterface
+class UInventorySubsystem : public UGameInstanceSubsystem, public IAssetInstanceCollectionProvider
 {
 
 	GENERATED_BODY()
 
 public:
 
-	RSYSTEM_API UInventoryStorage* GetInventory(const FGuid& InventoryId) const;
+	RSYSTEM_API UInventoryStorage* GetInventory(const FName& InventoryId) const;
 
-	// ~ IAssetInterchangeInterface
-	virtual IAssetTransactionInterface* GetTransactionSource(const FGuid& SourceId) const override;
-	virtual FPrimaryAssetType GetSupportedAssetType() const override;
-	virtual FGuid GetDefaultSourceId() const override;
-	// ~ End of IAssetInterchangeInterface
+	// ~ IAssetInstanceCollectionProvider
+	RSYSTEM_API virtual IAssetInstanceCollection* GetInstanceCollection(const FName& SourceId) const override;
+	RSYSTEM_API virtual FPrimaryAssetType GetSupportedAssetType() const override;
+	RSYSTEM_API virtual FName GetDefaultCollectionId() const override;
+	// ~ End of IAssetInstanceCollectionProvider
 
 protected:
 
-	TWeakInterfacePtr<IStorageProviderInterface> StorageProvider;
+	TWeakInterfacePtr<IStorageProvider> StorageProvider;
+
 
 	void OnPreGameInitialized();
 
@@ -53,23 +54,12 @@ protected:
 	virtual void Deinitialize() override;
 	// ~ End of UGameInstanceSubsystem
 
-
 public:
 
 	static RSYSTEM_API UInventorySubsystem* Get(UWorld* World);
 	static RSYSTEM_API UInventorySubsystem* Get(UGameInstance* GameInstance);
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	static RSYSTEM_API FGuid GetStorageId();
-
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	static RSYSTEM_API FString GetStorageUrl();
-
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	static RSYSTEM_API TSubclassOf<UStorage> GetStorageClass();
-
 };
-
 
 
 // Module Macros

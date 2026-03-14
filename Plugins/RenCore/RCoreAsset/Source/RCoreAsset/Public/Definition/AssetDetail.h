@@ -2,10 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
-// Project Headers
-
 // Generated Headers
 #include "AssetDetail.generated.h"
 

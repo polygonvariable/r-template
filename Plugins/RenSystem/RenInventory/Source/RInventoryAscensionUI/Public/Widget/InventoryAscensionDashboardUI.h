@@ -17,7 +17,7 @@ class UAssetDetailUI;
 class UInventoryStorage;
 class UInventoryAscensionSubsystem;
 class URPrimaryDataAsset;
-class IAscensionProviderInterface;
+class IAscensionProvider;
 
 struct FInventoryItem;
 struct FTaskResult;
@@ -46,7 +46,7 @@ protected:
 	bool bAutoRefresh = false;
 
 	FGuid ActiveItemId;
-	const IAscensionProviderInterface* ActiveItemAscension = nullptr;
+	const IAscensionProvider* ActiveItemAscension = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<UInventoryAscensionSubsystem> AscensionSubsystem = nullptr;
@@ -55,13 +55,13 @@ protected:
 	TWeakObjectPtr<UInventoryStorage> Inventory = nullptr;
 
 	UPROPERTY(Meta = (BindWidget))
-	TObjectPtr<UAssetCollectionUI> PrimaryCollection = nullptr;
+	TObjectPtr<UAssetCollectionUI> LevelItemCollection = nullptr;
 
 	UPROPERTY(Meta = (BindWidget))
-	TObjectPtr<UAssetCollectionUI> SecondaryCollection = nullptr;
+	TObjectPtr<UAssetCollectionUI> RankItemCollection = nullptr;
 
 	UPROPERTY(Meta = (BindWidget))
-	TObjectPtr<UAssetDetailUI> PrimaryDetail = nullptr;
+	TObjectPtr<UAssetDetailUI> InventoryDetail = nullptr;
 
 	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UButton> LevelUpButton = nullptr;
@@ -89,8 +89,8 @@ protected:
 	void HandleOnItemUpdated();
 
 	// ~ UAssetDashboardUI
+	virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
 	virtual void SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
-	virtual void GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutAssetUI) const;
 	// ~ End of UAssetDashboardUI
 
 	// ~ UUserWidget

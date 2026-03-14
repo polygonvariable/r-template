@@ -14,7 +14,7 @@
 class URAssetManager;
 class UTradeAsset;
 class URPrimaryDataAsset;
-class IAssetTransactionInterface;
+class IAssetInstanceCollection;
 
 
 
@@ -50,7 +50,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<const URPrimaryDataAsset> TargetAsset = nullptr;
 
-	IAssetTransactionInterface* MaterialTransaction = nullptr;
+	IAssetInstanceCollection* MaterialTransaction = nullptr;
 
 
 

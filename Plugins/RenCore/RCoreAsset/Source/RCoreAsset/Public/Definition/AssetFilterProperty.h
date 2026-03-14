@@ -2,14 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
-// Project Headers
-
-// Generated Headers
-
-// Forward Declarations
-
 // Module Macros
 #define RCORE_API RCOREASSET_API
 
@@ -26,7 +18,6 @@ public:
 	static const FName AssetId;
 
 };
-
 
 
 // Module Macros

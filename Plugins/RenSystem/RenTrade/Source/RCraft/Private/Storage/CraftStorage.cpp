@@ -81,3 +81,4 @@ int UCraftStorage::ClaimCraftedItems(const FTradeKey& TradeKey)
 
 	return AvailableQuantity;
 }
+

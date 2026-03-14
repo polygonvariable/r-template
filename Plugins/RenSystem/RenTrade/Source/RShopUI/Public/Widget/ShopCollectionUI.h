@@ -12,6 +12,7 @@
 
 // Forward Declarations
 class UShopSubsystem;
+class UShopStorage;
 
 
 
@@ -28,6 +29,9 @@ public:
 
 	UPROPERTY()
 	TObjectPtr<UShopSubsystem> ShopSubsystem;
+
+	UPROPERTY()
+	TWeakObjectPtr<UShopStorage> ShopStorage;
 
 
 	// ~ UTradeCollectionUI

@@ -11,7 +11,6 @@
 #include "InventoryEntryUI.generated.h"
 
 // Forward Declarations
-class UTextBlock;
 class URPrimaryDataAsset;
 
 
@@ -30,7 +29,8 @@ class UInventoryEntryUI : public UAssetEntryUI
 protected:
 
 	UPROPERTY(Meta = (BindWidget))
-	TObjectPtr<UTextBlock> EntryQuantity = nullptr;
+	TObjectPtr<UTextBlock> ItemQuantity = nullptr;
+
 
 	// ~ UInventoryUI
 	virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;

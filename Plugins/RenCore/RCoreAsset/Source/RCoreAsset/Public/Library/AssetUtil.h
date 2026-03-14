@@ -7,7 +7,7 @@
 
 // Forward Declarations
 class UGameInstance;
-class IAssetInterchangeInterface;
+class IAssetInstanceCollectionProvider;
 
 
 
@@ -16,11 +16,11 @@ class FAssetUtil
 
 public:
 
-	RCORE_API static IAssetInterchangeInterface* GetAssetInterchange(UWorld* Context, const FPrimaryAssetId& HandleAssetId);
-	RCORE_API static IAssetInterchangeInterface* GetAssetInterchange(UGameInstance* Context, const FPrimaryAssetId& HandleAssetId);
+	RCORE_API static IAssetInstanceCollectionProvider* GetAssetInterchange(UWorld* Context, const FPrimaryAssetId& HandleAssetId);
+	RCORE_API static IAssetInstanceCollectionProvider* GetAssetInterchange(UGameInstance* Context, const FPrimaryAssetId& HandleAssetId);
 
-	RCORE_API static IAssetInterchangeInterface* GetAssetInterchange(UWorld* Context, const FPrimaryAssetType& HandleType);
-	RCORE_API static IAssetInterchangeInterface* GetAssetInterchange(UGameInstance* Context, const FPrimaryAssetType& HandleType);
+	RCORE_API static IAssetInstanceCollectionProvider* GetAssetInterchange(UWorld* Context, const FPrimaryAssetType& HandleType);
+	RCORE_API static IAssetInstanceCollectionProvider* GetAssetInterchange(UGameInstance* Context, const FPrimaryAssetType& HandleType);
 
 };
 

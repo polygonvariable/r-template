@@ -11,11 +11,11 @@
 #include "InventoryDetailUI.generated.h"
 
 // Forward Declarations
-class UTextBlock;
 class UAscensionDetailUI;
 class UInventoryStorage;
 class UInventorySubsystem;
 class URPrimaryDataAsset;
+
 struct FInventoryItem;
 
 
@@ -46,9 +46,9 @@ protected:
 	TWeakObjectPtr<UInventoryStorage> Inventory = nullptr;
 
 	UPROPERTY(Meta = (BindWidget))
-	TObjectPtr<UTextBlock> EntryQuantity = nullptr;
+	TObjectPtr<UTextBlock> ItemQuantity = nullptr;
 
-	UPROPERTY(Meta = (BindWidgetOptional))
+	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UAscensionDetailUI> AscensionDetail = nullptr;
 
 

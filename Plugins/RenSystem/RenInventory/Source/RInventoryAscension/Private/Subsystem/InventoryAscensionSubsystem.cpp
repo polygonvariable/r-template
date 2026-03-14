@@ -9,29 +9,30 @@
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Subsystem/TaskSubsystem.h"
-#include "Task/GrantItemExperience.h"
-#include "Task/GrantItemRank.h"
+#include "Task/Task_GrantItemExperience.h"
+#include "Task/Task_GrantItemRank.h"
 
 
 
-void UInventoryAscensionSubsystem::AddExperiencePoints(FGuid TaskId, FGuid InventoryId, FPrimaryAssetId TargetAssetId, FGuid TargetId, FPrimaryAssetId MaterialAssetId, FGuid MaterialId, FTaskCallback Callback)
+void UInventoryAscensionSubsystem::AddExperiencePoints(FName SourceId, FPrimaryAssetId TargetAssetId, FGuid TargetId, FPrimaryAssetId MaterialAssetId, FGuid MaterialId, FTaskCallback Callback)
 {
 	UTaskSubsystem* TaskSubsystem = UTaskSubsystem::Get(GetGameInstance());
 	if (!IsValid(TaskSubsystem))
 	{
-		LOG_ERROR(LogInventoryAscension, TEXT("Task subsystem is invalid"));
+		Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed));
 		return;
 	}
 
-	UGrantItemExperience* Task = TaskSubsystem->CreateTask<UGrantItemExperience>(TaskId);
+	FGuid TaskId = FGuid::NewGuid();
+	UTask_GrantItemExperience* Task = TaskSubsystem->CreateTask<UTask_GrantItemExperience>(TaskId);
 	if (!IsValid(Task))
 	{
-		LOG_ERROR(LogInventoryAscension, TEXT("Failed to create task"));
+		Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed));
 		return;
 	}
 
 	Task->Callback = MoveTemp(Callback);
-	Task->InventoryId = InventoryId;
+	Task->SourceId = SourceId;
 	Task->TargetAssetId = TargetAssetId;
 	Task->TargetId = TargetId;
 	Task->MaterialAssetId = MaterialAssetId;
@@ -39,24 +40,25 @@ void UInventoryAscensionSubsystem::AddExperiencePoints(FGuid TaskId, FGuid Inven
 	Task->StartTask();
 }
 
-void UInventoryAscensionSubsystem::AddRankPoints(FGuid TaskId, FGuid InventoryId, FPrimaryAssetId TargetAssetId, FGuid TargetId, FTaskCallback Callback)
+void UInventoryAscensionSubsystem::AddRankPoints(FName SourceId, FPrimaryAssetId TargetAssetId, FGuid TargetId, FTaskCallback Callback)
 {
 	UTaskSubsystem* TaskSubsystem = UTaskSubsystem::Get(GetGameInstance());
 	if (!IsValid(TaskSubsystem))
 	{
-		LOG_ERROR(LogInventoryAscension, TEXT("Task subsystem is invalid"));
+		Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed));
 		return;
 	}
 
-	UGrantItemRank* Task = TaskSubsystem->CreateTask<UGrantItemRank>(TaskId);
+	FGuid TaskId = FGuid::NewGuid();
+	UTask_GrantItemRank* Task = TaskSubsystem->CreateTask<UTask_GrantItemRank>(TaskId);
 	if (!IsValid(Task))
 	{
-		LOG_ERROR(LogInventoryAscension, TEXT("Failed to create task"));
+		Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed));
 		return;
 	}
 
 	Task->Callback = MoveTemp(Callback);
-	Task->InventoryId = InventoryId;
+	Task->SourceId = SourceId;
 	Task->TargetAssetId = TargetAssetId;
 	Task->TargetId = TargetId;
 	Task->StartTask();

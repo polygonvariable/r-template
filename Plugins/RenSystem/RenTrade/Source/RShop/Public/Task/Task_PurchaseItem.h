@@ -14,7 +14,7 @@
 class URAssetManager;
 class UShopAsset;
 class URPrimaryDataAsset;
-class IAssetTransactionInterface;
+class IAssetInstanceCollection;
 
 
 
@@ -49,7 +49,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<const URPrimaryDataAsset> TargetAsset = nullptr;
 
-	IAssetTransactionInterface* MaterialTransaction = nullptr;
+	IAssetInstanceCollection* MaterialInstance = nullptr;
 
 
 	void Step_LoadAsset();

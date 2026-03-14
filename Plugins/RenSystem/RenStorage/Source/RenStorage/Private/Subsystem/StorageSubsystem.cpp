@@ -8,7 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 
 // Project Headers
-#include "Interface/StorageProviderInterface.h"
+#include "Interface/IStorageProvider.h"
 #include "Delegate/LatentDelegate.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
@@ -16,7 +16,7 @@
 
 
 
-UStorage* UStorageSubsystem::GetStorage(const FGuid& StorageId)
+UStorage* UStorageSubsystem::GetStorage(const FName& StorageId)
 {
 	TObjectPtr<UStorage>* FoundStorage = StorageCollection.Find(StorageId);
 	if (!FoundStorage)
@@ -54,7 +54,7 @@ void UStorageSubsystem::LoadStorage(FStorageHandle&& Handle)
 	Handle.Callback.ExecuteIfBound(FTaskResult(State));
 }
 
-void UStorageSubsystem::SaveStorage(const FGuid& StorageId)
+void UStorageSubsystem::SaveStorage(const FName& StorageId)
 {
 	TObjectPtr<UStorage>* FoundStorage = StorageCollection.Find(StorageId);
 	if (!FoundStorage)
@@ -94,7 +94,7 @@ bool UStorageSubsystem::MakeStorageId(TSubclassOf<UStorage> InStorageClass, cons
 	return true;
 }
 
-void UStorageSubsystem::GetDefaultQuery(const FGuid& StorageId, TSharedPtr<FJsonObject>& QueryJson)
+void UStorageSubsystem::GetDefaultQuery(const FName& StorageId, TSharedPtr<FJsonObject>& QueryJson)
 {
 	QueryJson->SetStringField(TEXT("storageId"), StorageId.ToString());
 }
@@ -107,7 +107,7 @@ void UStorageSubsystem::SerializeQuery(TSharedPtr<FJsonObject>& QueryJson, FStri
 
 
 
-UStorage* UStorageSubsystem::CreateStorage_Internal(TSubclassOf<UStorage> StorageClass, const FGuid& StorageId)
+UStorage* UStorageSubsystem::CreateStorage_Internal(TSubclassOf<UStorage> StorageClass, const FName& StorageId)
 {
 	if (!IsValid(StorageClass))
 	{
@@ -140,7 +140,7 @@ UStorage* UStorageSubsystem::CreateStorage_Internal(TSubclassOf<UStorage> Storag
 	return Cast<UStorage>(NewStorage);
 }
 
-bool UStorageSubsystem::SaveStorage_Internal(UStorage* Storage, const FGuid& StorageId)
+bool UStorageSubsystem::SaveStorage_Internal(UStorage* Storage, const FName& StorageId)
 {
 	if (!IsValid(Storage))
 	{
@@ -224,7 +224,7 @@ void UStorageSubsystem::LoadStorage_NetworkResponse(FHttpRequestPtr Request, FHt
 	Handle.Callback.ExecuteIfBound(FTaskResult(ETaskState::Completed));
 }
 
-UStorage* UStorageSubsystem::LoadStorage_Internal(const FGuid& StorageId, TSubclassOf<UStorage> StorageClass)
+UStorage* UStorageSubsystem::LoadStorage_Internal(const FName& StorageId, TSubclassOf<UStorage> StorageClass)
 {
 	if (!StorageId.IsValid())
 	{
@@ -232,7 +232,7 @@ UStorage* UStorageSubsystem::LoadStorage_Internal(const FGuid& StorageId, TSubcl
 		return nullptr;
 	}
 
-	IStorageProviderInterface* StorageProvider = IStorageProviderInterface::Get(GetGameInstance());
+	IStorageProvider* StorageProvider = IStorageProvider::Get(GetGameInstance());
 	if (!StorageProvider)
 	{
 		LOG_ERROR(LogInventory, TEXT("Storage provider not found"));
@@ -261,7 +261,7 @@ void UStorageSubsystem::OnPreGameInitialized()
 
 void UStorageSubsystem::SaveAllStorages()
 {
-	for (const TPair<FGuid, UStorage*>& Pair : StorageCollection)
+	for (const TPair<FName, UStorage*>& Pair : StorageCollection)
 	{
 		SaveStorage(Pair.Key);
 	}

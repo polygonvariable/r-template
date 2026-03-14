@@ -13,6 +13,7 @@
 // Forward Declarations
 class UAssetCollectionUI;
 class UAssetDetailUI;
+class UInventoryAsset;
 
 
 
@@ -29,20 +30,26 @@ public:
 
 	// ~ UAssetDashboardUI
 	virtual void InitializeDetail() override;
+	virtual void ResetDetail() override;
 	// ~ End of UAssetDashboardUI
 
 protected:
 
 	UPROPERTY(Meta = (BindWidget))
-	TObjectPtr<UAssetCollectionUI> PrimaryCollection = nullptr;
+	TObjectPtr<UAssetCollectionUI> InventoryCollection = nullptr;
 
 	UPROPERTY(Meta = (BindWidget))
-	TObjectPtr<UAssetDetailUI> PrimaryDetail = nullptr;
+	TObjectPtr<UAssetDetailUI> InventoryDetail = nullptr;
 
+
+	UFUNCTION(BlueprintNativeEvent)
+	void SetCustomDetail(const UInventoryAsset* Asset);
+	virtual void SetCustomDetail_Implementation(const UInventoryAsset* Asset) {};
 
 	// ~ UAssetDashboardUI
 	virtual void RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetClass) override;
-	virtual void GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutAssetUI) const;
+	virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	virtual void SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
 	// ~ End of UAssetDashboardUI
 
 	// ~ UUserWidget

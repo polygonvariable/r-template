@@ -37,9 +37,6 @@ public:
 protected:
 
 	UPROPERTY(EditAnywhere)
-	bool bAutoRefresh = false;
-
-	UPROPERTY(EditAnywhere)
 	FInventoryQueryRule QueryRule;
 
 	UPROPERTY()

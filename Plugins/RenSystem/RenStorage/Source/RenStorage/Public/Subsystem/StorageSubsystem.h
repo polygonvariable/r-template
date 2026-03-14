@@ -7,7 +7,7 @@
 #include "Http.h"
 
 // Project Headers
-#include "Interface/StorageProviderInterface.h"
+#include "Interface/IStorageProvider.h"
 #include "Definition/StorageHandle.h"
 #include "Definition/TaskType.h"
 
@@ -16,7 +16,6 @@
 
 // Forward Declarations
 class UStorage;
-class UStorage;
 
 
 
@@ -24,39 +23,39 @@ class UStorage;
  * 
  */
 UCLASS()
-class UStorageSubsystem : public UGameInstanceSubsystem, public IStorageProviderInterface
+class UStorageSubsystem : public UGameInstanceSubsystem, public IStorageProvider
 {
 
 	GENERATED_BODY()
 
 public:
 
-	// ~ IStorageProviderInterface
-	virtual UStorage* GetStorage(const FGuid& StorageId) override;
+	// ~ IStorageProvider
+	virtual UStorage* GetStorage(const FName& StorageId) override;
 	virtual void LoadStorage(FStorageHandle&& Handle) override;
-	virtual void SaveStorage(const FGuid& StorageId) override;
-	// ~ End of IStorageProviderInterface
+	virtual void SaveStorage(const FName& StorageId) override;
+	// ~ End of IStorageProvider
 
 protected:
 
 	bool bNetLoad = false;
 
 	UPROPERTY()
-	TMap<FGuid, TObjectPtr<UStorage>> StorageCollection;
+	TMap<FName, TObjectPtr<UStorage>> StorageCollection;
 
 
 	bool MakeStorageId(TSubclassOf<UStorage> InStorageClass, const FString& InSlotName, int InUserIndex, FString& OutStorageId) const;
-	void GetDefaultQuery(const FGuid& StorageId, TSharedPtr<FJsonObject>& QueryJson);
+	void GetDefaultQuery(const FName& StorageId, TSharedPtr<FJsonObject>& QueryJson);
 	void SerializeQuery(TSharedPtr<FJsonObject>& QueryJson, FString& OutString);
 
 
-	UStorage* CreateStorage_Internal(TSubclassOf<UStorage> StorageClass, const FGuid& StorageId);
-	bool SaveStorage_Internal(UStorage* Storage, const FGuid& StorageId);
+	UStorage* CreateStorage_Internal(TSubclassOf<UStorage> StorageClass, const FName& StorageId);
+	bool SaveStorage_Internal(UStorage* Storage, const FName& StorageId);
 
 
 	void LoadStorage_Network(FStorageHandle Handle);
 	void LoadStorage_NetworkResponse(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSucceeded, FStorageHandle Handle);
-	UStorage* LoadStorage_Internal(const FGuid& StorageId, TSubclassOf<UStorage> StorageClass);
+	UStorage* LoadStorage_Internal(const FName& StorageId, TSubclassOf<UStorage> StorageClass);
 
 
 	void OnPreGameInitialized();

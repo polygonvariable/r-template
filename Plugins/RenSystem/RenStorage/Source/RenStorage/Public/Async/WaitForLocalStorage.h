@@ -33,7 +33,7 @@ public:
 	FOnCompleted OnCompleted;
 
 	UFUNCTION(BlueprintCallable, Meta = (WorldContext = "InWorldContext", BlueprintInternalUseOnly = "true"))
-	static UWaitForLocalStorage* WaitForLocalStorage(const UObject* InWorldContext, TSubclassOf<UStorage> InStorageClass, FGuid InStorageId);
+	static UWaitForLocalStorage* WaitForLocalStorage(const UObject* InWorldContext, TSubclassOf<UStorage> InStorageClass, FName InStorageId);
 
 	UFUNCTION(BlueprintCallable)
 	void EndTask();
@@ -42,7 +42,7 @@ protected:
 
 	TWeakObjectPtr<const UObject> WorldContext;
     TSubclassOf<UStorage> StorageClass;
-    FGuid StorageId;
+	FName StorageId;
 
 	void OnStorageLoaded(const FTaskResult& Result);
 

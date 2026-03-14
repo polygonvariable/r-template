@@ -6,7 +6,7 @@
 
 // Project Headers
 #include "Definition/Runtime/InventoryStack.h"
-#include "Interface/AssetTransactionInterface.h"
+#include "Interface/IAssetInstance.h"
 #include "SaveGame/Storage.h"
 
 // Generated Headers
@@ -28,7 +28,7 @@ struct FInventorySortEntry;
  *
  */
 UCLASS(MinimalAPI)
-class UInventoryStorage : public UStorage, public IAssetTransactionInterface
+class UInventoryStorage : public UStorage, public IAssetInstanceCollection
 {
 
 	GENERATED_BODY()
@@ -44,6 +44,7 @@ public:
 	FOnInventoryRefreshed OnInventoryRefreshed;
 
 
+	// ~ IAssetInstanceCollection
 	RSYSTEM_API virtual bool AddItem(const FPrimaryAssetId& AssetId, int Quantity) override;
 	RSYSTEM_API virtual bool AddItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier) override;
 
@@ -63,11 +64,12 @@ public:
 	RSYSTEM_API virtual bool RemoveAnyItems(const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) override;
 	RSYSTEM_API virtual bool RemoveItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId, int Quantity) override;
 
-	RSYSTEM_API bool UpdateItem(const FPrimaryAssetId& AssetId, TFunctionRef<void(FInventoryItem*)> Callback);
-	RSYSTEM_API bool UpdateItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId, TFunctionRef<void(FInventoryItem*)> Callback);
-
 	RSYSTEM_API virtual bool ContainItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier) const override;
 	RSYSTEM_API virtual bool ContainAnyItems(const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const override;
+	// ~ End of IAssetInstanceCollection
+
+	RSYSTEM_API bool UpdateItem(const FPrimaryAssetId& AssetId, TFunctionRef<void(FInventoryItem*)> Callback);
+	RSYSTEM_API bool UpdateItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId, TFunctionRef<void(FInventoryItem*)> Callback);
 
 	RSYSTEM_API int GetTotalQuantity(const FPrimaryAssetId& AssetId) const;
 	RSYSTEM_API const FInventoryItem* GetItem(const FPrimaryAssetId& AssetId) const;
@@ -85,8 +87,8 @@ protected:
 	FInventoryItem* GetMutableItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId);
 
 	void HandleItemSorting(TArray<FInventorySortEntry>& SortedItems, const FInventoryQueryRule& QueryRule) const;
-	void HandleGlossaryItems(UAssetManager* AssetManager, const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback) const;
-	void HandleInventoryItems(UAssetManager* AssetManager, const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback) const;
+	void QueryAssetItems(UAssetManager* AssetManager, const UFilterCriterion* FilterCriterion, TArray<FInventorySortEntry>& OutSortedItems) const;
+	void QueryInstanceItems(UAssetManager* AssetManager, const UFilterCriterion* FilterCriterion, TArray<FInventorySortEntry>& OutSortedItems) const;
 
 	const FInventoryStack* GetStack(const FPrimaryAssetId& AssetId) const;
 	FInventoryStack* FindOrAddStack(const FPrimaryAssetId& AssetId);

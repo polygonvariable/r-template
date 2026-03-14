@@ -2,29 +2,13 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
+#include "Definition/AssetQuerySource.h"
 #include "Definition/InventorySortType.h"
 #include "Definition/QueryType.h"
 
 // Generated Headers
 #include "InventoryQueryType.generated.h"
-
-// Forward Declarations
-
-
-
-/**
- *
- * 
- */
-UENUM(BlueprintType)
-enum class EInventoryQuerySource : uint8
-{
-	Inventory UMETA(DisplayName = "Inventory"),
-	Glossary UMETA(DisplayName = "Glossary"),
-};
 
 
 
@@ -42,8 +26,9 @@ public:
 
 	FInventoryQueryRule() {}
 
+
 	UPROPERTY(EditAnywhere)
-	EInventoryQuerySource QuerySource = EInventoryQuerySource::Inventory;
+	EAssetQuerySource QuerySource = EAssetQuerySource::Instance;
 
 	UPROPERTY(EditAnywhere)
 	ESortDirection SortDirection = ESortDirection::Ascending;

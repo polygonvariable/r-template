@@ -11,13 +11,14 @@
 #include "Asset/ShopAsset.h"
 #include "Definition/AssetDetail.h"
 #include "Definition/AssetRuleDefinition.h"
-#include "Interface/AssetTransactionInterface.h"
-#include "Interface/ShopProviderInterface.h"
+#include "Interface/IAssetInstance.h"
+#include "Interface/IShopProvider.h"
 #include "Library/AssetUtil.h"
 #include "Management/AssetCollection.h"
 #include "Management/AssetGroup.h"
 #include "Management/Collection/AssetCollection_Trade.h"
 #include "Manager/RAssetManager.inl"
+#include "Settings/ShopSettings.h"
 #include "Storage/ShopStorage.h"
 #include "Subsystem/ShopSubsystem.h"
 
@@ -39,7 +40,7 @@ void UTask_PurchaseItem::OnCleanup()
 	AssetManager = nullptr;
 	ShopAsset = nullptr;
 	TargetAsset = nullptr;
-	MaterialTransaction = nullptr;
+	MaterialInstance = nullptr;
 
 	ShopAssetId = FPrimaryAssetId();
 	TargetAssetId = FPrimaryAssetId();
@@ -126,10 +127,10 @@ void UTask_PurchaseItem::Step_CheckTarget()
 
 void UTask_PurchaseItem::Step_CheckMaterial()
 {
-	const IShopProviderInterface* ShopProvider = Cast<IShopProviderInterface>(TargetAsset);
+	const IShopProvider* ShopProvider = Cast<IShopProvider>(TargetAsset);
 	if (!ShopProvider)
 	{
-		Fail(TEXT("Item asset does not implement IShopProviderInterface"));
+		Fail(TEXT("Item asset does not implement IShopProvider"));
 		return;
 	}
 
@@ -151,22 +152,22 @@ void UTask_PurchaseItem::Step_CheckMaterial()
 
 void UTask_PurchaseItem::Step_CheckMaterialTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
 {
-	IAssetInterchangeInterface* MaterialInterchange = FAssetUtil::GetAssetInterchange(GetWorld(), MaterialAssetType);
+	IAssetInstanceCollectionProvider* MaterialInterchange = FAssetUtil::GetAssetInterchange(GetWorld(), MaterialAssetType);
 	if (!MaterialInterchange)
 	{
 		Fail(TEXT("Failed to get transaction interface"));
 		return;
 	}
 
-	FGuid MaterialId = MaterialInterchange->GetDefaultSourceId();
-	MaterialTransaction = MaterialInterchange->GetTransactionSource(MaterialId);
-	if (!MaterialTransaction)
+	FName MaterialSourceId = MaterialInterchange->GetDefaultCollectionId();
+	MaterialInstance = MaterialInterchange->GetInstanceCollection(MaterialSourceId);
+	if (!MaterialInstance)
 	{
 		Fail(TEXT("Failed to get transaction source"));
 		return;
 	}
 
-	if (!MaterialTransaction->ContainItems(MaterialAssetList, 1))
+	if (!MaterialInstance->ContainItems(MaterialAssetList, 1))
 	{
 		Fail(TEXT("Material not enough"));
 		return;
@@ -190,7 +191,8 @@ void UTask_PurchaseItem::Step_CheckShopQuota(TMap<FPrimaryAssetId, int>&& Materi
 		return;
 	}
 
-	UShopStorage* ShopStorage = ShopSubsystem->GetShopStorage();
+	FName ShopStorageId = UShopSettings::Get()->StorageId;
+	UShopStorage* ShopStorage = ShopSubsystem->GetShop(ShopStorageId);
 	if (!IsValid(ShopStorage))
 	{
 		Fail(TEXT("Failed to get ShopStorage"));
@@ -222,28 +224,28 @@ void UTask_PurchaseItem::Step_CheckShopQuota(TMap<FPrimaryAssetId, int>&& Materi
 
 void UTask_PurchaseItem::Step_PerformTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
 {
-	IAssetInterchangeInterface* TargetInterchange = FAssetUtil::GetAssetInterchange(GetWorld(), TargetAssetId);
+	IAssetInstanceCollectionProvider* TargetInterchange = FAssetUtil::GetAssetInterchange(GetWorld(), TargetAssetId);
 	if (!TargetInterchange)
 	{
 		Fail(TEXT("Failed to get transaction interface"));
 		return;
 	}
 
-	FGuid TargetId = TargetInterchange->GetDefaultSourceId();
-	IAssetTransactionInterface* TargetTransaction = TargetInterchange->GetTransactionSource(TargetId);
-	if (!TargetTransaction || !MaterialTransaction)
+	FName TargetSourceId = TargetInterchange->GetDefaultCollectionId();
+	IAssetInstanceCollection* TargetInstance = TargetInterchange->GetInstanceCollection(TargetSourceId);
+	if (!TargetInstance || !MaterialInstance)
 	{
 		Fail(TEXT("Failed to get transaction source"));
 		return;
 	}
 
-	if (!MaterialTransaction->RemoveItems(MaterialAssetList, 1))
+	if (!MaterialInstance->RemoveItems(MaterialAssetList, 1))
 	{
 		Fail(TEXT("Failed to remove item"));
 		return;
 	}
 	
-	if (!TargetTransaction->AddItem(TargetAssetId, TargetQuantity))
+	if (!TargetInstance->AddItem(TargetAssetId, TargetQuantity))
 	{
 		Fail(TEXT("Failed to add item"));
 		return;

@@ -29,7 +29,7 @@ struct FStorageHandle
 public:
 
     TSubclassOf<UStorage> StorageClass;
-    FGuid StorageId;
+    FName StorageId;
     FString Url;
     FTaskCallback Callback;
 

@@ -6,7 +6,7 @@
 // Engine Headers
 
 // Project Headers
-#include "Interface/StorageProviderInterface.h"
+#include "Interface/IStorageProvider.h"
 
 #include "Log/LogMacro.h"
 #include "Util/SubsystemUtil.h"
@@ -226,7 +226,7 @@ void UClockSubsystem::HandleWorldBeginTearDown(UWorld* World)
 void UClockSubsystem::LoadClockRecord(UWorld& InWorld)
 {/*
 	UGameInstance* GameInstance = InWorld.GetGameInstance();
-	IStorageProviderInterface* StorageInterface = SubsystemUtil::GetSubsystemInterface<UGameInstance, UGameInstanceSubsystem, IStorageProviderInterface>(GameInstance);
+	IStorageProvider* StorageInterface = SubsystemUtil::GetSubsystemInterface<UGameInstance, UGameInstanceSubsystem, IStorageProvider>(GameInstance);
 	if (!StorageInterface)
 	{
 		LOG_ERROR(LogTemp, TEXT("StorageInterface is invalid"));

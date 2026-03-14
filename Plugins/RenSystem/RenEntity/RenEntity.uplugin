@@ -16,7 +16,17 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "RenEntity",
+			"Name": "REntity",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RAvatarEd",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RAvatarUI",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}

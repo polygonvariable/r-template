@@ -22,7 +22,7 @@ void UCraftCollectionUI::DisplayEntries()
 
 	FPrimaryAssetId TradeAssetId = TradeAsset->GetPrimaryAssetId();
 
-	CraftSubsystem->QueryItems(TradeAsset, TradeCollectionId, QuerySource,
+	CraftSubsystem->QueryItems(AssetSourceId, TradeAsset, TradeCollectionId, QuerySource,
 		[this, TradeAssetId](const FPrimaryAssetId& ItemAssetId, const FAssetDetail_Trade& ItemDetail, const FCraftData* CraftData) {
 
 			UCraftEntry* Entry = GetEntryFromPool<UCraftEntry>();
@@ -42,11 +42,12 @@ void UCraftCollectionUI::NativeConstruct()
 	CraftSubsystem = UCraftSubsystem::Get(GetGameInstance());
 	if (IsValid(CraftSubsystem))
 	{
-		UCraftStorage* CraftStorage = CraftSubsystem->GetCraftStorage();
-		if (IsValid(CraftStorage))
+		UCraftStorage* Craft = CraftSubsystem->GetCraft(AssetSourceId);
+		if (IsValid(Craft))
 		{
-			CraftStorage->OnCraftUpdated.AddUObject(this, &UCraftCollectionUI::RefreshEntries);
+			Craft->OnCraftUpdated.AddUObject(this, &UCraftCollectionUI::RefreshEntries);
 		}
+		CraftStorage = TWeakObjectPtr<UCraftStorage>(Craft);
 	}
 
 	Super::NativeConstruct();
@@ -54,15 +55,13 @@ void UCraftCollectionUI::NativeConstruct()
 
 void UCraftCollectionUI::NativeDestruct()
 {
-	if (IsValid(CraftSubsystem))
+	UCraftStorage* Craft = CraftStorage.Get();
+	if (IsValid(Craft))
 	{
-		UCraftStorage* CraftStorage = CraftSubsystem->GetCraftStorage();
-		if (IsValid(CraftStorage))
-		{
-			CraftStorage->OnCraftUpdated.RemoveAll(this);
-		}
+		Craft->OnCraftUpdated.RemoveAll(this);
 	}
 	CraftSubsystem = nullptr;
+	CraftStorage.Reset();
 
 	Super::NativeDestruct();
 }

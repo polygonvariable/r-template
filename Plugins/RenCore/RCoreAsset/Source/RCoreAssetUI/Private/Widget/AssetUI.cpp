@@ -14,12 +14,6 @@
 
 
 
-
-void UAssetUI::SetContainerId(const FGuid& Id)
-{
-	ContainerId = Id;
-}
-
 void UAssetUI::InitializeDetail()
 {
 

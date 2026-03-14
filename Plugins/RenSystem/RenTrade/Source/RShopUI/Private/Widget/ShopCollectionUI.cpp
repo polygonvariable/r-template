@@ -37,11 +37,12 @@ void UShopCollectionUI::NativeConstruct()
 	ShopSubsystem = UShopSubsystem::Get(GetGameInstance());
 	if (IsValid(ShopSubsystem))
 	{
-		UShopStorage* ShopStorage = ShopSubsystem->GetShopStorage();
-		if (IsValid(ShopStorage))
+		UShopStorage* Shop = ShopSubsystem->GetShop(AssetSourceId);
+		if (IsValid(Shop))
 		{
-			ShopStorage->OnShopUpdated.AddUObject(this, &UShopCollectionUI::RefreshEntries);
+			Shop->OnShopUpdated.AddUObject(this, &UShopCollectionUI::RefreshEntries);
 		}
+		ShopStorage = TWeakObjectPtr<UShopStorage>(Shop);
 	}
 
 	Super::NativeConstruct();
@@ -49,15 +50,13 @@ void UShopCollectionUI::NativeConstruct()
 
 void UShopCollectionUI::NativeDestruct()
 {
+	UShopStorage* Shop = ShopStorage.Get();
 	if (IsValid(ShopSubsystem))
 	{
-		UShopStorage* ShopStorage = ShopSubsystem->GetShopStorage();
-		if (IsValid(ShopStorage))
-		{
-			ShopStorage->OnShopUpdated.RemoveAll(this);
-		}
+		Shop->OnShopUpdated.RemoveAll(this);
 	}
 	ShopSubsystem = nullptr;
+	ShopStorage.Reset();
 
 	Super::NativeDestruct();
 }

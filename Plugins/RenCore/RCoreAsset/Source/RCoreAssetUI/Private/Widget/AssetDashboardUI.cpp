@@ -12,10 +12,6 @@
 
 void UAssetDashboardUI::RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetClass)
 {
-}
-
-void UAssetDashboardUI::GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutAssetUI) const
-{
 
 }
 

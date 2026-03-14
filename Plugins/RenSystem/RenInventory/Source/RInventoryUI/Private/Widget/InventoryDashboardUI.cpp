@@ -6,6 +6,7 @@
 // Engine Headers
 
 // Project Headers
+#include "Asset/InventoryAsset.h"
 #include "Widget/AssetCollectionUI.h"
 #include "Widget/AssetDetailUI.h"
 #include "Widget/AssetEntry.h"
@@ -14,17 +15,22 @@
 
 void UInventoryDashboardUI::InitializeDetail()
 {
-	PrimaryDetail->SetContainerId(ContainerId);
-	PrimaryDetail->InitializeDetail();
+	InventoryDetail->AssetSourceId = AssetSourceId;
+	InventoryDetail->InitializeDetail();
 
-	PrimaryCollection->SetContainerId(ContainerId);
-	PrimaryCollection->InitializeCollection();
-	PrimaryCollection->DisplayEntries();
+	InventoryCollection->AssetSourceId = AssetSourceId;
+	InventoryCollection->InitializeCollection();
+	InventoryCollection->DisplayEntries();
+}
+
+void UInventoryDashboardUI::ResetDetail()
+{
+	InventoryDetail->ResetDetail();
 }
 
 void UInventoryDashboardUI::RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetClass)
 {
-	const UAssetEntry* SelectedEntry = PrimaryCollection->GetSelectedEntry();
+	const UAssetEntry* SelectedEntry = InventoryCollection->GetSelectedEntry();
 	if (!IsValid(WidgetClass) || !IsValid(SelectedEntry))
 	{
 		return;
@@ -36,27 +42,39 @@ void UInventoryDashboardUI::RedirectToWidget(TSubclassOf<UAssetDashboardUI> Widg
 		return;
 	}
 
+	Widget->AssetSourceId = AssetSourceId;
 	Widget->AddToViewport();
-	Widget->SetContainerId(ContainerId);
 	Widget->InitializeDetail();
 	Widget->InitializeDetail(SelectedEntry);
 }
 
-void UInventoryDashboardUI::GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutAssetUI) const
+void UInventoryDashboardUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
-	OutAssetUI.Add(PrimaryDetail);
+	InventoryDetail->InitializeDetail(Entry, Asset);
+}
+
+void UInventoryDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+{
+	const UInventoryAsset* InventoryAsset = Cast<UInventoryAsset>(Asset);
+	if (!IsValid(InventoryAsset))
+	{
+		return;
+	}
+	SetCustomDetail(InventoryAsset);
 }
 
 void UInventoryDashboardUI::NativeConstruct()
 {
-	PrimaryCollection->OnSelectionChanged.BindUObject(this, &UAssetDashboardUI::InitializeDetail);
+	InventoryCollection->OnSelectionChanged.BindUObject(this, &UAssetDashboardUI::InitializeDetail);
+	InventoryCollection->OnSelectionCleared.BindUObject(this, &UAssetDashboardUI::ResetDetail);
 	
 	Super::NativeConstruct();
 }
 
 void UInventoryDashboardUI::NativeDestruct()
 {
-	PrimaryCollection->OnSelectionChanged.Unbind();
+	InventoryCollection->OnSelectionChanged.Unbind();
+	InventoryCollection->OnSelectionCleared.Unbind();
 
 	Super::NativeDestruct();
 }

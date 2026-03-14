@@ -12,11 +12,12 @@
 #include "Definition/AssetDetail.h"
 #include "Definition/AssetRuleDefinition.h"
 #include "Definition/Runtime/TradeKey.h"
-#include "Interface/AssetTransactionInterface.h"
+#include "Interface/IAssetInstance.h"
 #include "Library/AssetUtil.h"
 #include "Management/AssetGroup.h"
 #include "Management/Collection/AssetCollection_Trade.h"
 #include "Manager/RAssetManager.inl"
+#include "Settings/CraftSettings.h"
 #include "Storage/CraftStorage.h"
 #include "Subsystem/CraftSubsystem.h"
 
@@ -124,7 +125,8 @@ void UTask_ClaimCraftItem::Step_CheckClaimable()
 		return;
 	}
 
-	UCraftStorage* CraftStorage = CraftSubsystem->GetCraftStorage();
+	FName CraftSourceId = UCraftSettings::Get()->StorageId;
+	UCraftStorage* CraftStorage = CraftSubsystem->GetCraft(CraftSourceId);
 	if (!IsValid(CraftStorage))
 	{
 		Fail(TEXT("Failed to get CraftStorage"));
@@ -146,15 +148,15 @@ void UTask_ClaimCraftItem::Step_PerformTransaction()
 	UWorld* World = GetWorld();
 	UGameInstance* GameInstance = World->GetGameInstance();
 
-	IAssetInterchangeInterface* TargetInterchange = FAssetUtil::GetAssetInterchange(GameInstance, TargetAssetId);
+	IAssetInstanceCollectionProvider* TargetInterchange = FAssetUtil::GetAssetInterchange(GameInstance, TargetAssetId);
 	if (!TargetInterchange)
 	{
 		Fail(TEXT("Failed to get transaction interface"));
 		return;
 	}
 
-	FGuid TargetId = TargetInterchange->GetDefaultSourceId();
-	IAssetTransactionInterface* TargetTransaction = TargetInterchange->GetTransactionSource(TargetId);
+	FName TargetSourceId = TargetInterchange->GetDefaultCollectionId();
+	IAssetInstanceCollection* TargetTransaction = TargetInterchange->GetInstanceCollection(TargetSourceId);
 	if (!TargetTransaction)
 	{
 		Fail(TEXT("Failed to get transaction source"));

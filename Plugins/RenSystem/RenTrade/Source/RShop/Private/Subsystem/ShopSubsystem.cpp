@@ -12,28 +12,28 @@
 #include "Definition/AssetRuleDefinition.h"
 #include "Definition/Runtime/TradeKey.h"
 #include "Delegate/LatentDelegate.h"
-#include "Interface/ShopProviderInterface.h"
-#include "Interface/StorageProviderInterface.h"
+#include "Interface/IShopProvider.h"
+#include "Interface/IStorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Management/AssetGroup.h"
 #include "Management/Collection/AssetCollection_Trade.h"
+#include "Settings/ShopSettings.h"
 #include "Storage/ShopStorage.h"
 #include "Subsystem/TaskSubsystem.h"
 #include "Task/Task_PurchaseItem.h"
 
 
 
-UShopStorage* UShopSubsystem::GetShopStorage()
+UShopStorage* UShopSubsystem::GetShop(const FName& ShopId)
 {
-	IStorageProviderInterface* StorageInterface = StorageProvider.Get();
+	IStorageProvider* StorageInterface = StorageProvider.Get();
 	if (!StorageInterface)
 	{
 		return nullptr;
 	}
-	return StorageInterface->GetStorage<UShopStorage>(UShopSubsystem::GetStorageId());
+	return StorageInterface->GetStorage<UShopStorage>(ShopId);
 }
-
 
 void UShopSubsystem::PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& ShopAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId, FTaskCallback Callback)
 {
@@ -63,7 +63,7 @@ void UShopSubsystem::PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& Sh
 
 const UAssetCollection* UShopSubsystem::GetMaterialCollection(const URPrimaryDataAsset* Asset, const FInstancedStruct& Context) const
 {
-	const IShopProviderInterface* ShopProvider = Cast<IShopProviderInterface>(Asset);
+	const IShopProvider* ShopProvider = Cast<IShopProvider>(Asset);
 	if (!ShopProvider)
 	{
 		return nullptr;
@@ -79,8 +79,7 @@ const UAssetCollection* UShopSubsystem::GetMaterialCollection(const URPrimaryDat
 
 void UShopSubsystem::QueryItems(const UTradeAsset* Asset, const FGuid& CollectionId, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&)> Callback)
 {
-	UShopStorage* ShopStorage = GetShopStorage();
-	if (!IsValid(Asset) || !IsValid(ShopStorage))
+	if (!IsValid(Asset))
 	{
 		return;
 	}
@@ -114,13 +113,6 @@ void UShopSubsystem::QueryItems(const UTradeAsset* Asset, const FGuid& Collectio
 
 		const FPrimaryAssetId& ItemAssetId = ItemDataAsset->GetPrimaryAssetId();
 
-		FTradeKey ShopKey(ShopAssetId, CollectionId, ItemAssetId);
-		const FShopData* ShopData = ShopStorage->GetItem(ShopKey);
-		if (ShopData)
-		{
-			ItemDetail.Quota = FMath::Max(0, ItemDetail.Quota - ShopData->PurchaseCount);
-		}
-
 		Callback(ItemAssetId, ItemDetail);
 	}
 }
@@ -129,26 +121,28 @@ void UShopSubsystem::QueryItems(const UTradeAsset* Asset, const FGuid& Collectio
 
 void UShopSubsystem::OnPreGameInitialized()
 {
-	IStorageProviderInterface* StorageInterface = IStorageProviderInterface::Get(GetGameInstance());
+	IStorageProvider* StorageInterface = IStorageProvider::Get(GetGameInstance());
 	if (!StorageInterface)
 	{
 		LOG_ERROR(LogShop, TEXT("Storage subsystem not found"));
 		return;
 	}
 
+	const UShopSettings* Settings = UShopSettings::Get();
+
 	FStorageHandle Handle;
-	Handle.StorageClass = UShopSubsystem::GetStorageClass();
-	Handle.StorageId = UShopSubsystem::GetStorageId();
-	Handle.Url = UShopSubsystem::GetStorageUrl();
+	Handle.StorageClass = Settings->StorageClass;
+	Handle.StorageId = Settings->StorageId;
+	Handle.Url = Settings->StorageUrl;
 
 	StorageInterface->LoadStorage(MoveTemp(Handle));
 
-	StorageProvider = TWeakInterfacePtr<IStorageProviderInterface>(StorageInterface);
+	StorageProvider = TWeakInterfacePtr<IStorageProvider>(StorageInterface);
 }
 
 bool UShopSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 {
-	return true;
+	return GetClass() == UShopSettings::Get()->SubsystemClass;
 }
 
 void UShopSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -187,22 +181,5 @@ UShopSubsystem* UShopSubsystem::Get(UGameInstance* GameInstance)
 		return nullptr;
 	}
 	return GameInstance->GetSubsystem<UShopSubsystem>();
-}
-
-
-
-FGuid UShopSubsystem::GetStorageId()
-{
-	return FGuid(TEXT("390C55A4-BF6C-4874-9346-C422E916AD64"));
-}
-
-FString UShopSubsystem::GetStorageUrl()
-{
-	return TEXT("/api/get/shop");
-}
-
-TSubclassOf<UStorage> UShopSubsystem::GetStorageClass()
-{
-	return UShopStorage::StaticClass();
 }
 

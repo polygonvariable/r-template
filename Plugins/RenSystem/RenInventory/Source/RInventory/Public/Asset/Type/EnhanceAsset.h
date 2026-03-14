@@ -34,10 +34,10 @@ public:
 	TObjectPtr<UAssetGroup> RebuildItems = nullptr;
 
 
-	// ~ IAssetStructureInterface
+	// ~ IAssetCompositionInterface
 	RINVENTORY_API virtual const UAssetCollection* GetBreakdownAssets(const FGuid& InId) const override;
 	RINVENTORY_API virtual const UAssetCollection* GetRebuildAssets(const FGuid& InId) const override;
-	// ~ End of IAssetStructureInterface
+	// ~ End of IAssetCompositionInterface
 	
 };
 

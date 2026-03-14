@@ -6,7 +6,7 @@
 
 // Project Headers
 #include "Asset/Category/CraftableAsset.h"
-#include "Interface/AscensionProviderInterface.h"
+#include "Interface/IAscensionProvider.h"
 
 // Generated Headers
 #include "EnhanceableAsset.generated.h"
@@ -26,21 +26,21 @@ struct FAscensionData;
  * 
  */
 UCLASS(MinimalAPI, Abstract)
-class UEnhanceableAsset : public UCraftableAsset, public IAscensionProviderInterface
+class UEnhanceableAsset : public UCraftableAsset, public IAscensionProvider
 {
 
 	GENERATED_BODY()
 
 public:
 
-	// ~ IAscensionProviderInterface
+	// ~ IAscensionProvider
 	RSYSTEM_API virtual int GetExperienceInterval(int Level) const override;
 	RSYSTEM_API virtual int GetLevelInterval(int Rank) const override;
 	RSYSTEM_API virtual int GetMaxLevel() const override;
 	RSYSTEM_API virtual int GetMaxRank() const override;
-	RSYSTEM_API virtual const UAssetCollection* GetExperienceItems(const FAscensionData& Ascension) const override;
-	RSYSTEM_API virtual const UAssetCollection* GetRankItems(const FAscensionData& Ascension) const override;
-	// ~ End of IAscensionProviderInterface
+	RSYSTEM_API virtual const UAssetCollection* GetExperienceAssets(const FAscensionData& Ascension) const override;
+	RSYSTEM_API virtual const UAssetCollection* GetRankAssets(const FAscensionData& Ascension) const override;
+	// ~ End of IAscensionProvider
 
 protected:
 

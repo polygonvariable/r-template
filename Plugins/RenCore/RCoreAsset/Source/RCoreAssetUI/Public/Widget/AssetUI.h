@@ -31,7 +31,9 @@ class UAssetUI : public UUserWidget
 
 public:
 
-	RCORE_API virtual void SetContainerId(const FGuid& Id);
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (ExposeOnSpawn = true))
+	FName AssetSourceId = NAME_None;
+
 
 	UFUNCTION(BlueprintCallable)
 	RCORE_API virtual void InitializeDetail();
@@ -49,9 +51,6 @@ public:
 	RCORE_API virtual void CloseWidget();
 
 protected:
-
-	UPROPERTY(EditAnywhere)
-	FGuid ContainerId;
 
 	UPROPERTY()
 	TObjectPtr<URAssetManager> AssetManager;

@@ -69,7 +69,7 @@ void UCraftDetailUI::NativeConstruct()
 	UCraftSubsystem* CraftSubsystem = UCraftSubsystem::Get(GetGameInstance());
 	if (IsValid(CraftSubsystem))
 	{
-		UCraftStorage* Craft = CraftSubsystem->GetCraftStorage();
+		UCraftStorage* Craft = CraftSubsystem->GetCraft(AssetSourceId);
 		if (IsValid(Craft))
 		{
 			Craft->OnCraftUpdated.AddUObject(this, &UCraftDetailUI::RefreshDetail);

@@ -38,11 +38,13 @@ void UTradeDashboardUI::InitializeTradeDetails(const UTradeAsset* Asset)
 {
 	PrimaryCollection->TradeAsset = Asset;
 	PrimaryCollection->TradeCollectionId = TradeCollectionId;
+	PrimaryCollection->AssetSourceId = AssetSourceId;
 	PrimaryCollection->InitializeCollection();
 	PrimaryCollection->DisplayEntries();
 
-	PrimaryDetail->TradeCollectionId = TradeCollectionId;
 	PrimaryDetail->TradeAssetId = TradeAssetId;
+	PrimaryDetail->TradeCollectionId = TradeCollectionId;
+	PrimaryDetail->AssetSourceId = AssetSourceId;
 	PrimaryDetail->InitializeDetail();
 
 	SecondaryCollection->InitializeCollection();

@@ -5,12 +5,8 @@
 // Engine Headers
 #include "GameplayTagContainer.h"
 
-// Project Headers
-
 // Generated Headers
 #include "AssetRuleDefinition.generated.h"
-
-// Forward Declarations
 
 
 

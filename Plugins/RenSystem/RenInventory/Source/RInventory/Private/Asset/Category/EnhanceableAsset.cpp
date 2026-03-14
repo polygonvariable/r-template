@@ -34,7 +34,7 @@ int UEnhanceableAsset::GetMaxRank() const
 	return MaxRank;
 }
 
-const UAssetCollection* UEnhanceableAsset::GetExperienceItems(const FAscensionData& Ascension) const
+const UAssetCollection* UEnhanceableAsset::GetExperienceAssets(const FAscensionData& Ascension) const
 {
 	if (!IsValid(ExperienceItems))
 	{
@@ -43,7 +43,7 @@ const UAssetCollection* UEnhanceableAsset::GetExperienceItems(const FAscensionDa
 	return ExperienceItems->GetCollectionRule<UAssetCollection>();
 }
 
-const UAssetCollection* UEnhanceableAsset::GetRankItems(const FAscensionData& Ascension) const
+const UAssetCollection* UEnhanceableAsset::GetRankAssets(const FAscensionData& Ascension) const
 {
 	if (!IsValid(RankItems))
 	{

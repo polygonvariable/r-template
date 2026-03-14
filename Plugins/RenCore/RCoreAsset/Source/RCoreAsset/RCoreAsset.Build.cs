@@ -27,8 +27,6 @@ public class RCoreAsset : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-                "UMG",
-                "GameplayTags",
             }
 			);
 			
@@ -41,6 +39,7 @@ public class RCoreAsset : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
+				"DeveloperSettings",
                 "StructUtils",
                 "RCoreLibrary",
             }

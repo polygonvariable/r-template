@@ -29,8 +29,8 @@ class UInventoryAscensionSubsystem : public UGameInstanceSubsystem
 
 public:
 
-	RSYSTEM_API void AddExperiencePoints(FGuid TaskId, FGuid InventoryId, FPrimaryAssetId TargetAssetId, FGuid TargetId, FPrimaryAssetId MaterialAssetId, FGuid MaterialId, FTaskCallback Callback);
-	RSYSTEM_API void AddRankPoints(FGuid TaskId,  FGuid InventoryId, FPrimaryAssetId TargetAssetId, FGuid TargetId, FTaskCallback Callback);
+	RSYSTEM_API void AddExperiencePoints(FName SourceId, FPrimaryAssetId TargetAssetId, FGuid TargetId, FPrimaryAssetId MaterialAssetId, FGuid MaterialId, FTaskCallback Callback);
+	RSYSTEM_API void AddRankPoints(FName SourceId, FPrimaryAssetId TargetAssetId, FGuid TargetId, FTaskCallback Callback);
 
 protected:
 

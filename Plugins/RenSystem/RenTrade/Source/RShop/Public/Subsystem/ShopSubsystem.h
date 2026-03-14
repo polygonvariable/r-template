@@ -20,7 +20,7 @@ class UStorage;
 class UShopStorage;
 class UTradeAsset;
 class URPrimaryDataAsset;
-class IStorageProviderInterface;
+class IStorageProvider;
 
 struct FAssetDetail_Trade;
 struct FInstancedStruct;
@@ -38,7 +38,7 @@ class UShopSubsystem : public UGameInstanceSubsystem
 
 public:
 
-	RSYSTEM_API UShopStorage* GetShopStorage();
+	RSYSTEM_API UShopStorage* GetShop(const FName& ShopId);
 
 	RSYSTEM_API void PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& ShopAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId, FTaskCallback Callback);
 
@@ -49,7 +49,8 @@ public:
 
 protected:
 
-	TWeakInterfacePtr<IStorageProviderInterface> StorageProvider;
+	TWeakInterfacePtr<IStorageProvider> StorageProvider;
+
 
 	void OnPreGameInitialized();
 
@@ -63,11 +64,6 @@ public:
 
 	RSYSTEM_API static UShopSubsystem* Get(UWorld* World);
 	RSYSTEM_API static UShopSubsystem* Get(UGameInstance* GameInstance);
-
-
-	static FGuid GetStorageId();
-	static FString GetStorageUrl();
-	static TSubclassOf<UStorage> GetStorageClass();
 
 };
 

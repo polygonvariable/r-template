@@ -7,12 +7,12 @@
 
 // Project Headers
 #include "Asset/RPrimaryDataAsset.h"
-#include "Definition/FilterContext.h"
 #include "Definition/AssetFilterProperty.h"
+#include "Definition/FilterContext.h"
 #include "Definition/InventoryFilterProperty.h"
-#include "Library/InventoryPrimaryAsset.h"
 #include "Filter/FilterCriterion.h"
 #include "Filter/FilterGroup.h"
+#include "Library/InventoryPrimaryAsset.h"
 #include "Manager/RAssetManager.h"
 
 

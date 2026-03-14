@@ -13,7 +13,7 @@
 #include "Definition/AssetFilterProperty.h"
 #include "Definition/Runtime/InventoryItem.h"
 #include "Filter/FilterLeafCriterion.h"
-#include "Interface/AscensionProviderInterface.h"
+#include "Interface/IAscensionProvider.h"
 #include "Library/AscensionLibrary.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
@@ -30,14 +30,14 @@
 
 void UInventoryAscensionDashboardUI::InitializeDetail()
 {
-	PrimaryDetail->SetContainerId(ContainerId);
-	PrimaryDetail->InitializeDetail();
+	InventoryDetail->AssetSourceId = AssetSourceId;
+	InventoryDetail->InitializeDetail();
 
-	PrimaryCollection->SetContainerId(ContainerId);
-	PrimaryCollection->InitializeCollection();
+	LevelItemCollection->AssetSourceId = AssetSourceId;
+	LevelItemCollection->InitializeCollection();
 
-	SecondaryCollection->SetContainerId(ContainerId);
-	SecondaryCollection->InitializeCollection();
+	RankItemCollection->AssetSourceId = AssetSourceId;
+	RankItemCollection->InitializeCollection();
 
 	UInventorySubsystem* InventorySubsystem = UInventorySubsystem::Get(GetGameInstance());
 	if (!IsValid(InventorySubsystem))
@@ -45,7 +45,7 @@ void UInventoryAscensionDashboardUI::InitializeDetail()
 		return;
 	}
 
-	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(ContainerId);
+	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(AssetSourceId);
 	if (bAutoRefresh)
 	{
 		InventoryStorage->OnInventoryRefreshed.AddUObject(this, &UInventoryAscensionDashboardUI::HandleOnItemUpdated);
@@ -119,15 +119,15 @@ void UInventoryAscensionDashboardUI::ToggleRankUp(const FInventoryItem* Item)
 		return;
 	}
 
-	SecondaryCollection->ClearSubDetails();
+	RankItemCollection->ClearSubDetails();
 
-	UFilterAssetCriterion* AssetFilter = SecondaryCollection->GetCriterionByName<UFilterAssetCriterion>(FAssetFilterProperty::AssetId);
+	UFilterAssetCriterion* AssetFilter = RankItemCollection->GetCriterionByName<UFilterAssetCriterion>(FAssetFilterProperty::AssetId);
 	if (IsValid(AssetFilter))
 	{
 		AssetFilter->Included.Empty();
 
 		const FAscensionData& AscensionData = Item->Ascension;
-		const UAssetCollection* ItemCollection = ActiveItemAscension->GetRankItems(AscensionData);
+		const UAssetCollection* ItemCollection = ActiveItemAscension->GetRankAssets(AscensionData);
 		if (IsValid(ItemCollection))
 		{
 			TMap<FPrimaryAssetId, FAssetDetail> AssetList;
@@ -138,12 +138,12 @@ void UInventoryAscensionDashboardUI::ToggleRankUp(const FInventoryItem* Item)
 				const FPrimaryAssetId& AssetId = AssetKv.Key;
 
 				AssetFilter->Included.Add(AssetId);
-				SecondaryCollection->AddSubDetails(AssetId, FInstancedStruct::Make(AssetKv.Value));
+				RankItemCollection->AddSubDetails(AssetId, FInstancedStruct::Make(AssetKv.Value));
 			}
 		}
 	}
 
-	SecondaryCollection->RefreshEntries();
+	RankItemCollection->RefreshEntries();
 }
 
 
@@ -166,25 +166,17 @@ void UInventoryAscensionDashboardUI::HandleTaskCallback(const FTaskResult& Resul
 
 void UInventoryAscensionDashboardUI::HandleLevelUp()
 {
-	const UInventoryEntry* InventoryEntry = PrimaryCollection->GetSelectedEntry<UInventoryEntry>();
-	if (!IsValid(AscensionSubsystem) || !IsValid(InventoryEntry))
+	const UAssetEntry* Entry = LevelItemCollection->GetSelectedEntry();
+	if (!IsValid(AscensionSubsystem) || !IsValid(Entry))
 	{
-		LOG_ERROR(LogInventoryAscension, TEXT("AscensionSubsystem, InventoryEntry is not valid"));
+		LOG_ERROR(LogInventoryAscension, TEXT("AscensionSubsystem, Entry is not valid"));
 		return;
 	}
 
-	const FInventoryItem* Item = InventoryEntry->Item;
-	if (!Item)
-	{
-		LOG_ERROR(LogInventoryAscension, TEXT("Item is not valid"));
-		return;
-	}
-
-	FGuid MaterialId = Item->ItemId;
-	FPrimaryAssetId MaterialAssetId = InventoryEntry->AssetId;
+	FGuid MaterialId = Entry->GetAssetInstanceId();
+	FPrimaryAssetId MaterialAssetId = Entry->AssetId;
 	
-	FGuid TaskId = FGuid::NewGuid();
-	AscensionSubsystem->AddExperiencePoints(TaskId, ContainerId, GetActiveAssetId(), ActiveItemId, MaterialAssetId, MaterialId, FTaskCallback::CreateUObject(this, &UInventoryAscensionDashboardUI::HandleTaskCallback));
+	AscensionSubsystem->AddExperiencePoints(AssetSourceId, GetActiveAssetId(), ActiveItemId, MaterialAssetId, MaterialId, FTaskCallback::CreateUObject(this, &UInventoryAscensionDashboardUI::HandleTaskCallback));
 }
 
 void UInventoryAscensionDashboardUI::HandleRankUp()
@@ -195,8 +187,7 @@ void UInventoryAscensionDashboardUI::HandleRankUp()
 		return;
 	}
 
-	FGuid TaskId = FGuid::NewGuid();
-	AscensionSubsystem->AddRankPoints(TaskId, ContainerId, GetActiveAssetId(), ActiveItemId, FTaskCallback::CreateUObject(this, &UInventoryAscensionDashboardUI::HandleTaskCallback));
+	AscensionSubsystem->AddRankPoints(AssetSourceId, GetActiveAssetId(), ActiveItemId, FTaskCallback::CreateUObject(this, &UInventoryAscensionDashboardUI::HandleTaskCallback));
 }
 
 void UInventoryAscensionDashboardUI::HandleOnItemUpdated()
@@ -206,10 +197,15 @@ void UInventoryAscensionDashboardUI::HandleOnItemUpdated()
 
 
 
+void UInventoryAscensionDashboardUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+{
+	InventoryDetail->InitializeDetail(Entry, Asset);
+}
+
 void UInventoryAscensionDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	const UInventoryEntry* InventoryEntry = Cast<UInventoryEntry>(Entry);
-	const IAscensionProviderInterface* AscensionProvider = Cast<IAscensionProviderInterface>(Asset);
+	const IAscensionProvider* AscensionProvider = Cast<IAscensionProvider>(Asset);
 	if (!IsValid(InventoryEntry) || !AscensionProvider)
 	{
 		return;
@@ -224,13 +220,13 @@ void UInventoryAscensionDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry
 	ActiveItemId = Item->ItemId;
 	ActiveItemAscension = AscensionProvider;
 
-	UFilterAssetCriterion* AssetIdFilter = PrimaryCollection->GetCriterionByName<UFilterAssetCriterion>(FAssetFilterProperty::AssetId);
+	UFilterAssetCriterion* AssetIdFilter = LevelItemCollection->GetCriterionByName<UFilterAssetCriterion>(FAssetFilterProperty::AssetId);
 	if (IsValid(AssetIdFilter))
 	{
 		AssetIdFilter->Included.Empty();
 
 		const FAscensionData& AscensionData = Item->Ascension;
-		const UAssetCollection* ItemCollection = AscensionProvider->GetExperienceItems(AscensionData);
+		const UAssetCollection* ItemCollection = AscensionProvider->GetExperienceAssets(AscensionData);
 		if (IsValid(ItemCollection))
 		{
 			TArray<FPrimaryAssetId> AssetList;
@@ -240,14 +236,9 @@ void UInventoryAscensionDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry
 		}
 	}
 
-	PrimaryCollection->DisplayEntries();
+	LevelItemCollection->DisplayEntries();
 
 	ToggleAscension(Item);
-}
-
-void UInventoryAscensionDashboardUI::GetAllAssetUI_Implementation(TArray<UAssetUI*>& OutAssetUI) const
-{
-	OutAssetUI.Add(PrimaryDetail);
 }
 
 
