@@ -3,8 +3,6 @@
 // Parent Header
 #include "Widget/AvatarDashboardUI.h"
 
-// Engine Headers
-
 // Project Headers
 #include "Widget/AssetCollectionUI.h"
 #include "Widget/AssetDetailUI.h"
@@ -50,11 +48,6 @@ void UAvatarDashboardUI::RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetC
 void UAvatarDashboardUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
 {
 	AvatarDetail->InitializeDetail(Entry, Asset);
-}
-
-void UAvatarDashboardUI::NativePreConstruct()
-{
-	Super::NativePreConstruct();
 }
 
 void UAvatarDashboardUI::NativeConstruct()

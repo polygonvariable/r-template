@@ -2,8 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Widget/AssetDetailUI.h"
 
@@ -15,7 +13,7 @@ class UAscensionDetailUI;
 class UAvatarStorage;
 class URPrimaryDataAsset;
 
-struct FAvatarData;
+struct FAvatarInstance;
 
 
 
@@ -41,10 +39,10 @@ protected:
 	TObjectPtr<UAscensionDetailUI> AscensionDetail = nullptr;
 
 	UPROPERTY()
-	TWeakObjectPtr<UAvatarStorage> AvatarCollection = nullptr;
+	TWeakObjectPtr<UAvatarStorage> AvatarStorage = nullptr;
 
 
-	virtual void SetCustomDetails(const FAvatarData* Item);
+	virtual void SetCustomDetails(const FAvatarInstance* Instance);
 
 	// ~ UAssetDetailUI
 	virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;

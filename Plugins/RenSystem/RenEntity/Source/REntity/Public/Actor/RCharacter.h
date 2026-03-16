@@ -3,22 +3,18 @@
 #pragma once
 
 // Engine Headers
-#include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
+#include "GameFramework/Character.h"
 #include "GameplayTagAssetInterface.h"
-#include "GameplayEffectTypes.h"
-#include "AttributeSet.h"
-
-// Project Headers
 
 // Generated Headers
 #include "RCharacter.generated.h"
 
+// Module Macros
+#define RSYSTEM_API RENTITY_API
+
 // Forward Declarations
-class USpringArmComponent;
-class UCameraComponent;
 class UAbilitySystemComponent;
-class UGameplayEffect;
 
 
 
@@ -27,8 +23,8 @@ class UGameplayEffect;
  * 
  * 
  */
-UCLASS(Abstract, MinimalAPI)
-class ARCharacter : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface
+UCLASS(Abstract)
+class RSYSTEM_API ARCharacter : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface
 {
 
 	GENERATED_BODY()
@@ -37,22 +33,17 @@ public:
 
 	ARCharacter();
 
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
-	TObjectPtr<USpringArmComponent> SpringArm;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
-	TObjectPtr<UCameraComponent> Camera;
-
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
-
 
 
 	// ~ ACharacter
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// ~ End of ACharacter
 
+	// ~ IAbilitySystemInterface
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	// ~ End of IAbilitySystemInterface
 
 	// ~ IGameplayTagAssetInterface
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
@@ -61,43 +52,18 @@ public:
 	virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
 	// ~ End of IGameplayTagAssetInterface
 
-
-	// ~ IAbilitySystemInterface
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	// ~ End of IAbilitySystemInterface
-
 protected:
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	float CameraMinZoom = 100.0f;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	float CameraMaxZoom = 2000.0f;
-
-	UFUNCTION(BlueprintCallable, Meta = (BlueprintProtected))
-	void CameraPan(FVector2D Axis);
-
-	UFUNCTION(BlueprintCallable, Meta = (BlueprintProtected))
-	void CameraZoom(float Delta, float Multiplier = 5.0f);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected))
 	void DirectionalMove(const FVector& Direction);
 	virtual void DirectionalMove_Implementation(const FVector& Direction);
 
-
-	UFUNCTION(BlueprintCallable)
-	void DealDamage(TSubclassOf<UGameplayEffect> EffectClass, AActor* Target, AActor* EffectCauser);
-
-
-	UFUNCTION(BlueprintCallable)
-	void CancelAbility(FGameplayTagContainer WithTags);
-
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TArray<TObjectPtr<AActor>> OwnedActors;
-
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool IsMoving(float Threshold = 0.0f) const;
+	bool IsMoving(float Threshold = 0.1f) const;
 
 };
+
+
+// Module Macros
+#undef RSYSTEM_API
 

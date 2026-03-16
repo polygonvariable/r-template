@@ -128,14 +128,16 @@ UStorage* UStorageSubsystem::CreateStorage_Internal(TSubclassOf<UStorage> Storag
 		return Cast<UStorage>(UGameplayStatics::LoadGameFromSlot(FileId, 0));
 	}
 
-	USaveGame* NewStorage = UGameplayStatics::CreateSaveGameObject(StorageClass);
-	if (!IsValid(NewStorage))
+	USaveGame* NewSaveGame = UGameplayStatics::CreateSaveGameObject(StorageClass);
+	if (!IsValid(NewSaveGame))
 	{
 		LOG_ERROR(LogStorage, TEXT("Failed to create save game object"));
 		return nullptr;
 	}
 
-	UGameplayStatics::SaveGameToSlot(NewStorage, FileId, 0);
+	UGameplayStatics::SaveGameToSlot(NewSaveGame, FileId, 0);
+
+	UStorage* NewStorage = Cast<UStorage>(NewSaveGame);
 
 	return Cast<UStorage>(NewStorage);
 }

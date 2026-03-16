@@ -4,21 +4,10 @@
 #include "Actor/RCharacter.h"
 
 // Engine Headers
-#include "Camera/CameraComponent.h"
+#include "AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "AbilitySystemComponent.h"
-#include "GameplayEffectExtension.h"
-#include "GameplayEffect.h"
-#include "Net/UnrealNetwork.h"
-
-// Project Headers
-#include "Log/LogMacro.h"
-#include "RenAbility/Public/Attributes/DamageSet.h"
-#include "RenAbility/Public/Library/AbilitySystemLibrary.h"
-#include "RenAbility/Public/Component/RAbilitySystemComponent.h"
 
 
 
@@ -31,25 +20,6 @@ ARCharacter::ARCharacter() : Super()
 		Capsule->SetCapsuleHalfHeight(90.0f);
 		Capsule->SetCapsuleRadius(35.0f);
 	}
-
-	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	if (IsValid(SpringArm))
-	{
-		SpringArm->SetupAttachment(GetRootComponent());
-		SpringArm->TargetArmLength = 400.f;
-		SpringArm->bUsePawnControlRotation = true;
-		SpringArm->bInheritRoll = false;
-		SpringArm->bEnableCameraLag = true;
-		SpringArm->bEnableCameraRotationLag = true;
-	}
-
-	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	if (IsValid(Camera))
-	{
-		Camera->SetupAttachment(SpringArm);
-	}
-	
-	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
 	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
 	if (IsValid(MovementComponent))
@@ -68,15 +38,24 @@ ARCharacter::ARCharacter() : Super()
 		MovementComponent->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 		MovementComponent->bOrientRotationToMovement = true;
 	}
+	
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
 	PrimaryActorTick.bStartWithTickEnabled = false;
-	bUseControllerRotationYaw = false;
 }
+
 
 void ARCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
+
+
+UAbilitySystemComponent* ARCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
 
 void ARCharacter::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
 {
@@ -118,30 +97,6 @@ bool ARCharacter::HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagCon
 }
 
 
-
-UAbilitySystemComponent* ARCharacter::GetAbilitySystemComponent() const
-{
-	return AbilitySystemComponent;
-}
-
-void ARCharacter::CameraPan(FVector2D Axis)
-{
-	AddControllerYawInput(Axis.X);
-	AddControllerPitchInput(Axis.Y);
-}
-
-void ARCharacter::CameraZoom(float Delta, float Multiplier)
-{
-	if (!IsValid(SpringArm))
-	{
-		return;
-	}
-	
-	float CurrentLength = SpringArm->TargetArmLength;
-	SpringArm->TargetArmLength = FMath::Clamp(CurrentLength + (Delta * Multiplier), CameraMinZoom, CameraMaxZoom);
-}
-
-
 void ARCharacter::DirectionalMove_Implementation(const FVector& Direction)
 {
 	FRotator Rotation = GetControlRotation();
@@ -151,62 +106,6 @@ void ARCharacter::DirectionalMove_Implementation(const FVector& Direction)
 	AddMovementInput(RightVector, Direction.X, false);
 	AddMovementInput(ForwardVector, Direction.Y, false);
 }
-
-void ARCharacter::DealDamage(TSubclassOf<UGameplayEffect> EffectClass, AActor* Target, AActor* EffectCauser)
-{
-	// If the target has lazy loading of ASC, try to call the function
-	// to load the ASC and then apply the effect here
-
-	/*
-	UAbilitySystemComponent* TargetASC = Target->GetComponentByClass<UAbilitySystemComponent>();
-
-	if (IsValid(RAbilitySystemComponent) && IsValid(TargetASC))
-	{
-		TArray<TWeakObjectPtr<AActor>> ContextActors;
-		for (AActor* Actor : OwnedActors)
-		{
-			ContextActors.Add(TWeakObjectPtr<AActor>(Actor));
-		}
-
-		UAbilitySystemLibrary::ApplyGameplayEffectToTarget(Target, this, this, EffectClass, 1.0f, [&](FGameplayEffectContextHandle& EffectContext) {
-			EffectContext.AddActors(ContextActors);
-			EffectContext.AddOrigin(GetActorLocation());
-		});
-
-		TArray<TWeakObjectPtr<AActor>> TargetActors;
-		TargetActors.Add(TWeakObjectPtr<AActor>(Target));
-
-		FGameplayEffectContextHandle EffectContext = RAbilitySystemComponent->MakeEffectContext();
-		EffectContext.AddSourceObject(this);
-		EffectContext.AddActors(TargetActors);
-		EffectContext.AddOrigin(GetActorLocation());
-		EffectContext.AddInstigator(this, EffectCauser);
-
-		if (!EffectContext.IsValid())
-		{
-			PRINT_ERROR(LogTemp, 1.0f, TEXT("Failed to create effect context"));
-			return;
-		}
-
-		FGameplayEffectSpecHandle SpecHandle = RAbilitySystemComponent->MakeOutgoingSpec(EffectClass, 1.0f, EffectContext);
-		if (!SpecHandle.IsValid())
-		{
-			PRINT_ERROR(LogTemp, 1.0f, TEXT("Failed to create effect spec handle"));
-			return;
-		}
-		// Damage type
-		// SpecHandle.Data->AddDynamicAssetTag();
-
-		RAbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
-	}*/
-}
-
-void ARCharacter::CancelAbility(FGameplayTagContainer WithTags)
-{
-	AbilitySystemComponent->CancelAbilities(&WithTags, nullptr, nullptr);
-}
-
-
 
 bool ARCharacter::IsMoving(float Threshold) const
 {

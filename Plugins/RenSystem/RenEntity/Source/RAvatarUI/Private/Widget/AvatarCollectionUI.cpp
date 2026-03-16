@@ -23,25 +23,25 @@ void UAvatarCollectionUI::InitializeCollection()
 		return;
 	}
 
-	UAvatarStorage* AvatarStorage = AvatarSubsystem->GetAvatarCollection(AssetSourceId);
-	if (IsValid(AvatarStorage) && bAutoRefresh)
+	UAvatarStorage* AvatarCollection = AvatarSubsystem->GetAvatarCollection(AssetSourceId);
+	if (IsValid(AvatarCollection) && bAutoRefresh)
 	{
-		AvatarStorage->OnRefreshed.AddUObject(this, &UAvatarCollectionUI::RefreshEntries);
+		AvatarCollection->OnRefreshed.AddUObject(this, &UAvatarCollectionUI::RefreshEntries);
 	}
 
-	AvatarCollection = TWeakObjectPtr<UAvatarStorage>(AvatarStorage);
+	AvatarStorage = TWeakObjectPtr<UAvatarStorage>(AvatarCollection);
 }
 
 void UAvatarCollectionUI::DisplayEntries()
 {
-	UAvatarStorage* AvatarStorage = AvatarCollection.Get();
-	if (!IsValid(AvatarStorage))
+	UAvatarStorage* AvatarCollection = AvatarStorage.Get();
+	if (!IsValid(AvatarCollection))
 	{
 		LOG_ERROR(LogAvatar, TEXT("AvatarStorage is invalid"));
 		return;
 	}
 
-	AvatarStorage->QueryItems(GetFilterRoot(), QueryRule,
+	AvatarCollection->QueryItems(GetFilterRoot(), QueryRule,
 		[this](const FAvatarSortEntry& SortEntry)
 		{
 			UAvatarEntry* Entry = GetEntryFromPool<UAvatarEntry>();
@@ -56,12 +56,12 @@ void UAvatarCollectionUI::DisplayEntries()
 
 void UAvatarCollectionUI::NativeDestruct()
 {
-	UAvatarStorage* AvatarStorage = AvatarCollection.Get();
-	if (IsValid(AvatarStorage))
+	UAvatarStorage* AvatarCollection = AvatarStorage.Get();
+	if (IsValid(AvatarCollection))
 	{
-		AvatarStorage->OnRefreshed.RemoveAll(this);
+		AvatarCollection->OnRefreshed.RemoveAll(this);
 	}
-	AvatarCollection.Reset();
+	AvatarStorage.Reset();
 
 	Super::NativeDestruct();
 }

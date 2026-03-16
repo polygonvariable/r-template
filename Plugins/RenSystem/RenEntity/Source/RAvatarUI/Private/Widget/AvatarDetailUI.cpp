@@ -27,30 +27,30 @@ void UAvatarDetailUI::InitializeDetail()
 		return;
 	}
 
-	UAvatarStorage* AvatarStorage = AvatarSubsystem->GetAvatarCollection(AssetSourceId);
-	if (IsValid(AvatarStorage) && bAutoRefresh)
+	UAvatarStorage* AvatarCollection = AvatarSubsystem->GetAvatarCollection(AssetSourceId);
+	if (IsValid(AvatarCollection) && bAutoRefresh)
 	{
-		AvatarStorage->OnRefreshed.AddUObject(this, &UAvatarDetailUI::RefreshDetail);
+		AvatarCollection->OnRefreshed.AddUObject(this, &UAvatarDetailUI::RefreshDetail);
 	}
 
-	AvatarCollection = TWeakObjectPtr<UAvatarStorage>(AvatarStorage);
+	AvatarStorage = TWeakObjectPtr<UAvatarStorage>(AvatarCollection);
 }
 
 void UAvatarDetailUI::RefreshDetail()
 {
-	UAvatarStorage* AvatarStorage = AvatarCollection.Get();
-	if (!IsValid(AvatarStorage))
+	UAvatarStorage* AvatarCollection = AvatarStorage.Get();
+	if (!IsValid(AvatarCollection))
 	{
 		return;
 	}
 
-	const FAvatarData* Item = AvatarStorage->GetItem(GetActiveAssetId());
-	if (!Item)
+	const FAvatarInstance* Instance = AvatarCollection->GetInstance(GetActiveAssetId());
+	if (!Instance)
 	{
 		return;
 	}
 
-	SetCustomDetails(Item);
+	SetCustomDetails(Instance);
 }
 
 void UAvatarDetailUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
@@ -77,28 +77,28 @@ void UAvatarDetailUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPrima
 		return;
 	}
 
-	const FAvatarData* Item = AvatarEntry->AvatarInstance;
-	SetCustomDetails(Item);
+	const FAvatarInstance* Instance = AvatarEntry->AvatarInstance;
+	SetCustomDetails(Instance);
 }
 
-void UAvatarDetailUI::SetCustomDetails(const FAvatarData* Item)
+void UAvatarDetailUI::SetCustomDetails(const FAvatarInstance* Instance)
 {
-	if (!Item)
+	if (!Instance)
 	{
 		return;
 	}
 
-	AscensionDetail->InitializeDetail(Item->Ascension);
+	AscensionDetail->InitializeDetail(Instance->Ascension);
 }
 
 void UAvatarDetailUI::NativeDestruct()
 {
-	UAvatarStorage* AvatarStorage = AvatarCollection.Get();
-	if (IsValid(AvatarStorage))
+	UAvatarStorage* AvatarCollection = AvatarStorage.Get();
+	if (IsValid(AvatarCollection))
 	{
-		AvatarStorage->OnRefreshed.RemoveAll(this);
+		AvatarCollection->OnRefreshed.RemoveAll(this);
 	}
-	AvatarCollection.Reset();
+	AvatarStorage.Reset();
 
 	Super::NativeDestruct();
 }

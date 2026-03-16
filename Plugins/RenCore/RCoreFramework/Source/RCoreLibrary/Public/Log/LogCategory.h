@@ -59,6 +59,7 @@ RCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogInventoryInstance, Log, All);
 
 // ~ Avatar Categories
 RCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogAvatar, Log, All);
+RCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogAvatarAscension, Log, All);
 // ~ End of Avatar Categories
 
 

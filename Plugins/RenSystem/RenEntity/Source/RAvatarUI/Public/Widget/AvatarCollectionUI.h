@@ -2,11 +2,9 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
-#include "Widget/AssetCollectionUI.h"
 #include "Definition/AvatarQueryType.h"
+#include "Widget/AssetCollectionUI.h"
 
 // Generated Headers
 #include "AvatarCollectionUI.generated.h"
@@ -38,7 +36,7 @@ protected:
 	FAvatarQueryRule QueryRule;
 
 	UPROPERTY()
-	TWeakObjectPtr<UAvatarStorage> AvatarCollection = nullptr;
+	TWeakObjectPtr<UAvatarStorage> AvatarStorage = nullptr;
 
 
 	// ~ UUserWidget

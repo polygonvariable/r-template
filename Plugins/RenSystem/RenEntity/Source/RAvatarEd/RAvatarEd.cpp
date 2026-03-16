@@ -116,7 +116,7 @@ void FRAvatarEdModule::GetItem(const TArray<FString>& Args, UWorld* World)
 	if (IsValid(Collection))
 	{
 		FPrimaryAssetId AssetId = FEntityPrimaryAsset::GetPrimaryAssetId(FName(*Args[1]));
-		const FAvatarData* Item = Collection->GetItem(AssetId);
+		const FAvatarInstance* Item = Collection->GetInstance(AssetId);
 		if (!Item)
 		{
 			UE_LOG(LogTemp, Error, TEXT("Avatar not found"));

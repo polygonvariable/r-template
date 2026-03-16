@@ -2,8 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Widget/AssetDashboardUI.h"
 
@@ -49,7 +47,6 @@ protected:
 	// ~ End of UAssetDashboardUI
 
 	// ~ UUserWidget
-	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 	// ~ End of UUserWidget

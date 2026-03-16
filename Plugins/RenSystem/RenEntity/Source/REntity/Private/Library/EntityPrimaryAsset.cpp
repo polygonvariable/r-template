@@ -4,13 +4,13 @@
 #include "Library/EntityPrimaryAsset.h"
 
 // Project Headers
-#include "Asset/AvatarAsset.h"
+#include "Asset/EntityAsset.h"
 
 
 
 FPrimaryAssetType FEntityPrimaryAsset::GetAssetType()
 {
-	return UAvatarAsset::GetPrimaryAssetType();
+	return UEntityAsset::GetPrimaryAssetType();
 }
 
 FPrimaryAssetId FEntityPrimaryAsset::GetPrimaryAssetId(const FName& AssetName)
@@ -29,7 +29,7 @@ bool FEntityPrimaryAsset::GetDisplayName(const FAssetData& AssetData, FText& Dis
 	{
 		return false;
 	}
-	return AssetData.GetTagValue<FText>(GET_MEMBER_NAME_CHECKED(UAvatarAsset, DisplayName), DisplayName);
+	return AssetData.GetTagValue<FText>(GET_MEMBER_NAME_CHECKED(UEntityAsset, DisplayName), DisplayName);
 }
 
 bool FEntityPrimaryAsset::GetHealth(const FAssetData& AssetData, int& Health)
@@ -38,6 +38,6 @@ bool FEntityPrimaryAsset::GetHealth(const FAssetData& AssetData, int& Health)
 	{
 		return false;
 	}
-	return AssetData.GetTagValue<int>(GET_MEMBER_NAME_CHECKED(UAvatarAsset, Health), Health);
+	return AssetData.GetTagValue<int>(GET_MEMBER_NAME_CHECKED(UEntityAsset, Health), Health);
 }
 

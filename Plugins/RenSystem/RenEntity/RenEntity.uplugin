@@ -21,6 +21,11 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "RAvatar",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "RAvatarEd",
 			"Type": "Editor",
 			"LoadingPhase": "Default"
@@ -29,11 +34,25 @@
 			"Name": "RAvatarUI",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RAvatarAscension",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RAvatarAscensionUI",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
 		{
 			"Name": "GameplayAbilities",
+			"Enabled": true
+		},
+		{
+			"Name": "StructUtils",
 			"Enabled": true
 		},
 		{
@@ -45,19 +64,11 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RenStorage",
-			"Enabled": true
-		},
-		{
-			"Name": "RenAbility",
-			"Enabled": true
-		},
-		{
 			"Name": "RCoreAscension",
 			"Enabled": true
 		},
 		{
-			"Name": "StructUtils",
+			"Name": "RCoreStorage",
 			"Enabled": true
 		}
 	]

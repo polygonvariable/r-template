@@ -46,7 +46,7 @@ void UInventoryAscensionDashboardUI::InitializeDetail()
 	}
 
 	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(AssetSourceId);
-	if (bAutoRefresh)
+	if (IsValid(InventoryStorage) && bAutoRefresh)
 	{
 		InventoryStorage->OnInventoryRefreshed.AddUObject(this, &UInventoryAscensionDashboardUI::HandleOnItemUpdated);
 	}

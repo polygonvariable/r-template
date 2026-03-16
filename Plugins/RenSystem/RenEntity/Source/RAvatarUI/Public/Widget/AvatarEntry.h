@@ -2,8 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Widget/AssetEntry.h"
 
@@ -11,14 +9,14 @@
 #include "AvatarEntry.generated.h"
 
 // Forward Declarations
-struct FAvatarData;
+struct FAvatarInstance;
 
 
 
 /**
  *
  */
-UCLASS()
+UCLASS(MinimalAPI)
 class UAvatarEntry : public UAssetEntry
 {
 
@@ -26,14 +24,11 @@ class UAvatarEntry : public UAssetEntry
 
 public:
 
-	const FAvatarData* AvatarInstance = nullptr;
+	const FAvatarInstance* AvatarInstance = nullptr;
 
 	// ~ UAvatarEntry
-	virtual void ResetData() override
-	{
-		AvatarInstance = nullptr;
-		Super::ResetData();
-	}
+	virtual FGuid GetAssetInstanceId() const override;
+	virtual void ResetData() override;
 	// ~ UAvatarEntry
 
 };

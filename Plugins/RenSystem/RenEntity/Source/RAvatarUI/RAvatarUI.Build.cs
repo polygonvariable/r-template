@@ -27,22 +27,9 @@ public class RAvatarUI : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-				"DeveloperSettings",
                 "UMG",
-                "CoreUObject",
-				"Engine",
-				"StructUtils",
-                "RCoreCommon",
-                "RCoreTask",
-                "RenStorage",
-                "RenAbility",
-                "GameplayAbilities",
-                "RCoreAscension",
-                "HTTP",
-				"Json",
-                "JsonUtilities",
-                "RCoreStorage",
-                "REntity",
+                "RCoreAssetUI",
+                "RAvatar",
             }
 			);
 			
@@ -55,15 +42,8 @@ public class RAvatarUI : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "GameplayTags",
-                "GameplayTasks",
                 "RCoreLibrary",
-                "RCoreDelegate",
                 "RCoreFilter",
-				"RCoreAssetManager",
-                "RCoreAsset",
-				"RCoreAssetUI",
-                "StructUtils",
                 "RCoreAscensionUI",
             }
 			);

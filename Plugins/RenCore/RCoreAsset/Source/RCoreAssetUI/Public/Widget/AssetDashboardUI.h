@@ -34,7 +34,7 @@ protected:
 
 
 	UFUNCTION(BlueprintCallable)
-	RCORE_API virtual void RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetClass);
+	RCORE_API virtual void RedirectToWidget(UPARAM(Meta = (AllowAbstract = false)) TSubclassOf<UAssetDashboardUI> WidgetClass);
 
 	// ~ UUserWidget
 	RCORE_API virtual void NativeConstruct() override;
@@ -42,7 +42,6 @@ protected:
 	// ~ End of UUserWidget
 
 };
-
 
 
 // Module Macros

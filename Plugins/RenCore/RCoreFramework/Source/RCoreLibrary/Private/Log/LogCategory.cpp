@@ -52,5 +52,6 @@ DEFINE_LOG_CATEGORY(LogInventoryInstance);
 
 // ~ Avatar Categories
 DEFINE_LOG_CATEGORY(LogAvatar);
+DEFINE_LOG_CATEGORY(LogAvatarAscension);
 // ~ End of Avatar Categories
 

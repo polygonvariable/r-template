@@ -2,8 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Widget/AssetEntryUI.h"
 
