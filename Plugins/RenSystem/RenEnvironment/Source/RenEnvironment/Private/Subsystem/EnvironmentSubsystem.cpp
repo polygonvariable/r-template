@@ -208,7 +208,7 @@ void UEnvironmentSubsystem::LoadDefaultProfiles(const TArray<FPrimaryAssetId>& A
 		return;
 	}
 
-	TFuture<FLatentLoadedAssets<UEnvironmentProfileAsset>> Future = AssetManager->FetchPrimaryAssets<UEnvironmentProfileAsset>(AssetIds);
+	TFuture<FLatentLoadedAssets<UEnvironmentProfileAsset>> Future = AssetManager->FetchPrimaryAssets<UEnvironmentProfileAsset>(FGuid::NewGuid(), AssetIds);
 	if (!Future.IsValid())
 	{
 		LOG_ERROR(LogWeather, TEXT("Failed to create Future"));

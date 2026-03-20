@@ -106,7 +106,7 @@ void USeasonSubsystem::LoadDefaultSeasons(const TArray<FPrimaryAssetId>& AssetId
 		return;
 	}
 
-	TFuture<FLatentLoadedAssets<USeasonAsset>> Future = AssetManager->FetchPrimaryAssets<USeasonAsset>(AssetIds);
+	TFuture<FLatentLoadedAssets<USeasonAsset>> Future = AssetManager->FetchPrimaryAssets<USeasonAsset>(FGuid::NewGuid(), AssetIds);
 	if (Future.IsValid())
 	{
 		LOG_ERROR(LogWeather, TEXT("Failed to create Future"));

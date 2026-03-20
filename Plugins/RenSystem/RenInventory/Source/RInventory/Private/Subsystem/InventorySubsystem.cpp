@@ -7,7 +7,7 @@
 
 // Project Headers
 #include "Asset/InventoryAsset.h"
-#include "Delegate/LatentDelegate.h"
+#include "Delegate/GameLifecycleDelegates.h"
 #include "Interface/IStorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
@@ -47,22 +47,11 @@ FName UInventorySubsystem::GetDefaultCollectionId() const
 void UInventorySubsystem::OnPreGameInitialized()
 {
 	IStorageProvider* StorageInterface = IStorageProvider::Get(GetGameInstance());
-	if (!StorageInterface)
+	if (StorageInterface)
 	{
-		LOG_ERROR(LogInventory, TEXT("Storage subsystem not found"));
-		return;
+		StorageInterface->LoadStorageFromSettings(UInventorySettings::Get());
+		StorageProvider = TWeakInterfacePtr<IStorageProvider>(StorageInterface);
 	}
-
-	const UInventorySettings* Settings = UInventorySettings::Get();
-
-	FStorageHandle Handle;
-	Handle.StorageClass = Settings->StorageClass;
-	Handle.StorageId = Settings->StorageId;
-	Handle.Url = Settings->StorageUrl;
-
-	StorageInterface->LoadStorage(MoveTemp(Handle));
-
-	StorageProvider = TWeakInterfacePtr<IStorageProvider>(StorageInterface);
 }
 
 bool UInventorySubsystem::ShouldCreateSubsystem(UObject* Outer) const
@@ -75,14 +64,14 @@ void UInventorySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogInventory, TEXT("InventorySubsystem initialized"));
 
-	FLatentDelegate::OnPreGameInitialized.AddUObject(this, &UInventorySubsystem::OnPreGameInitialized);
+	FGameLifecycleDelegates::OnPreGameInitialized.AddUObject(this, &UInventorySubsystem::OnPreGameInitialized);
 }
 
 void UInventorySubsystem::Deinitialize()
 {
 	StorageProvider.Reset();
 
-	FLatentDelegate::OnPreGameInitialized.RemoveAll(this);
+	FGameLifecycleDelegates::OnPreGameInitialized.RemoveAll(this);
 
 	LOG_WARNING(LogInventory, TEXT("InventorySubsystem deinitialized"));
 	Super::Deinitialize();

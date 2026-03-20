@@ -27,13 +27,13 @@ public:
 	FInventoryItem(const FGuid& InItemId, int InQuantity) : ItemId(InItemId), Quantity(InQuantity) {}
 
 
-	UPROPERTY(SaveGame)
+	UPROPERTY(EditAnywhere, SaveGame)
 	FGuid ItemId;
 
-	UPROPERTY(SaveGame)
+	UPROPERTY(EditAnywhere, SaveGame)
 	int Quantity = 0;
 
-	UPROPERTY(SaveGame)
+	UPROPERTY(EditAnywhere, SaveGame)
 	FAscensionData Ascension;
 
 

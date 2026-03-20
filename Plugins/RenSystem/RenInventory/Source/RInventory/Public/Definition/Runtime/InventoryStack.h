@@ -27,16 +27,16 @@ public:
 	FInventoryStack(FGuid InStackId, bool bInStackable, bool bInPersistWhenEmpty) : StackId(InStackId), bStackable(bInStackable), bPersistWhenEmpty(bInPersistWhenEmpty) {}
 
 
-	UPROPERTY(SaveGame)
+	UPROPERTY(EditAnywhere, SaveGame)
 	TArray<FInventoryItem> ItemList;
 
-	UPROPERTY(SaveGame)
+	UPROPERTY(EditAnywhere, SaveGame)
 	FGuid StackId;
 
-	UPROPERTY(SaveGame)
+	UPROPERTY(EditAnywhere, SaveGame)
 	bool bStackable = false;
 
-	UPROPERTY(SaveGame)
+	UPROPERTY(EditAnywhere, SaveGame)
 	bool bPersistWhenEmpty = false;
 
 

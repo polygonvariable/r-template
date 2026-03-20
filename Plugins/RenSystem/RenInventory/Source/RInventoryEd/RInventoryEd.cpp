@@ -119,7 +119,7 @@ void FRInventoryEdModule::GetItem(const TArray<FString>& Args, UWorld* World)
 	}
 
 	UInventoryStorage* Inventory = GetInventory(World, FName(*Args[0]));
-	if (!IsValid(Inventory))
+	if (IsValid(Inventory))
 	{
 		FPrimaryAssetId AssetId = FInventoryPrimaryAsset::GetPrimaryAssetId(FName(*Args[1]));
 		const FInventoryItem* Item = Inventory->GetItem(AssetId);

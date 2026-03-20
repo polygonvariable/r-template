@@ -11,59 +11,7 @@
 
 
 template<typename T>
-TFuture<FLatentLoadedAsset<T>> URAssetManager::FetchPrimaryAsset(const FPrimaryAssetId& AssetId)
-{
-	TSharedPtr<TPromise<FLatentLoadedAsset<T>>> Promise = MakeShared<TPromise<FLatentLoadedAsset<T>>>();
-	TFuture<FLatentLoadedAsset<T>> Future = Promise->GetFuture();
-
-	FStreamableDelegate Streamable = FStreamableDelegate::CreateWeakLambda(this, [this, AssetId, Promise]()
-		{
-			T* Object = Cast<T>(GetPrimaryAssetObject(AssetId));
-
-			FLatentLoadedAsset<T> Result;
-			Result.Asset = Object;
-			Result.bSuccess = (Object != nullptr);
-
-			Promise->SetValue(MoveTemp(Result));
-		}
-	);
-
-	LoadPrimaryAsset(AssetId, TArray<FName>(), MoveTemp(Streamable));
-	return Future;
-}
-
-template<typename T>
-TFuture<FLatentLoadedAssets<T>> URAssetManager::FetchPrimaryAssets(const TArray<FPrimaryAssetId>& AssetIds)
-{
-	TSharedPtr<TPromise<FLatentLoadedAssets<T>>> Promise = MakeShared<TPromise<FLatentLoadedAssets<T>>>();
-	TFuture<FLatentLoadedAssets<T>> Future = Promise->GetFuture();
-
-	FStreamableDelegate Streamable = FStreamableDelegate::CreateWeakLambda(this, [this, AssetIds, Promise]()
-		{
-			TArray<T*> Objects;
-			for (const FPrimaryAssetId& AssetId : AssetIds)
-			{
-				T* Object = Cast<T>(GetPrimaryAssetObject(AssetId));
-				if (Object)
-				{
-					Objects.Add(Object);
-				}
-			}
-
-			FLatentLoadedAssets<T> Result;
-			Result.bSuccess = (Objects.Num() == AssetIds.Num());
-			Result.Assets = MoveTemp(Objects);
-
-			Promise->SetValue(MoveTemp(Result));
-		}
-	);
-
-	LoadPrimaryAssets(AssetIds, TArray<FName>(), MoveTemp(Streamable));
-	return Future;
-}
-
-template<typename T>
-TFuture<FLatentLoadedAsset<T>> URAssetManager::FetchPrimaryAsset(const FGuid& LatentId, const FPrimaryAssetId& AssetId)
+TFuture<FLatentLoadedAsset<T>> URAssetManager::FetchPrimaryAsset(const FGuid& LatentId, const FPrimaryAssetId& AssetId, const TArray<FName>& AssetBundles)
 {
 	TSharedPtr<TPromise<FLatentLoadedAsset<T>>> Promise = MakeShared<TPromise<FLatentLoadedAsset<T>>>();
 	TFuture<FLatentLoadedAsset<T>> Future = Promise->GetFuture();
@@ -101,12 +49,12 @@ TFuture<FLatentLoadedAsset<T>> URAssetManager::FetchPrimaryAsset(const FGuid& La
 		}
 	);
 
-	LoadPrimaryAsset(AssetId, TArray<FName>(), MoveTemp(Streamable));
+	LoadPrimaryAsset(AssetId, AssetBundles, MoveTemp(Streamable));
 	return Future;
 }
 
 template<typename T>
-TFuture<FLatentLoadedAssets<T>> URAssetManager::FetchPrimaryAssets(const FGuid& LatentId, const TArray<FPrimaryAssetId>& AssetIds)
+TFuture<FLatentLoadedAssets<T>> URAssetManager::FetchPrimaryAssets(const FGuid& LatentId, const TArray<FPrimaryAssetId>& AssetIds, const TArray<FName>& AssetBundles)
 {
 	TSharedPtr<TPromise<FLatentLoadedAssets<T>>> Promise = MakeShared<TPromise<FLatentLoadedAssets<T>>>();
 	TFuture<FLatentLoadedAssets<T>> Future = Promise->GetFuture();
@@ -152,67 +100,10 @@ TFuture<FLatentLoadedAssets<T>> URAssetManager::FetchPrimaryAssets(const FGuid& 
 		}
 	);
 
-	LoadPrimaryAssets(AssetIds, TArray<FName>(), MoveTemp(Streamable));
+	LoadPrimaryAssets(AssetIds, AssetBundles, MoveTemp(Streamable));
 	return Future;
 }
 
-
-template<typename T>
-TFuture<FLatentLoadedAsset<T>> URAssetManager::FetchSecondaryAsset(const FSoftObjectPath& Path)
-{
-	TSharedPtr<TPromise<FLatentLoadedAsset<T>>> Promise = MakeShared<TPromise<FLatentLoadedAsset<T>>>();
-	TFuture<FLatentLoadedAsset<T>> Future = Promise->GetFuture();
-
-	FStreamableDelegate Streamable = FStreamableDelegate::CreateWeakLambda(this, [this, Path, Promise]()
-		{
-			FLatentLoadedAsset<T> Result;
-
-			T* Object = Cast<T>(Path.ResolveObject());
-
-			Result.Asset = Object;
-			Result.bSuccess = (Object != nullptr);
-
-			Promise->SetValue(MoveTemp(Result));
-		}
-	);
-
-	FStreamableManager& Manager = GetStreamableManager();
-	Manager.RequestAsyncLoad(Path, MoveTemp(Streamable));
-
-	return Future;
-}
-
-template<typename T>
-TFuture<FLatentLoadedAssets<T>> URAssetManager::FetchSecondaryAssets(const TArray<FSoftObjectPath>& Paths)
-{
-	TSharedPtr<TPromise<FLatentLoadedAssets<T>>> Promise = MakeShared<TPromise<FLatentLoadedAssets<T>>>();
-	TFuture<FLatentLoadedAssets<T>> Future = Promise->GetFuture();
-
-	FStreamableDelegate Streamable = FStreamableDelegate::CreateWeakLambda(this, [this, Paths, Promise]()
-		{
-			TArray<T*> Objects;
-			for (const FSoftObjectPath& Path : Paths)
-			{
-				T* Object = Cast<T>(Path.ResolveObject());
-				if (Object)
-				{
-					Objects.Add(Object);
-				}
-			}
-
-			FLatentLoadedAssets<T> Result;
-			Result.bSuccess = (Objects.Num() == Paths.Num());
-			Result.Assets = MoveTemp(Objects);
-
-			Promise->SetValue(MoveTemp(Result));
-		}
-	);
-
-	FStreamableManager& Manager = GetStreamableManager();
-	Manager.RequestAsyncLoad(Paths, MoveTemp(Streamable));
-
-	return Future;
-}
 
 template<typename T>
 TFuture<FLatentLoadedAsset<T>> URAssetManager::FetchSecondaryAsset(const FGuid& LatentId, const FSoftObjectPath& Path)
@@ -314,18 +205,6 @@ TFuture<FLatentLoadedAssets<T>> URAssetManager::FetchSecondaryAssets(const FGuid
 
 
 template<typename T>
-TFuture<FLatentLoadedAsset<UClass>> URAssetManager::FetchSecondaryClass(const FSoftClassPath& Path)
-{
-	return FetchSecondaryClass(Path, T::StaticClass());
-}
-
-template<typename T>
-TFuture<FLatentLoadedAssets<UClass>> URAssetManager::FetchSecondaryClasses(const TArray<FSoftClassPath>& Paths)
-{
-	return FetchSecondaryClasses(Paths, T::StaticClass());
-}
-
-template<typename T>
 TFuture<FLatentLoadedAsset<UClass>> URAssetManager::FetchSecondaryClass(const FGuid& LatentId, const FSoftClassPath& Path)
 {
 	return FetchSecondaryClass(LatentId, Path, T::StaticClass());
@@ -337,23 +216,6 @@ TFuture<FLatentLoadedAssets<UClass>> URAssetManager::FetchSecondaryClasses(const
 	return FetchSecondaryClasses(LatentId, Paths, T::StaticClass());
 }
 
-
-template<typename T>
-TFuture<FLatentLoadedAsset<UClass>> URAssetManager::FetchSecondaryClass(const TSoftClassPtr<T>& Path)
-{
-	return FetchSecondaryClass(Path.ToSoftObjectPath(), T::StaticClass());
-}
-
-template<typename T>
-TFuture<FLatentLoadedAssets<UClass>> URAssetManager::FetchSecondaryClasses(const TArray<TSoftClassPtr<T>>& Paths)
-{
-	TArray<FSoftObjectPath> ObjectPaths;
-	for (const TSoftClassPtr<T>& Path : Paths)
-	{
-		ObjectPaths.Add(Path.ToSoftObjectPath());
-	}
-	return FetchSecondaryClasses(ObjectPaths, T::StaticClass());
-}
 
 template<typename T>
 TFuture<FLatentLoadedAsset<UClass>> URAssetManager::FetchSecondaryClass(const FGuid& LatentId, const TSoftClassPtr<T>& Path)

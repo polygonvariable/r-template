@@ -63,7 +63,7 @@ void UTask_GrantItemRank::OnCleanup()
 
 void UTask_GrantItemRank::Step_LoadAsset()
 {
-	TFuture<FLatentLoadedAsset<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAsset<URPrimaryDataAsset>(TargetAssetId);
+	TFuture<FLatentLoadedAsset<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAsset<URPrimaryDataAsset>(FGuid::NewGuid(), TargetAssetId);
 	if (!Future.IsValid())
 	{
 		Fail(TEXT("Failed to create Future"));

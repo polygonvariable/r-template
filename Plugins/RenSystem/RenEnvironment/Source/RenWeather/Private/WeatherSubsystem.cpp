@@ -101,7 +101,7 @@ void UWeatherSubsystem::LoadDefaultWeather(const FPrimaryAssetId& AssetId, int P
 		return;
 	}
 	
-	TFuture<FLatentLoadedAsset<UWeatherAsset>> Future = AssetManager->FetchPrimaryAsset<UWeatherAsset>(AssetId);
+	TFuture<FLatentLoadedAsset<UWeatherAsset>> Future = AssetManager->FetchPrimaryAsset<UWeatherAsset>(FGuid::NewGuid(), AssetId);
 	if (!Future.IsValid())
 	{
 		LOG_ERROR(LogWeather, TEXT("Failed to create Future"));

@@ -3,8 +3,6 @@
 // Parent Header
 #include "Manager/RAssetManager.inl"
 
-// Engine Headers
-
 
 
 TWeakPtr<FLatentHandle> URAssetManager::CreateHandle(const FGuid& LatentId)
@@ -38,77 +36,6 @@ void URAssetManager::CancelFetch(const FGuid& LatentId)
 	}
 }
 
-
-TFuture<FLatentLoadedAsset<UClass>> URAssetManager::FetchSecondaryClass(const FSoftClassPath& Path, UClass* Type)
-{
-	TSharedPtr<TPromise<FLatentLoadedAsset<UClass>>> Promise = MakeShared<TPromise<FLatentLoadedAsset<UClass>>>();
-	TFuture<FLatentLoadedAsset<UClass>> Future = Promise->GetFuture();
-
-	FStreamableDelegate Streamable = FStreamableDelegate::CreateWeakLambda(this, [this, Path, Type, Promise]()
-		{
-			UClass* Class = Path.ResolveClass();
-
-			FLatentLoadedAsset<UClass> Result;
-			Result.Asset = Class;
-			Result.bSuccess = (Class != nullptr && Class->IsChildOf(Type));
-
-			Promise->SetValue(MoveTemp(Result));
-		}
-	);
-
-	FStreamableManager& Manager = GetStreamableManager();
-	Manager.RequestAsyncLoad(Path, MoveTemp(Streamable));
-
-	return Future;
-}
-
-TFuture<FLatentLoadedAssets<UClass>> URAssetManager::FetchSecondaryClasses(const TArray<FSoftClassPath>& Paths, UClass* Type)
-{
-	TSharedPtr<TPromise<FLatentLoadedAssets<UClass>>> Promise = MakeShared<TPromise<FLatentLoadedAssets<UClass>>>();
-	TFuture<FLatentLoadedAssets<UClass>> Future = Promise->GetFuture();
-
-	if (Paths.Num() == 0)
-	{
-		FLatentLoadedAssets<UClass> Result;
-		Result.bSuccess = false;
-		Result.bCancelled = false;
-
-		Promise->SetValue(MoveTemp(Result));
-
-		return Future;
-	}
-
-	FStreamableDelegate Streamable = FStreamableDelegate::CreateWeakLambda(this, [this, Paths, Type, Promise]()
-		{
-			TArray<UClass*> Classes;
-			for (const FSoftClassPath& Path : Paths)
-			{
-				UClass* Class = Path.ResolveClass();
-				if (Class && Class->IsChildOf(Type))
-				{
-					Classes.Add(Class);
-				}
-			}
-
-			FLatentLoadedAssets<UClass> Result;
-			Result.bSuccess = (Classes.Num() == Paths.Num());
-			Result.Assets = MoveTemp(Classes);
-
-			Promise->SetValue(MoveTemp(Result));
-		}
-	);
-
-	TArray<FSoftObjectPath> ObjectPaths;
-	for (const FSoftClassPath& Path : Paths)
-	{
-		ObjectPaths.Add(Path);
-	}
-
-	FStreamableManager& Manager = GetStreamableManager();
-	Manager.RequestAsyncLoad(ObjectPaths, MoveTemp(Streamable));
-
-	return Future;
-}
 
 TFuture<FLatentLoadedAsset<UClass>> URAssetManager::FetchSecondaryClass(const FGuid& LatentId, const FSoftClassPath& Path, UClass* Type)
 {
@@ -223,72 +150,6 @@ TFuture<FLatentLoadedAssets<UClass>> URAssetManager::FetchSecondaryClasses(const
 	return Future;
 }
 
-
-TFuture<FLatentLoadedAsset<UClass>> URAssetManager::FetchSecondaryClass(const FSoftObjectPath& Path, UClass* Type)
-{
-	TSharedPtr<TPromise<FLatentLoadedAsset<UClass>>> Promise = MakeShared<TPromise<FLatentLoadedAsset<UClass>>>();
-	TFuture<FLatentLoadedAsset<UClass>> Future = Promise->GetFuture();
-
-	FStreamableDelegate Streamable = FStreamableDelegate::CreateWeakLambda(this, [this, Path, Type, Promise]()
-		{
-			UClass* Class = Cast<UClass>(Path.ResolveObject());
-
-			FLatentLoadedAsset<UClass> Result;
-			Result.Asset = Class;
-			Result.bSuccess = (Class != nullptr && Class->IsChildOf(Type));
-
-			Promise->SetValue(MoveTemp(Result));
-		}
-	);
-
-	FStreamableManager& Manager = GetStreamableManager();
-	Manager.RequestAsyncLoad(Path, MoveTemp(Streamable));
-
-	return Future;
-}
-
-TFuture<FLatentLoadedAssets<UClass>> URAssetManager::FetchSecondaryClasses(const TArray<FSoftObjectPath>& Paths, UClass* Type)
-{
-	TSharedPtr<TPromise<FLatentLoadedAssets<UClass>>> Promise = MakeShared<TPromise<FLatentLoadedAssets<UClass>>>();
-	TFuture<FLatentLoadedAssets<UClass>> Future = Promise->GetFuture();
-
-	if (Paths.Num() == 0)
-	{
-		FLatentLoadedAssets<UClass> Result;
-		Result.bSuccess = false;
-		Result.bCancelled = false;
-
-		Promise->SetValue(MoveTemp(Result));
-
-		return Future;
-	}
-
-	FStreamableDelegate Streamable = FStreamableDelegate::CreateWeakLambda(this, [this, Paths, Type, Promise]()
-		{
-			TArray<UClass*> Classes;
-			for (const FSoftObjectPath& Path : Paths)
-			{
-				UClass* Class = Cast<UClass>(Path.ResolveObject());
-				if (Class && Class->IsChildOf(Type))
-				{
-					Classes.Add(Class);
-				}
-			}
-
-			FLatentLoadedAssets<UClass> Result;
-			Result.bSuccess = (Classes.Num() == Paths.Num());
-			Result.Assets = MoveTemp(Classes);
-
-			Promise->SetValue(MoveTemp(Result));
-		}
-	);
-
-
-	FStreamableManager& Manager = GetStreamableManager();
-	Manager.RequestAsyncLoad(Paths, MoveTemp(Streamable));
-
-	return Future;
-}
 
 TFuture<FLatentLoadedAsset<UClass>> URAssetManager::FetchSecondaryClass(const FGuid& LatentId, const FSoftObjectPath& Path, UClass* Type)
 {

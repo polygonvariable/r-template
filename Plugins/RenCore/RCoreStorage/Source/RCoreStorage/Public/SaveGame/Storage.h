@@ -28,6 +28,10 @@ class UStorage : public USaveGame
 
 public:
 
+	DECLARE_MULTICAST_DELEGATE(FOnStorageUpdated);
+	FOnStorageUpdated OnStorageUpdated;
+
+	RCORE_API virtual void InitializeDefaults();
 	RCORE_API virtual void InitializeStorage();
 	RCORE_API virtual void DeinitializeStorage();
 

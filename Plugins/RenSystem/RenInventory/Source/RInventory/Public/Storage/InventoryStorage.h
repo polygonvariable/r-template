@@ -2,8 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Definition/Runtime/InventoryStack.h"
 #include "Interface/IAssetInstance.h"
@@ -76,6 +74,10 @@ public:
 	RSYSTEM_API const FInventoryItem* GetItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId) const;
 
 	RSYSTEM_API void QueryItems(const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback);
+
+	// ~ UStorage
+	RSYSTEM_API virtual void InitializeDefaults() override;
+	// ~ End of UStorage
 
 protected:
 

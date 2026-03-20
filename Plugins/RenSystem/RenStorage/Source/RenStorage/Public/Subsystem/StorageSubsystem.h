@@ -16,6 +16,7 @@
 
 // Forward Declarations
 class UStorage;
+class UDeveloperSettings;
 
 
 
@@ -33,6 +34,7 @@ public:
 	// ~ IStorageProvider
 	virtual UStorage* GetStorage(const FName& StorageId) override;
 	virtual void LoadStorage(FStorageHandle&& Handle) override;
+	virtual void LoadStorageFromSettings(const UDeveloperSettings* Settings) override;
 	virtual void SaveStorage(const FName& StorageId) override;
 	// ~ End of IStorageProvider
 

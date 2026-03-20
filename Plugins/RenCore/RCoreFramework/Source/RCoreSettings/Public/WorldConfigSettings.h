@@ -30,6 +30,9 @@ class RCORE_API AWorldConfigSettings : public AWorldSettings
 	
 public:
 
+	UPROPERTY(EditAnywhere, Category = "World Config Settings")
+	FVector SpawnLocation;
+
 	UPROPERTY(EditAnywhere, Meta = (AllowedClasses = "/Script/RenAsset.ClockAsset"), Category = "World Config Settings")
 	TObjectPtr<UPrimaryDataAsset> ClockAsset;
 

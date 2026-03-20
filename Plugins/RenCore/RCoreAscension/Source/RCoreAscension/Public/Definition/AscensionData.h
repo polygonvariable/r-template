@@ -25,13 +25,13 @@ public:
 	FAscensionData() {}
 	FAscensionData(int InExperience, int InLevel, int InRank) : Experience(InExperience), Level(InLevel), Rank(InRank) {}
 
-	UPROPERTY(SaveGame)
+	UPROPERTY(EditAnywhere, SaveGame)
 	int Experience = 0;
 
-	UPROPERTY(SaveGame)
+	UPROPERTY(EditAnywhere, SaveGame)
 	int Level = 1;
 
-	UPROPERTY(SaveGame)
+	UPROPERTY(EditAnywhere, SaveGame)
 	int Rank = 1;
 
 	bool IsValid() const

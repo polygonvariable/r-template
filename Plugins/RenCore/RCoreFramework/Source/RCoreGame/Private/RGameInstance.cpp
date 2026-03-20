@@ -3,56 +3,19 @@
 // Parent Header
 #include "RGameInstance.h"
 
-// Engine Headers
-#include "Engine/AssetManager.h"
-
 // Project Headers
-#include "Delegate/LatentDelegate.h"
-#include "Util/AssetManagerUtil.h"
-#include "RCoreSettings/Public/GameMetadataSettings.h"
+#include "Delegate/GameLifecycleDelegates.h"
 
 
 
 void URGameInstance::Init()
 {
 	Super::Init();
-	PreloadAssets();
+	GameInit();
 }
 
 void URGameInstance::GameInit()
 {
-	FLatentDelegate::OnPreGameInitialized.Broadcast();
-}
-
-void URGameInstance::PreloadAssets()
-{
-	const UGameMetadataSettings* GameMetadata = GetDefault<UGameMetadataSettings>();
-	UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
-
-	if (!GameMetadata || !AssetManager)
-	{
-		return;
-	}
-
-	const TArray<FPrimaryAssetId>& PreloadAssets = GameMetadata->PreloadAssets;
-	if (PreloadAssets.Num() == 0)
-	{
-		GameInit();
-		return;
-	}
-
-	TWeakObjectPtr<URGameInstance> WeakThis(this);
-
-	TFunction<void(bool)> AsyncCallback = [WeakThis](bool bSuccess)
-		{
-			URGameInstance* Owner = WeakThis.Get();
-			if (!Owner || !bSuccess)
-			{
-				return;
-			}
-			Owner->GameInit();
-		};
-
-	AssetManagerUtil::LoadPrimaryAssets(this, AssetManager, PreloadAssets, AsyncCallback);
+	FGameLifecycleDelegates::OnPreGameInitialized.Broadcast();
 }
 

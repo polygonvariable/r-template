@@ -16,6 +16,7 @@
 
 // Forward Declarations
 class UStorage;
+class UDeveloperSettings;
 
 
 
@@ -46,6 +47,7 @@ public:
 	}
 
 	virtual void LoadStorage(FStorageHandle&& Handle) = 0;
+	virtual void LoadStorageFromSettings(const UDeveloperSettings* Settings) = 0;
 	virtual void SaveStorage(const FName& StorageId) = 0;
 
 public:

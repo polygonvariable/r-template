@@ -16,8 +16,14 @@
 #include "Library/InventoryPrimaryAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
+#include "Settings/InventorySettings.h"
 
 
+
+void UInventoryStorage::InitializeDefaults()
+{
+	InventoryStack = UInventorySettings::Get()->DefaultInventory;
+}
 
 bool UInventoryStorage::AddItem(const FPrimaryAssetId& AssetId, int Quantity)
 {

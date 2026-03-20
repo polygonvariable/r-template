@@ -27,7 +27,6 @@ public:
 protected:
 
 	virtual void GameInit();
-	virtual void PreloadAssets();
 
 };
 

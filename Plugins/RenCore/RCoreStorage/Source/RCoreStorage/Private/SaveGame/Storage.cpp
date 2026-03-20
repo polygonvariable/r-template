@@ -3,14 +3,14 @@
 // Parent Header
 #include "SaveGame/Storage.h"
 
-// Engine Headers
-
-// Project Headers
 
 
+void UStorage::InitializeDefaults()
+{
 
+}
 
- void UStorage::InitializeStorage()
+void UStorage::InitializeStorage()
 {
 
 }

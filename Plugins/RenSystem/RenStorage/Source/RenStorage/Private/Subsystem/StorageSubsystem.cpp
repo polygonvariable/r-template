@@ -8,8 +8,9 @@
 #include "Kismet/GameplayStatics.h"
 
 // Project Headers
+#include "Delegate/GameLifecycleDelegates.h"
 #include "Interface/IStorageProvider.h"
-#include "Delegate/LatentDelegate.h"
+#include "Interface/IStorageSettingsProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "SaveGame/Storage.h"
@@ -52,6 +53,22 @@ void UStorageSubsystem::LoadStorage(FStorageHandle&& Handle)
 	ETaskState State = IsValid(Storage) ? ETaskState::Completed : ETaskState::Failed;
 
 	Handle.Callback.ExecuteIfBound(FTaskResult(State));
+}
+
+void UStorageSubsystem::LoadStorageFromSettings(const UDeveloperSettings* Settings)
+{
+	const IStorageSettingsProvider* SettingsProvider = Cast<IStorageSettingsProvider>(Settings);
+	if (!SettingsProvider)
+	{
+		return;
+	}
+
+	FStorageHandle Handle;
+	Handle.StorageClass = SettingsProvider->GetStorageClass();
+	Handle.StorageId = SettingsProvider->GetStorageId();
+	//Handle.Url = SettingsProvider->GetStorageUrl();
+
+	LoadStorage(MoveTemp(Handle));
 }
 
 void UStorageSubsystem::SaveStorage(const FName& StorageId)
@@ -128,18 +145,17 @@ UStorage* UStorageSubsystem::CreateStorage_Internal(TSubclassOf<UStorage> Storag
 		return Cast<UStorage>(UGameplayStatics::LoadGameFromSlot(FileId, 0));
 	}
 
-	USaveGame* NewSaveGame = UGameplayStatics::CreateSaveGameObject(StorageClass);
-	if (!IsValid(NewSaveGame))
+	UStorage* NewStorage = Cast<UStorage>(UGameplayStatics::CreateSaveGameObject(StorageClass));
+	if (!IsValid(NewStorage))
 	{
-		LOG_ERROR(LogStorage, TEXT("Failed to create save game object"));
+		LOG_ERROR(LogStorage, TEXT("Failed to create storage"));
 		return nullptr;
 	}
 
-	UGameplayStatics::SaveGameToSlot(NewSaveGame, FileId, 0);
+	NewStorage->InitializeDefaults();
+	UGameplayStatics::SaveGameToSlot(NewStorage, FileId, 0);
 
-	UStorage* NewStorage = Cast<UStorage>(NewSaveGame);
-
-	return Cast<UStorage>(NewStorage);
+	return NewStorage;
 }
 
 bool UStorageSubsystem::SaveStorage_Internal(UStorage* Storage, const FName& StorageId)
@@ -258,7 +274,7 @@ UStorage* UStorageSubsystem::LoadStorage_Internal(const FName& StorageId, TSubcl
 
 void UStorageSubsystem::OnPreGameInitialized()
 {
-	FLatentDelegate::OnPreGameInitialized.RemoveAll(this);
+	FGameLifecycleDelegates::OnPreGameInitialized.RemoveAll(this);
 }
 
 void UStorageSubsystem::SaveAllStorages()
@@ -277,14 +293,14 @@ bool UStorageSubsystem::ShouldCreateSubsystem(UObject* Object) const
 void UStorageSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-	FLatentDelegate::OnPreGameInitialized.AddUObject(this, &UStorageSubsystem::OnPreGameInitialized);
+	FGameLifecycleDelegates::OnPreGameInitialized.AddUObject(this, &UStorageSubsystem::OnPreGameInitialized);
 }
 
 void UStorageSubsystem::Deinitialize()
 {
 	SaveAllStorages();
 
-	FLatentDelegate::OnPreGameInitialized.RemoveAll(this);
+	FGameLifecycleDelegates::OnPreGameInitialized.RemoveAll(this);
 	Super::Deinitialize();
 }
 

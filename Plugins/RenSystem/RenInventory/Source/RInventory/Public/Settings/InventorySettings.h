@@ -5,6 +5,10 @@
 // Engine Headers
 #include "Engine/DeveloperSettings.h"
 
+// Project Headers
+#include "Interface/IStorageSettingsProvider.h"
+#include "Definition/Runtime/InventoryStack.h"
+
 // Generated Headers
 #include "InventorySettings.generated.h"
 
@@ -17,19 +21,18 @@ class UInventorySubsystem;
 /**
  *
  */
-UCLASS(Config = Game, DefaultConfig)
-class UInventorySettings : public UDeveloperSettings
+UCLASS(MinimalAPI, Config = RenProject, DefaultConfig)
+class UInventorySettings : public UDeveloperSettings, public IStorageSettingsProvider
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(Config, EditDefaultsOnly)
-	FName StorageId;
+	UInventorySettings(const FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY(Config, EditDefaultsOnly)
-	FString StorageUrl;
+	FName StorageId;
 
 	UPROPERTY(Config, EditDefaultsOnly)
 	TSubclassOf<UInventoryStorage> StorageClass;
@@ -37,10 +40,16 @@ public:
 	UPROPERTY(Config, EditDefaultsOnly)
 	TSubclassOf<UInventorySubsystem> SubsystemClass;
 
+	UPROPERTY(Config, EditDefaultsOnly)
+	TMap<FPrimaryAssetId, FInventoryStack> DefaultInventory;
 
-	static const UInventorySettings* Get()
-	{
-		return GetDefault<UInventorySettings>();
-	}
+
+	// ~ IStorageSettingsProvider
+	virtual const FName& GetStorageId() const override;
+	virtual TSubclassOf<UStorage> GetStorageClass() const override;
+	// ~ End of IStorageSettingsProvider
+
+	static const UInventorySettings* Get();
+
 };
 
