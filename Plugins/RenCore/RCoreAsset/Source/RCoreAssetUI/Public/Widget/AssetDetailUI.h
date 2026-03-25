@@ -29,6 +29,12 @@ class UAssetDetailUI : public UAssetUI
 
 	GENERATED_BODY()
 
+public:
+
+	// ~ UAssetUI
+	RCORE_API virtual void ResetDetail() override;
+	// ~ End of UAssetUI
+
 protected:
 
 	UPROPERTY(EditAnywhere, Meta = (BindWidget))

@@ -13,6 +13,7 @@
 
 // Forward Declarations
 class UPartyStorage;
+class UPartySubsystem;
 
 
 
@@ -35,6 +36,9 @@ public:
 	UPROPERTY(Config, EditDefaultsOnly)
 	TSubclassOf<UPartyStorage> StorageClass;
 
+	UPROPERTY(Config, EditDefaultsOnly)
+	TSubclassOf<UPartySubsystem> SubsystemClass;
+
 	UPROPERTY(Config, EditDefaultsOnly, Meta=(ClampMin=1, ClampMax=6))
 	int MinPartySize = 1;
 
@@ -43,6 +47,9 @@ public:
 
 	UPROPERTY(Config, EditDefaultsOnly)
 	TArray<FPrimaryAssetId> DefaultCharacters;
+
+	UPROPERTY(Config, EditDefaultsOnly)
+	TArray<FName> CharacterBundles;
 
 
 	// ~ IStorageSettingsProvider

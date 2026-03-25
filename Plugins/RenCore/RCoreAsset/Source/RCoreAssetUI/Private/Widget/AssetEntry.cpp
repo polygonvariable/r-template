@@ -3,16 +3,7 @@
 // Parent Header
 #include "Widget/AssetEntry.h"
 
-// Engine Headers
 
-// Project Headers
-
-
-
-FPrimaryAssetId UAssetEntry::GetAssetId() const
-{
-	return FPrimaryAssetId();
-}
 
 FGuid UAssetEntry::GetAssetInstanceId() const
 {

@@ -62,8 +62,7 @@ protected:
 
 	// ~ UAssetDashboardUI
 	RSYSTEM_API virtual void InitializeDetail() override;
-	RSYSTEM_API virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
-	RSYSTEM_API virtual void SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	RSYSTEM_API virtual void SetPrimaryDetail(const URPrimaryDataAsset* Asset) override;
 	// ~ End of UAssetDashboardUI
 	
 	// ~ UUserWidget

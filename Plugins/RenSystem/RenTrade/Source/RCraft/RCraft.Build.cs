@@ -47,6 +47,7 @@ public class RCraft : ModuleRules
                 "RCoreDelegate",
                 "RCoreAsset",
 				"RCoreAssetManager",
+                "RCoreAssetInstance",
                 "RCoreCraft",
                 "RCoreLibrary",
             }

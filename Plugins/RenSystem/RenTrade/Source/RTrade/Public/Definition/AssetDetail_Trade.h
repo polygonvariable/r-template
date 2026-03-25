@@ -38,26 +38,3 @@ public:
 
 };
 
-#if WITH_EDITORONLY_DATA
-
-USTRUCT(BlueprintType)
-struct FAssetDetail_TradeEd : public FAssetDetail_Trade
-{
-
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditDefaultsOnly)
-	TSoftObjectPtr<URPrimaryDataAsset> DataAsset;
-
-	void Reset()
-	{
-		DataAsset.Reset();
-		FAssetDetail::Reset();
-	}
-
-};
-
-#endif
-

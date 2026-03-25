@@ -9,7 +9,7 @@
 #include "Asset/AscensionAsset.h"
 #include "Asset/InventoryAsset.h"
 #include "Asset/RPrimaryDataAsset.h"
-#include "Definition/Runtime/InventoryItem.h"
+#include "Definition/Runtime/InventoryInstance.h"
 #include "Interface/IAscensionProvider.h"
 #include "Interface/IAssetComposition.h"
 #include "Library/AscensionLibrary.h"
@@ -106,7 +106,7 @@ void UTask_GrantItemExperience::Step_LoadAssets()
 
 void UTask_GrantItemExperience::Step_CheckItemAsset()
 {
-	const FInventoryItem* Item = Inventory->GetItemById(TargetAssetId, TargetId);
+	const FInventoryInstance* Item = Inventory->GetInstanceById(TargetAssetId, TargetId);
 	if (!Item)
 	{
 		Fail(TEXT("Item not found, TargetAsset is invalid"));
@@ -215,7 +215,7 @@ void UTask_GrantItemExperience::Step_LoadBreakdownAsset(const FPrimaryAssetId& A
 
 void UTask_GrantItemExperience::Step_RemoveItem()
 {
-	bool bRemoved = Inventory->RemoveItemById(MaterialAssetId, MaterialId, MaterialQuantity);
+	bool bRemoved = Inventory->RemoveInstanceById(MaterialAssetId, MaterialId, MaterialQuantity);
 	if (!bRemoved)
 	{
 		Fail(TEXT("Failed to remove material"));
@@ -228,7 +228,7 @@ void UTask_GrantItemExperience::Step_RemoveItem()
 // UE_DISABLE_OPTIMIZATION
 void UTask_GrantItemExperience::Step_AddExperience()
 {
-	const FInventoryItem* Item = Inventory->GetItemById(TargetAssetId, TargetId);
+	const FInventoryInstance* Item = Inventory->GetInstanceById(TargetAssetId, TargetId);
 	if (!Item)
 	{
 		Fail(TEXT("Item not found"));
@@ -247,7 +247,7 @@ void UTask_GrantItemExperience::Step_AddExperience()
 		return;
 	}
 
-	bool bSuccess = Inventory->UpdateItemById(TargetAssetId, TargetId, [NewExperience, NewLevel](FInventoryItem* Item)
+	bool bSuccess = Inventory->UpdateInstanceById(TargetAssetId, TargetId, [NewExperience, NewLevel](FInventoryInstance* Item)
 		{
 			if (Item)
 			{

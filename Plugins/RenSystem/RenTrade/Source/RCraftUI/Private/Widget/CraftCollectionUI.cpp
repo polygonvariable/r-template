@@ -22,7 +22,7 @@ void UCraftCollectionUI::DisplayEntries()
 
 	FPrimaryAssetId TradeAssetId = TradeAsset->GetPrimaryAssetId();
 
-	CraftSubsystem->QueryItems(AssetSourceId, TradeAsset, TradeCollectionId, QuerySource,
+	CraftSubsystem->QueryItems(PrimarySourceId, TradeAsset, TradeCollectionId, QuerySource,
 		[this, TradeAssetId](const FPrimaryAssetId& ItemAssetId, const FAssetDetail_Trade& ItemDetail, const FCraftData* CraftData) {
 
 			UCraftEntry* Entry = GetEntryFromPool<UCraftEntry>();
@@ -42,7 +42,7 @@ void UCraftCollectionUI::NativeConstruct()
 	CraftSubsystem = UCraftSubsystem::Get(GetGameInstance());
 	if (IsValid(CraftSubsystem))
 	{
-		UCraftStorage* Craft = CraftSubsystem->GetCraft(AssetSourceId);
+		UCraftStorage* Craft = CraftSubsystem->GetCraft(PrimarySourceId);
 		if (IsValid(Craft))
 		{
 			Craft->OnCraftUpdated.AddUObject(this, &UCraftCollectionUI::RefreshEntries);

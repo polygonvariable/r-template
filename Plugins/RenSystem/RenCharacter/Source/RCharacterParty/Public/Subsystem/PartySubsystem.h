@@ -14,6 +14,7 @@
 // Forward Declarations
 class IStorageProvider;
 class UPartyStorage;
+class UPartyManagerComponent;
 
 
 
@@ -31,8 +32,17 @@ class UPartySubsystem : public UGameInstanceSubsystem
 public:
 
 	RSYSTEM_API UPartyStorage* GetPartyCollection();
+	
+	UFUNCTION(BlueprintCallable)
+	RSYSTEM_API void RequestSpawnParty();
+
+	RSYSTEM_API void RegisterManager(UPartyManagerComponent* Manager);
+	RSYSTEM_API void UnregisterManager();
 
 protected:
+
+	UPROPERTY()
+	TWeakObjectPtr<UPartyManagerComponent> ManagerComponent;
 
 	TWeakInterfacePtr<IStorageProvider> StorageProvider;
 

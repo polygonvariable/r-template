@@ -6,6 +6,7 @@
 // Engine Headers
 
 // Project Headers
+#include "Component/PartyManagerComponent.h"
 #include "Delegate/GameLifecycleDelegates.h"
 #include "Interface/IStorageProvider.h"
 #include "Log/LogCategory.h"
@@ -16,6 +17,15 @@
 
 
 
+void UPartySubsystem::RegisterManager(UPartyManagerComponent* Manager)
+{
+	ManagerComponent = TWeakObjectPtr<UPartyManagerComponent>(Manager);
+}
+
+void UPartySubsystem::UnregisterManager()
+{
+	ManagerComponent.Reset();
+}
 
 UPartyStorage* UPartySubsystem::GetPartyCollection()
 {
@@ -31,6 +41,15 @@ UPartyStorage* UPartySubsystem::GetPartyCollection()
 	return Cast<UPartyStorage>(Storage);
 }
 
+void UPartySubsystem::RequestSpawnParty()
+{
+	UPartyManagerComponent* Manager = ManagerComponent.Get();
+	if (IsValid(Manager))
+	{
+		Manager->SpawnParty();
+	}
+}
+
 void UPartySubsystem::OnPreGameInitialized()
 {
 	IStorageProvider* StorageInterface = SubsystemUtil::GetSubsystemInterface<IStorageProvider>(GetGameInstance());
@@ -43,7 +62,7 @@ void UPartySubsystem::OnPreGameInitialized()
 
 bool UPartySubsystem::ShouldCreateSubsystem(UObject* Outer) const
 {
-	return true;
+	return GetClass() == UPartySettings::Get()->SubsystemClass;
 }
 
 void UPartySubsystem::Initialize(FSubsystemCollectionBase& Collection)

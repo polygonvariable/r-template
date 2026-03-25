@@ -6,8 +6,6 @@
 #include "Blueprint/UserWidget.h"
 #include "InstancedStruct.h"
 
-// Project Headers
-
 // Generated Headers
 #include "AssetCollectionUI.generated.h"
 
@@ -40,7 +38,7 @@ public:
 	FOnSelectionCleared OnSelectionCleared;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (ExposeOnSpawn = true))
-	FName AssetSourceId = NAME_None;
+	FName PrimarySourceId = NAME_None;
 
 
 	RCORE_API virtual void InitializeCollection();
@@ -123,7 +121,6 @@ private:
 	FPrimaryAssetId _SelectedAssetId;
 
 };
-
 
 
 // Module Macros

@@ -5,7 +5,7 @@
 // Engine Headers
 
 // Project Headers
-#include "Definition/Runtime/InventoryItem.h"
+#include "Definition/Runtime/InventoryInstance.h"
 
 // Generated Headers
 #include "InventoryInstance.generated.h"
@@ -26,7 +26,7 @@ class UInventoryInstance : public UObject
 
 public:
 
-    bool InitializeItem(const FGuid& InInventoryId, const FPrimaryAssetId& InAssetId, FInventoryItem InItem);
+    bool InitializeItem(const FGuid& InInventoryId, const FPrimaryAssetId& InAssetId, FInventoryInstance InItem);
     void ResetItem();
 
     int GetQuantity() const;
@@ -49,7 +49,7 @@ protected:
 
     FGuid InventoryId;
     FPrimaryAssetId AssetId;
-    FInventoryItem Item;
+    FInventoryInstance Item;
 
 };
 

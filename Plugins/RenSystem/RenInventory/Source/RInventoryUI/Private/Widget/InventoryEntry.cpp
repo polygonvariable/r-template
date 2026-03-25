@@ -6,7 +6,7 @@
 // Engine Headers
 
 // Project Headers
-#include "Definition/Runtime/InventoryItem.h"
+#include "Definition/Runtime/InventoryInstance.h"
 
 
 

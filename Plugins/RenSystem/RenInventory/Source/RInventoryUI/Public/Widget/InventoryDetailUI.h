@@ -16,7 +16,7 @@ class UInventoryStorage;
 class UInventorySubsystem;
 class URPrimaryDataAsset;
 
-struct FInventoryItem;
+struct FInventoryInstance;
 
 
 
@@ -52,11 +52,11 @@ protected:
 	TObjectPtr<UAscensionDetailUI> AscensionDetail = nullptr;
 
 
-	virtual void SetCustomDetails(const FInventoryItem* Item, int Quantity);
+	virtual void SetCustomDetails(const FInventoryInstance* Item, int Quantity);
 
 	// ~ UAssetDetailUI
-	virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
-	virtual void SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const URPrimaryDataAsset* Asset) override;
+	virtual void SetSecondaryDetail(const UAssetEntry* Entry) override;
 	// ~ End of UAssetDetailUI
 
 	// ~ End of UUserWidget

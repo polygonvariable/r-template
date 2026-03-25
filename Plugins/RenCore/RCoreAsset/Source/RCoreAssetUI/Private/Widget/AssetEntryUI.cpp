@@ -7,14 +7,13 @@
 
 // Project Headers
 #include "Widget/AssetEntry.h"
+#include "Widget/Drag/AssetDragOperation.h"
 
 
 
 void UAssetEntryUI::ResetDetail()
 {
 	CancelInitialization();
-
-	SetPrimaryDetail(nullptr, nullptr);
 }
 
 void UAssetEntryUI::GetAssetSubDetail(FInstancedStruct& SubDetail) const
@@ -31,7 +30,8 @@ void UAssetEntryUI::NativeOnListItemObjectSet(UObject* ListItemObject)
 	CancelInitialization();
 
 	const UAssetEntry* Entry = Cast<UAssetEntry>(ListItemObject);
-	InitializeDetail(Entry);
+	InitializeAssetByEntry(Entry);
+	InitializeEntryDetail(Entry);
 
 	Execute_OnListItemObjectSet(this, ListItemObject);
 }
@@ -39,5 +39,23 @@ void UAssetEntryUI::NativeOnListItemObjectSet(UObject* ListItemObject)
 void UAssetEntryUI::NativeOnItemSelectionChanged(bool bSelected)
 {
 	Execute_BP_OnItemSelectionChanged(this, bSelected);
+}
+
+void UAssetEntryUI::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
+{
+	if (!DragOperationClass)
+	{
+		return;
+	}
+
+	const UAssetEntry* Entry = GetListItem<UAssetEntry>();
+	UAssetDragOperation* DragOperation = NewObject<UAssetDragOperation>(this, DragOperationClass);
+	if (IsValid(DragOperation) && IsValid(Entry))
+	{
+		DragOperation->AssetId = Entry->AssetId;
+		DragOperation->AssetInstanceId = Entry->GetAssetInstanceId();
+		DragOperation->DataAsset = GetActiveAsset();
+		OutOperation = DragOperation;
+	}
 }
 

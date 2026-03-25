@@ -17,7 +17,7 @@ void UTradeDetailUI::ResetDetail()
 	SwitchDetail(false);
 }
 
-void UTradeDetailUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UTradeDetailUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
 {
 	if (!IsValid(Asset))
 	{

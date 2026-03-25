@@ -25,7 +25,7 @@ void UAvatarStorage::InitializeDefaults()
 	AvatarCollection = UAvatarSettings::Get()->DefaultAvatars;
 }
 
-bool UAvatarStorage::AddItem(const FPrimaryAssetId& AssetId, int Quantity)
+bool UAvatarStorage::AddInstance(const FPrimaryAssetId& AssetId, int Quantity)
 {
 	UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
 	if (!IsValid(AssetManager))
@@ -40,11 +40,11 @@ bool UAvatarStorage::AddItem(const FPrimaryAssetId& AssetId, int Quantity)
 		return false;
 	}
 
-	OnRefreshed.Broadcast();
+	OnStorageUpdated.Broadcast();
 	return true;
 }
 
-bool UAvatarStorage::AddItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier)
+bool UAvatarStorage::AddInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier)
 {
 	UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
 	if (!IsValid(AssetManager))
@@ -53,83 +53,98 @@ bool UAvatarStorage::AddItems(const TMap<FPrimaryAssetId, int>& Items, int Multi
 		return false;
 	}
 
-	for (const TPair<FPrimaryAssetId, int>& Kv : Items)
+	for (const TPair<FPrimaryAssetId, int>& Kv : AssetIds)
 	{
 		AddInstance_Internal(AssetManager, Kv.Key);
 	}
 
-	OnRefreshed.Broadcast();
+	OnStorageUpdated.Broadcast();
 	return true;
 }
 
-bool UAvatarStorage::RemoveItem(const FPrimaryAssetId& AssetId, int Quantity)
+bool UAvatarStorage::RemoveInstance(const FPrimaryAssetId& AssetId, int Quantity)
 {
 	if (!RemoveInstance_Internal(AssetId))
 	{
 		return false;
 	}
 
-	OnRefreshed.Broadcast();
+	OnStorageUpdated.Broadcast();
 	return true;
 }
 
-bool UAvatarStorage::RemoveItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier)
+bool UAvatarStorage::RemoveInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier)
 {
-	for (const TPair<FPrimaryAssetId, int>& Kv : Items)
+	for (const TPair<FPrimaryAssetId, int>& Kv : AssetIds)
 	{
 		RemoveInstance_Internal(Kv.Key);
 	}
 
-	OnRefreshed.Broadcast();
+	OnStorageUpdated.Broadcast();
 	return true;
 }
 
-bool UAvatarStorage::RemoveAnyItems(const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity)
+bool UAvatarStorage::RemoveAnyInstances(const TMap<FPrimaryAssetId, int>& InAssetIds, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity)
 {
     return bool();
 }
 
-bool UAvatarStorage::RemoveItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId, int Quantity)
+bool UAvatarStorage::RemoveInstanceById(const FPrimaryAssetId& AssetId, const FGuid& InstanceId, int Quantity)
 {
     return bool();
 }
 
-bool UAvatarStorage::ContainItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier) const
+bool UAvatarStorage::ContainInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) const
 {
     return bool();
 }
 
-bool UAvatarStorage::ContainAnyItems(const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const
+bool UAvatarStorage::ContainAnyInstances(const TMap<FPrimaryAssetId, int>& InAssetIds, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const
 {
     return bool();
 }
 
-bool UAvatarStorage::UpdateItem(const FPrimaryAssetId& AssetId, TFunctionRef<void(FAvatarInstance*)> Callback)
+FOnAssetInstanceCollectionUpdated& UAvatarStorage::GetOnAssetInstanceCollectionUpdated()
 {
-	FAvatarInstance* Instance = AvatarCollection.Find(AssetId);
-	if (!Instance)
+	return OnCollectionUpdated;
+}
+
+bool UAvatarStorage::UpdateInstance(const FPrimaryAssetId& AssetId, TFunctionRef<void(FAvatarInstance*)> Callback)
+{
+	FAvatarInstance* AvatarInstance = AvatarCollection.Find(AssetId);
+	if (!AvatarInstance)
 	{
 		return false;
 	}
 
-	Callback(Instance);
+	Callback(AvatarInstance);
 
-	OnRefreshed.Broadcast();
+	OnStorageUpdated.Broadcast();
 	return true;
 }
 
 
+
+const FAscensionData* UAvatarStorage::GetAscensionInstance(const FPrimaryAssetId& AssetId, const FGuid& InstanceId) const
+{
+	const FAvatarInstance* Instance = GetInstanceById(InstanceId);
+	if (!Instance)
+	{
+		return nullptr;
+	}
+	return &Instance->Ascension;
+}
 
 const FAvatarInstance* UAvatarStorage::GetInstance(const FPrimaryAssetId& AssetId) const
 {
 	return AvatarCollection.Find(AssetId);
 }
 
-const FAvatarInstance* UAvatarStorage::GetInstanceById(const FGuid& ItemId) const
+const FAvatarInstance* UAvatarStorage::GetInstanceById(const FGuid& InstanceId) const
 {
 	for (const TPair<FPrimaryAssetId, FAvatarInstance>& Kv : AvatarCollection)
 	{
-		if (Kv.Value.AvatarId == ItemId)
+		if (Kv.Value.AvatarId == InstanceId)
 		{
 			return &Kv.Value;
 		}
@@ -138,7 +153,7 @@ const FAvatarInstance* UAvatarStorage::GetInstanceById(const FGuid& ItemId) cons
 }
 
 
-void UAvatarStorage::QueryItems(const UFilterCriterion* FilterCriterion, const FAvatarQueryRule& QueryRule, TFunctionRef<void(const FAvatarSortEntry&)> Callback)
+void UAvatarStorage::QueryInstances(const UFilterCriterion* FilterCriterion, const FAvatarQueryRule& QueryRule, TFunctionRef<void(const FAvatarSortEntry&)> Callback)
 {
 	UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
 	if (!IsValid(AssetManager))
@@ -302,8 +317,6 @@ bool UAvatarStorage::AddInstance_Internal(UAssetManager* AssetManager, const FPr
 
 	FGuid ItemId = FGuid::NewGuid();
 	AvatarCollection.Add(AssetId, FAvatarInstance(ItemId, Health));
-
-	OnAdded.Broadcast(AssetId, ItemId);
 	return true;
 }
 
@@ -314,7 +327,5 @@ bool UAvatarStorage::RemoveInstance_Internal(const FPrimaryAssetId& AssetId)
 	{
 		return false;
 	}
-
-	OnRemoved.Broadcast(AssetId, RemovedInstance.AvatarId);
 	return true;
 }

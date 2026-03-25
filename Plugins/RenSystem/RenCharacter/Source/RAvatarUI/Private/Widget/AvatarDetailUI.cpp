@@ -27,13 +27,11 @@ void UAvatarDetailUI::InitializeDetail()
 		return;
 	}
 
-	UAvatarStorage* AvatarCollection = AvatarSubsystem->GetAvatarCollection(AssetSourceId);
-	if (IsValid(AvatarCollection) && bAutoRefresh)
+	AvatarStorage = AvatarSubsystem->GetAvatarCollection();
+	if (IsValid(AvatarStorage) && bAutoRefresh)
 	{
-		AvatarCollection->OnRefreshed.AddUObject(this, &UAvatarDetailUI::RefreshDetail);
+		AvatarStorage->OnStorageUpdated.AddUObject(this, &UAvatarDetailUI::RefreshDetail);
 	}
-
-	AvatarStorage = TWeakObjectPtr<UAvatarStorage>(AvatarCollection);
 }
 
 void UAvatarDetailUI::RefreshDetail()
@@ -44,16 +42,16 @@ void UAvatarDetailUI::RefreshDetail()
 		return;
 	}
 
-	const FAvatarInstance* Instance = AvatarCollection->GetInstance(GetActiveAssetId());
-	if (!Instance)
+	const FAvatarInstance* AvatarInstance = AvatarCollection->GetInstance(GetActiveAssetId());
+	if (!AvatarInstance)
 	{
 		return;
 	}
 
-	SetCustomDetails(Instance);
+	SetCustomDetails(AvatarInstance);
 }
 
-void UAvatarDetailUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UAvatarDetailUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
 {
 	const UAvatarAsset* AvatarAsset = Cast<UAvatarAsset>(Asset);
 	if (!IsValid(AvatarAsset))
@@ -69,7 +67,7 @@ void UAvatarDetailUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimary
 	EntryIcon->SetBrushFromSoftTexture(AvatarAsset->Icon);
 }
 
-void UAvatarDetailUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UAvatarDetailUI::SetSecondaryDetail(const UAssetEntry* Entry)
 {
 	const UAvatarEntry* AvatarEntry = Cast<UAvatarEntry>(Entry);
 	if (!IsValid(AvatarEntry))
@@ -93,12 +91,11 @@ void UAvatarDetailUI::SetCustomDetails(const FAvatarInstance* Instance)
 
 void UAvatarDetailUI::NativeDestruct()
 {
-	UAvatarStorage* AvatarCollection = AvatarStorage.Get();
-	if (IsValid(AvatarCollection))
+	if (IsValid(AvatarStorage))
 	{
-		AvatarCollection->OnRefreshed.RemoveAll(this);
+		AvatarStorage->OnStorageUpdated.RemoveAll(this);
 	}
-	AvatarStorage.Reset();
+	AvatarStorage = nullptr;
 
 	Super::NativeDestruct();
 }

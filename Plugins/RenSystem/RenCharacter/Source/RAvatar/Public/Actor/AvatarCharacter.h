@@ -4,6 +4,7 @@
 
 // Project Headers
 #include "Actor/RCharacterBase.h"
+#include "Interface/IAssetInstanceData.h"
 
 // Generated Headers
 #include "AvatarCharacter.generated.h"
@@ -22,7 +23,7 @@ class UAvatarStorage;
  * 
  */
 UCLASS(Abstract, MinimalAPI)
-class AAvatarCharacter : public ARCharacterBase
+class AAvatarCharacter : public ARCharacterBase, public IAssetInstanceData
 {
 
 	GENERATED_BODY()
@@ -38,14 +39,22 @@ public:
 	TObjectPtr<UCameraComponent> Camera;
 
 
+	// ~ IAssetInstanceData
+	virtual FGuid GetInstanceId() const override;
+	virtual void SetInstanceId(const FGuid& InstanceId) override;
+	// ~ End of IAssetInstanceData
+
 	// ~ ARCharacterBase
 	virtual void InitializeCharacter(const UCharacterAsset* CharacterAsset) override;
 	// ~ End of ARCharacterBase
 
 protected:
 
+	UPROPERTY(VisibleAnywhere)
+	FGuid AvatarId;
+
 	UPROPERTY()
-	TWeakObjectPtr<UAvatarStorage> AvatarStorage;
+	TObjectPtr<UAvatarStorage> AvatarStorage;
 
 	UPROPERTY(EditAnywhere)
 	float CameraMinZoom = 100.0f;

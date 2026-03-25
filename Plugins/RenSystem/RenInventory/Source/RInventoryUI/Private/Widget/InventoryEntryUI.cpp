@@ -14,17 +14,22 @@
 
 
 
-void UInventoryEntryUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UInventoryEntryUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
 {
 	const UInventoryAsset* InventoryAsset = Cast<UInventoryAsset>(Asset);
-	const UInventoryEntry* InventoryEntry = Cast<UInventoryEntry>(Entry);
-	if (!IsValid(InventoryAsset) || !IsValid(InventoryEntry))
+	if (IsValid(InventoryAsset))
 	{
-		return;
+		EntryName->SetText(InventoryAsset->DisplayName);
+		EntryIcon->SetBrushFromSoftTexture(InventoryAsset->Icon);
 	}
+}
 
-	EntryName->SetText(InventoryAsset->DisplayName);
-	EntryIcon->SetBrushFromSoftTexture(InventoryAsset->Icon);
-	ItemQuantity->SetText(FText::AsNumber(InventoryEntry->Quantity));
+void UInventoryEntryUI::SetSecondaryDetail(const UAssetEntry* Entry)
+{
+	const UInventoryEntry* InventoryEntry = Cast<UInventoryEntry>(Entry);
+	if (IsValid(InventoryEntry))
+	{
+		ItemQuantity->SetText(FText::AsNumber(InventoryEntry->Quantity));
+	}
 }
 

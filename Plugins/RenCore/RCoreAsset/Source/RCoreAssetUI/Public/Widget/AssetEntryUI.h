@@ -17,6 +17,7 @@
 // Forward Declarations
 class UImage;
 class UTextBlock;
+class UAssetDragOperation;
 
 struct FInstancedStruct;
 
@@ -45,6 +46,9 @@ protected:
 	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UTextBlock> EntryName = nullptr;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UAssetDragOperation> DragOperationClass = nullptr;
+
 
 	UFUNCTION(BlueprintCallable)
 	void GetAssetSubDetail(FInstancedStruct& SubDetail) const;
@@ -53,6 +57,10 @@ protected:
 	RCORE_API virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 	RCORE_API virtual void NativeOnItemSelectionChanged(bool bSelected) override;
 	// ~ End of IUserObjectListEntry
+
+	// ~ UWidget
+	RCORE_API virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation);
+	// ~ End of UWidget
 
 };
 

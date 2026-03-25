@@ -129,7 +129,7 @@ void UAssetCollection_Trade::PreSave(FObjectPreSaveContext ObjectSaveContext)
 	AssetType = FPrimaryAssetType();
 	AssetList.Empty();
 
-	for (const FAssetDetail_TradeEd& Item : AssetListEd)
+	for (const FAssetDetail_Trade& Item : AssetListEd)
 	{
 		TSoftObjectPtr<URPrimaryDataAsset> Asset = Item.DataAsset;
 		URPrimaryDataAsset* DataAsset = Asset.LoadSynchronous();

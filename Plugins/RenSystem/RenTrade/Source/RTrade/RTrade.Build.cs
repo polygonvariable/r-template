@@ -42,6 +42,7 @@ public class RTrade : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "RCoreLibrary",
                 "RCoreAssetManager",
+                "RCoreAssetInstance",
             }
 			);
 		

@@ -2,7 +2,7 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "RCoreAsset",
+	"FriendlyName": "RCore Asset",
 	"Description": "",
 	"Category": "Ren Core",
 	"CreatedBy": "polygonvariable",
@@ -10,13 +10,18 @@
 	"DocsURL": "",
 	"MarketplaceURL": "",
 	"SupportURL": "",
-	"CanContainContent": false,
+	"CanContainContent": true,
 	"IsBetaVersion": true,
 	"IsExperimentalVersion": false,
 	"Installed": false,
 	"Modules": [
 		{
 			"Name": "RCoreAsset",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RCoreAssetInstance",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},

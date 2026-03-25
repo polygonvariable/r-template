@@ -852,30 +852,30 @@ void ASplineSegment::BuildSplineMeshes()
 
 void ASplineSegment::BakeSplineMesh()
 {
-	bAutoUpdate = false;
+	//bAutoUpdate = false;
 
-	RemoveStaticMeshComponents();
+	//RemoveStaticMeshComponents();
 
-	if (bCombineBakedMesh)
-	{
-		BakeSplineMeshIntoSingle();
-	}
-	else
-	{
-		BakeSplineMeshSeparately();
-	}
+	//if (bCombineBakedMesh)
+	//{
+	//	BakeSplineMeshIntoSingle();
+	//}
+	//else
+	//{
+	//	BakeSplineMeshSeparately();
+	//}
 
-	if (bClearSplineMeshesAfterBake)
-	{
-		RemoveSplineMeshes();
-	}
+	//if (bClearSplineMeshesAfterBake)
+	//{
+	//	RemoveSplineMeshes();
+	//}
 
-	ReregisterAllComponents();
+	//ReregisterAllComponents();
 
-	MarkComponentsRenderStateDirty();
-	MarkPackageDirty();
+	//MarkComponentsRenderStateDirty();
+	//MarkPackageDirty();
 
-	FEditorFileUtils::SaveDirtyPackages(true, true, true, false);
+	//FEditorFileUtils::SaveDirtyPackages(true, true, true, false);
 }
 
 

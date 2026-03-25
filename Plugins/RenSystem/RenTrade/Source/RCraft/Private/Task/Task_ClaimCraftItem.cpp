@@ -12,8 +12,9 @@
 #include "Definition/AssetDetail.h"
 #include "Definition/AssetRuleDefinition.h"
 #include "Definition/Runtime/TradeKey.h"
-#include "Interface/IAssetInstance.h"
-#include "Library/AssetUtil.h"
+#include "Interface/IAssetInstanceCollection.h"
+#include "Interface/IAssetInstanceCollectionProvider.h"
+#include "Library/AssetInstanceUtil.h"
 #include "Management/AssetGroup.h"
 #include "Management/Collection/AssetCollection_Trade.h"
 #include "Manager/RAssetManager.inl"
@@ -148,7 +149,7 @@ void UTask_ClaimCraftItem::Step_PerformTransaction()
 	UWorld* World = GetWorld();
 	UGameInstance* GameInstance = World->GetGameInstance();
 
-	IAssetInstanceCollectionProvider* TargetInterchange = FAssetUtil::GetAssetInterchange(GameInstance, TargetAssetId);
+	IAssetInstanceCollectionProvider* TargetInterchange = FAssetInstanceUtil::GetAssetInterchange(GameInstance, TargetAssetId);
 	if (!TargetInterchange)
 	{
 		Fail(TEXT("Failed to get transaction interface"));
@@ -163,7 +164,7 @@ void UTask_ClaimCraftItem::Step_PerformTransaction()
 		return;
 	}
 
-	if (!TargetTransaction->AddItem(TargetAssetId, TargetQuantity * ClaimQuantity))
+	if (!TargetTransaction->AddInstance(TargetAssetId, TargetQuantity * ClaimQuantity))
 	{
 		Fail(TEXT("Failed to add item"));
 		return;

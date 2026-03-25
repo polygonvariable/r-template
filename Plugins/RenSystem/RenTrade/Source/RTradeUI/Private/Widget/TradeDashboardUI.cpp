@@ -38,13 +38,13 @@ void UTradeDashboardUI::InitializeTradeDetails(const UTradeAsset* Asset)
 {
 	PrimaryCollection->TradeAsset = Asset;
 	PrimaryCollection->TradeCollectionId = TradeCollectionId;
-	PrimaryCollection->AssetSourceId = AssetSourceId;
+	PrimaryCollection->PrimarySourceId = PrimarySourceId;
 	PrimaryCollection->InitializeCollection();
 	PrimaryCollection->DisplayEntries();
 
 	PrimaryDetail->TradeAssetId = TradeAssetId;
 	PrimaryDetail->TradeCollectionId = TradeCollectionId;
-	PrimaryDetail->AssetSourceId = AssetSourceId;
+	PrimaryDetail->PrimarySourceId = PrimarySourceId;
 	PrimaryDetail->InitializeDetail();
 
 	SecondaryCollection->InitializeCollection();
@@ -82,16 +82,15 @@ void UTradeDashboardUI::InitializeDetail()
 	);
 }
 
-void UTradeDashboardUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UTradeDashboardUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
 {
-	PrimaryDetail->InitializeDetail(Entry, Asset);
-}
+	UAssetEntry* Entry = PrimaryCollection->GetSelectedEntry();
 
-void UTradeDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
-{
-	const UTradeEntry* TradeEntry = Cast<UTradeEntry>(Entry);
+	PrimaryDetail->InitializeAssetDetail(Asset);
+	PrimaryDetail->InitializeEntryDetail(Entry);
+
 	const UAssetCollection* MaterialCollection = GetTradeMaterialCollection(Asset);
-	if (!IsValid(TradeEntry) || !IsValid(MaterialCollection))
+	if (!IsValid(MaterialCollection))
 	{
 		return;
 	}
@@ -102,7 +101,7 @@ void UTradeDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPri
 	if (IsValid(AssetCriterion))
 	{
 		AssetCriterion->Included.Empty();
-	
+
 		TMap<FPrimaryAssetId, FAssetDetail> MaterialAssetList;
 		MaterialCollection->GetAssetList(MaterialAssetList);
 
@@ -118,10 +117,9 @@ void UTradeDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPri
 	SecondaryCollection->RefreshEntries();
 }
 
-
 void UTradeDashboardUI::NativeConstruct()
 {
-	PrimaryCollection->OnSelectionChanged.BindUObject(this, &UAssetDashboardUI::InitializeDetail);
+	PrimaryCollection->OnSelectionChanged.BindUObject(this, &UAssetDashboardUI::InitializeAssetByEntry);
 	PrimaryCollection->OnSelectionCleared.BindUObject(this, &UAssetDashboardUI::ResetDetail);
 
 	Super::NativeConstruct();

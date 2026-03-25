@@ -31,6 +31,8 @@ public class RInventory : ModuleRules
                 "RCoreAscension",
                 "RCoreAsset",
 				"RCoreAssetManager",
+                "RCoreAssetInstance",
+                "RCoreEquipment",
                 "RCoreStorage",
                 "RCoreCommon",
                 "RCoreShop",

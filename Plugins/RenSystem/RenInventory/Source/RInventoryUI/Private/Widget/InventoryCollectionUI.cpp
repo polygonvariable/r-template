@@ -22,10 +22,10 @@ void UInventoryCollectionUI::InitializeCollection()
 		return;
 	}
 
-	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(AssetSourceId);
+	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(PrimarySourceId);
 	if (IsValid(InventoryStorage) && bAutoRefresh)
 	{
-		InventoryStorage->OnInventoryRefreshed.AddUObject(this, &UInventoryCollectionUI::RefreshEntries);
+		InventoryStorage->OnStorageUpdated.AddUObject(this, &UInventoryCollectionUI::RefreshEntries);
 	}
 
 	Inventory = TWeakObjectPtr<UInventoryStorage>(InventoryStorage);
@@ -40,7 +40,7 @@ void UInventoryCollectionUI::DisplayEntries()
 		return;
 	}
 
-	InventoryStorage->QueryItems(GetFilterRoot(), QueryRule,
+	InventoryStorage->QueryInstances(GetFilterRoot(), QueryRule,
 		[this](const FInventorySortEntry& SortEntry)
 		{
 			UInventoryEntry* Entry = GetEntryFromPool<UInventoryEntry>();
@@ -59,7 +59,7 @@ void UInventoryCollectionUI::NativeDestruct()
 	UInventoryStorage* InventoryStorage = Inventory.Get();
 	if (IsValid(InventoryStorage))
 	{
-		InventoryStorage->OnInventoryRefreshed.RemoveAll(this);
+		InventoryStorage->OnStorageUpdated.RemoveAll(this);
 	}
 	Inventory.Reset();
 

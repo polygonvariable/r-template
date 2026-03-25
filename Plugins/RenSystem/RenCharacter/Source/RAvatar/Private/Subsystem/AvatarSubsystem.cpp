@@ -31,19 +31,9 @@ UAvatarStorage* UAvatarSubsystem::GetAvatarCollection() const
 	return Cast<UAvatarStorage>(AvatarStorage);
 }
 
-UAvatarStorage* UAvatarSubsystem::GetAvatarCollection(const FName& CollectionId) const
-{
-	IStorageProvider* Storage = StorageProvider.Get();
-	if (!Storage)
-	{
-		return nullptr;
-	}
-	return Storage->GetStorage<UAvatarStorage>(CollectionId);
-}
-
 IAssetInstanceCollection* UAvatarSubsystem::GetInstanceCollection(const FName& CollectionId) const
 {
-	return Cast<IAssetInstanceCollection>(GetAvatarCollection(CollectionId));
+	return Cast<IAssetInstanceCollection>(GetAvatarCollection());
 }
 
 FPrimaryAssetType UAvatarSubsystem::GetSupportedAssetType() const

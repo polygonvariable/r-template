@@ -12,10 +12,10 @@
 
 void UAvatarDashboardUI::InitializeDetail()
 {
-	AvatarDetail->AssetSourceId = AssetSourceId;
+	AvatarDetail->PrimarySourceId = PrimarySourceId;
 	AvatarDetail->InitializeDetail();
 
-	AvatarCollection->AssetSourceId = AssetSourceId;
+	AvatarCollection->PrimarySourceId = PrimarySourceId;
 	AvatarCollection->InitializeCollection();
 	AvatarCollection->DisplayEntries();
 }
@@ -25,10 +25,20 @@ void UAvatarDashboardUI::ResetDetail()
 	AvatarDetail->ResetDetail();
 }
 
+void UAvatarDashboardUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
+{
+	AvatarDetail->InitializeAssetDetail(Asset);
+}
+
+void UAvatarDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry)
+{
+	AvatarDetail->InitializeEntryDetail(Entry);
+}
+
 void UAvatarDashboardUI::RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetClass)
 {
-	const UAssetEntry* SelectedEntry = AvatarCollection->GetSelectedEntry();
-	if (!IsValid(WidgetClass) || !IsValid(SelectedEntry))
+	const UAssetEntry* Entry = AvatarCollection->GetSelectedEntry();
+	if (!IsValid(WidgetClass) || !IsValid(Entry))
 	{
 		return;
 	}
@@ -39,20 +49,15 @@ void UAvatarDashboardUI::RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetC
 		return;
 	}
 
-	Widget->AssetSourceId = AssetSourceId;
+	Widget->PrimarySourceId = PrimarySourceId;
 	Widget->AddToViewport();
 	Widget->InitializeDetail();
-	Widget->InitializeDetail(SelectedEntry);
-}
-
-void UAvatarDashboardUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
-{
-	AvatarDetail->InitializeDetail(Entry, Asset);
+	Widget->InitializeAssetByEntry(Entry);
 }
 
 void UAvatarDashboardUI::NativeConstruct()
 {
-	AvatarCollection->OnSelectionChanged.BindUObject(this, &UAssetDashboardUI::InitializeDetail);
+	AvatarCollection->OnSelectionChanged.BindUObject(this, &UAssetDashboardUI::InitializeAssetByEntry);
 	AvatarCollection->OnSelectionCleared.BindUObject(this, &UAssetDashboardUI::ResetDetail);
 
 	Super::NativeConstruct();

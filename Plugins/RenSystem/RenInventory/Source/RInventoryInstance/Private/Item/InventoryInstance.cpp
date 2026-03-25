@@ -9,7 +9,7 @@
 
 
 
-bool UInventoryInstance::InitializeItem(const FGuid& InInventoryId, const FPrimaryAssetId& InAssetId, FInventoryItem InItem)
+bool UInventoryInstance::InitializeItem(const FGuid& InInventoryId, const FPrimaryAssetId& InAssetId, FInventoryInstance InItem)
 {
 	if (bIsInitialized)
 	{

@@ -5,15 +5,11 @@
 // Engine Headers
 #include "InstancedStruct.h"
 
-// Project Headers
-
 // Generated Headers
 #include "AssetEntry.generated.h"
 
 // Module Macros
 #define RCORE_API RCOREASSETUI_API
-
-// Forward Declarations
 
 
 
@@ -32,7 +28,6 @@ public:
 	FInstancedStruct AssetSubDetail;
 
 
-	RCORE_API virtual FPrimaryAssetId GetAssetId() const;
 	RCORE_API virtual FGuid GetAssetInstanceId() const;
 	RCORE_API virtual void ResetData();
 
@@ -41,7 +36,6 @@ public:
 	// ~ End of UObject
 
 };
-
 
 
 // Module Macros

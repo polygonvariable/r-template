@@ -17,7 +17,7 @@
 #include "Manager/RAssetManager.inl"
 #include "Storage/AvatarStorage.h"
 #include "Subsystem/AvatarSubsystem.h"
-#include "Library/AssetUtil.h"
+#include "Library/AssetInstanceUtil.h"
 
 
 
@@ -33,7 +33,7 @@ void UTask_GrantAvatarExperience::OnStarted()
 		return;
 	}
 
-	UAvatarStorage* AvatarCollection = AvatarSubsystem->GetAvatarCollection(TargetSourceId);
+	UAvatarStorage* AvatarCollection = AvatarSubsystem->GetAvatarCollection();
 	if (!IsValid(AvatarCollection))
 	{
 		Fail(TEXT("AvatarStorage is invalid"));
@@ -215,7 +215,7 @@ void UTask_GrantAvatarExperience::Step_LoadBreakdownAsset(const FPrimaryAssetId&
 
 void UTask_GrantAvatarExperience::Step_RemoveMaterial()
 {
-	IAssetInstanceCollectionProvider* MaterialProvider = FAssetUtil::GetAssetInterchange(GetWorld(), MaterialAssetId);
+	IAssetInstanceCollectionProvider* MaterialProvider = FAssetInstanceUtil::GetAssetInterchange(GetWorld(), MaterialAssetId);
 	if (!MaterialProvider)
 	{
 		Fail(TEXT("Failed to get instance collection provider"));
@@ -230,7 +230,7 @@ void UTask_GrantAvatarExperience::Step_RemoveMaterial()
 		return;
 	}
 
-	bool bRemoved = MaterialCollection->RemoveItem(MaterialAssetId, MaterialQuantity);
+	bool bRemoved = MaterialCollection->RemoveInstance(MaterialAssetId, MaterialQuantity);
 	if (!bRemoved)
 	{
 		Fail(TEXT("Failed to remove material"));
@@ -254,7 +254,7 @@ void UTask_GrantAvatarExperience::Step_AddExperience()
 		return;
 	}
 
-	bool bSuccess = AvatarStorage->UpdateItem(TargetAssetId, [NewExperience, NewLevel](FAvatarInstance* Instance)
+	bool bSuccess = AvatarStorage->UpdateInstance(TargetAssetId, [NewExperience, NewLevel](FAvatarInstance* Instance)
 		{
 			if (Instance)
 			{

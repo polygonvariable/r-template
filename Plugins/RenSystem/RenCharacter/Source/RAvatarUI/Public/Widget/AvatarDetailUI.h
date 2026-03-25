@@ -39,14 +39,14 @@ protected:
 	TObjectPtr<UAscensionDetailUI> AscensionDetail = nullptr;
 
 	UPROPERTY()
-	TWeakObjectPtr<UAvatarStorage> AvatarStorage = nullptr;
+	TObjectPtr<UAvatarStorage> AvatarStorage = nullptr;
 
 
 	virtual void SetCustomDetails(const FAvatarInstance* Instance);
 
 	// ~ UAssetDetailUI
-	virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
-	virtual void SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const URPrimaryDataAsset* Asset) override;
+	virtual void SetSecondaryDetail(const UAssetEntry* Entry) override;
 	// ~ End of UAssetDetailUI
 
 	// ~ UUserWidget

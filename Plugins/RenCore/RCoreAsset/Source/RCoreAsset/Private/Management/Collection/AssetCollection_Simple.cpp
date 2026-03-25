@@ -70,7 +70,7 @@ void UAssetCollection_Simple::PreSave(FObjectPreSaveContext ObjectSaveContext)
 	AssetType = FPrimaryAssetType();
 	AssetList.Empty();
 
-	for (const FAssetDetail_SimpleEd& Item : AssetListEd)
+	for (const FAssetDetail& Item : AssetListEd)
 	{
 		TSoftObjectPtr<URPrimaryDataAsset> Asset = Item.DataAsset;
 		URPrimaryDataAsset* DataAsset = Asset.LoadSynchronous();

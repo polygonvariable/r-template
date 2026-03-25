@@ -32,19 +32,19 @@ class UAssetUI : public UUserWidget
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (ExposeOnSpawn = true))
-	FName AssetSourceId = NAME_None;
+	FName PrimarySourceId = NAME_None;
 
 
 	UFUNCTION(BlueprintCallable)
 	RCORE_API virtual void InitializeDetail();
 
-	RCORE_API virtual void InitializeDetail(const UAssetEntry* Entry);
-	RCORE_API virtual void InitializeDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset);
+	RCORE_API virtual void InitializeAssetByEntry(const UAssetEntry* Entry);
+	RCORE_API virtual void InitializeAssetById(const FPrimaryAssetId& AssetId);
 
-	UFUNCTION(BlueprintCallable)
+	RCORE_API virtual void InitializeAssetDetail(const URPrimaryDataAsset* Asset);
+	RCORE_API virtual void InitializeEntryDetail(const UAssetEntry* Entry);
+
 	RCORE_API virtual void RefreshDetail();
-
-	UFUNCTION(BlueprintCallable)
 	RCORE_API virtual void ResetDetail();
 
 	UFUNCTION(BlueprintCallable)
@@ -57,9 +57,10 @@ protected:
 
 
 	RCORE_API virtual const FPrimaryAssetId& GetActiveAssetId() const;
+	RCORE_API const URPrimaryDataAsset* GetActiveAsset() const;
 
-	RCORE_API virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset);
-	RCORE_API virtual void SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset);
+	RCORE_API virtual void SetPrimaryDetail(const URPrimaryDataAsset* Asset);
+	RCORE_API virtual void SetSecondaryDetail(const UAssetEntry* Entry);
 
 	RCORE_API virtual void CancelInitialization();
 	RCORE_API virtual void SwitchDetail(bool bPrimary);
@@ -71,12 +72,14 @@ protected:
 
 private:
 
-	TWeakObjectPtr<const URPrimaryDataAsset> _ActiveAsset;
+	UPROPERTY()
+	TObjectPtr<const URPrimaryDataAsset> _ActiveAsset;
+
 	FPrimaryAssetId _ActiveAssetId;
+
 	FGuid _ActiveLoadId;
 
 };
-
 
 
 // Module Macros

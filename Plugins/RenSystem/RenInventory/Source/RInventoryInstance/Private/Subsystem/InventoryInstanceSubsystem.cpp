@@ -104,7 +104,7 @@ UInventoryInstance* UInventoryInstanceSubsystem::CreateItem_Internal(const FGuid
 	//	return nullptr;
 	//}
 
-	//const FInventoryItem* Item = InventorySubsystem->GetItem(InventoryId, AssetId);
+	//const FInventoryInstance* Item = InventorySubsystem->GetItem(InventoryId, AssetId);
 	//if (!Item)
 	//{
 	//	LOG_ERROR(LogInventoryInstance, TEXT("Unable to find item"));
@@ -141,7 +141,7 @@ bool UInventoryInstanceSubsystem::CommitItem_Internal(UInventoryInstance* Item, 
 	//int Quantity = Item->GetQuantity();
 
 	//bool bResult = InventorySubsystem->UpdateItemById(InventoryId, AssetId, ItemId,
-	//	[Quantity](FInventoryItem* Item)
+	//	[Quantity](FInventoryInstance* Item)
 	//	{
 	//		if (Item)
 	//		{

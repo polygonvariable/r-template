@@ -12,6 +12,9 @@
 // Generated Headers
 #include "AvatarSettings.generated.h"
 
+// Module Macros
+#define RSYSTEM_API RAVATAR_API
+
 // Forward Declarations
 class UAvatarStorage;
 class UAvatarSubsystem;
@@ -49,7 +52,11 @@ public:
 	virtual TSubclassOf<UStorage> GetStorageClass() const override;
 	// ~ End of IStorageSettingsProvider
 
-	static const UAvatarSettings* Get();
+	RSYSTEM_API static const UAvatarSettings* Get();
 
 };
+
+
+// Module Macros
+#undef RSYSTEM_API
 

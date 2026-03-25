@@ -25,41 +25,26 @@ public:
 	FAssetDetail() {}
 	FAssetDetail(int InQuantity) : Quantity(InQuantity) {}
 
+#if WITH_EDITORONLY_DATA
+
+	UPROPERTY(EditDefaultsOnly)
+	TSoftObjectPtr<URPrimaryDataAsset> DataAsset;
+
+#endif
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int Quantity = 0;
 
 	void Reset()
 	{
 		Quantity = 0;
-	}
 
-};
-
-
-
-#if WITH_EDITORONLY_DATA
-
-USTRUCT(BlueprintType)
-struct FAssetDetail_SimpleEd : public FAssetDetail
-{
-
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditDefaultsOnly)
-	TSoftObjectPtr<URPrimaryDataAsset> DataAsset;
-
-	void Reset()
-	{
+#if WITH_EDITOR
 		DataAsset.Reset();
-		FAssetDetail::Reset();
+#endif
 	}
 
 };
-
-#endif
-
 
 
 
@@ -85,27 +70,4 @@ public:
 	}
 
 };
-
-#if WITH_EDITORONLY_DATA
-
-USTRUCT(BlueprintType)
-struct FAssetDetail_UniqueEd : public FAssetDetail_Unique
-{
-
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditDefaultsOnly)
-	TSoftObjectPtr<URPrimaryDataAsset> DataAsset;
-
-	void Reset()
-	{
-		DataAsset.Reset();
-		FAssetDetail::Reset();
-	}
-
-};
-
-#endif
 

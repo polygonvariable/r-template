@@ -4,7 +4,8 @@
 
 // Project Headers
 #include "Definition/Runtime/InventoryStack.h"
-#include "Interface/IAssetInstance.h"
+#include "Interface/IAscensionInstanceData.h"
+#include "Interface/IAssetInstanceCollection.h"
 #include "SaveGame/Storage.h"
 
 // Generated Headers
@@ -26,67 +27,56 @@ struct FInventorySortEntry;
  *
  */
 UCLASS(MinimalAPI)
-class UInventoryStorage : public UStorage, public IAssetInstanceCollection
+class UInventoryStorage : public UStorage, public IAssetInstanceCollection, public IAscensionInstanceData
 {
 
 	GENERATED_BODY()
 
 public:
 
-	DECLARE_MULTICAST_DELEGATE_TwoParams(FOnInventoryUpdated, const FPrimaryAssetId& /* AssetId */, FGuid /* ItemId */);
-	FOnInventoryUpdated OnItemAdded;
-	FOnInventoryUpdated OnItemRemoved;
-	FOnInventoryUpdated OnItemUpdated;
-
-	DECLARE_MULTICAST_DELEGATE(FOnInventoryRefreshed);
-	FOnInventoryRefreshed OnInventoryRefreshed;
-
-
-	// ~ IAssetInstanceCollection
-	RSYSTEM_API virtual bool AddItem(const FPrimaryAssetId& AssetId, int Quantity) override;
-	RSYSTEM_API virtual bool AddItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier) override;
-
-	/*
-	 * Removes an item from the stack within the specified container.
-	 * Useful when the exact itemId is not required.
-	 */
-	RSYSTEM_API virtual bool RemoveItem(const FPrimaryAssetId& AssetId, int Quantity) override;
-	RSYSTEM_API virtual bool RemoveItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier) override;
-
-	/** Removes any first valid item from the item list.
-	 *
-	 * For stackable items, the quantity is reduced from the item,
-	 * and for non-stackable items, the number of item will be removed from the stack.
-	 * Useful when the exact itemId is not required.
-	 */
-	RSYSTEM_API virtual bool RemoveAnyItems(const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) override;
-	RSYSTEM_API virtual bool RemoveItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId, int Quantity) override;
-
-	RSYSTEM_API virtual bool ContainItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier) const override;
-	RSYSTEM_API virtual bool ContainAnyItems(const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const override;
-	// ~ End of IAssetInstanceCollection
-
-	RSYSTEM_API bool UpdateItem(const FPrimaryAssetId& AssetId, TFunctionRef<void(FInventoryItem*)> Callback);
-	RSYSTEM_API bool UpdateItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId, TFunctionRef<void(FInventoryItem*)> Callback);
-
-	RSYSTEM_API int GetTotalQuantity(const FPrimaryAssetId& AssetId) const;
-	RSYSTEM_API const FInventoryItem* GetItem(const FPrimaryAssetId& AssetId) const;
-	RSYSTEM_API const FInventoryItem* GetItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId) const;
-
-	RSYSTEM_API void QueryItems(const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback);
-
 	// ~ UStorage
 	RSYSTEM_API virtual void InitializeDefaults() override;
 	// ~ End of UStorage
 
+	// ~ IAssetInstanceCollection
+	RSYSTEM_API virtual bool AddInstance(const FPrimaryAssetId& AssetId, int Quantity) override;
+	RSYSTEM_API virtual bool AddInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) override;
+
+	RSYSTEM_API virtual bool RemoveInstance(const FPrimaryAssetId& AssetId, int Quantity) override;
+	RSYSTEM_API virtual bool RemoveInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) override;
+
+	RSYSTEM_API virtual bool RemoveAnyInstances(const TMap<FPrimaryAssetId, int>& InAssetIds, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) override;
+	RSYSTEM_API virtual bool RemoveInstanceById(const FPrimaryAssetId& AssetId, const FGuid& InstanceId, int Quantity) override;
+
+	RSYSTEM_API virtual bool ContainInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) const override;
+	RSYSTEM_API virtual bool ContainAnyInstances(const TMap<FPrimaryAssetId, int>& InAssetIds, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const override;
+
+	virtual FOnAssetInstanceCollectionUpdated& GetOnAssetInstanceCollectionUpdated() override;
+	// ~ End of IAssetInstanceCollection
+
+	// ~ IAscensionInstanceData
+	virtual const FAscensionData* GetAscensionInstance(const FPrimaryAssetId& AssetId, const FGuid& InstanceId) const override;
+	// ~ End of IAscensionInstanceData
+
+	RSYSTEM_API bool UpdateInstance(const FPrimaryAssetId& AssetId, TFunctionRef<void(FInventoryInstance*)> Callback);
+	RSYSTEM_API bool UpdateInstanceById(const FPrimaryAssetId& AssetId, const FGuid& InstanceId, TFunctionRef<void(FInventoryInstance*)> Callback);
+
+	RSYSTEM_API int GetTotalQuantity(const FPrimaryAssetId& AssetId) const;
+	RSYSTEM_API const FInventoryInstance* GetInstance(const FPrimaryAssetId& AssetId) const;
+	RSYSTEM_API const FInventoryInstance* GetInstanceById(const FPrimaryAssetId& AssetId, const FGuid& InstanceId) const;
+
+	RSYSTEM_API void QueryInstances(const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback);
+
 protected:
+
+	FOnAssetInstanceCollectionUpdated OnCollectionUpdated;
 
 	UPROPERTY(SaveGame)
 	TMap<FPrimaryAssetId, FInventoryStack> InventoryStack;
 
 
-	FInventoryItem* GetMutableItemByIndex(const FPrimaryAssetId& AssetId, int Index);
-	FInventoryItem* GetMutableItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId);
+	FInventoryInstance* GetMutableItemByIndex(const FPrimaryAssetId& AssetId, int Index);
+	FInventoryInstance* GetMutableItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId);
 
 	void HandleItemSorting(TArray<FInventorySortEntry>& SortedItems, const FInventoryQueryRule& QueryRule) const;
 	void QueryAssetItems(UAssetManager* AssetManager, const UFilterCriterion* FilterCriterion, TArray<FInventorySortEntry>& OutSortedItems) const;
@@ -98,14 +88,14 @@ protected:
 	int GetItemQuantity_Internal(const FPrimaryAssetId& AssetId) const;
 
 	bool AddItem_Internal(const FPrimaryAssetId& AssetId, int Quantity, FInventoryStack* Stack);
-	void AddItem_InternalCreate(const FPrimaryAssetId& AssetId, TArray<FInventoryItem>& ItemList, int Quantity);
-	void AddItem_InternalUpdate(const FPrimaryAssetId& AssetId, FInventoryItem& Record, int Quantity);
+	void AddItem_InternalCreate(const FPrimaryAssetId& AssetId, TArray<FInventoryInstance>& ItemList, int Quantity);
+	void AddItem_InternalUpdate(const FPrimaryAssetId& AssetId, FInventoryInstance& Record, int Quantity);
 
 	bool RemoveItem_Internal(const FPrimaryAssetId& AssetId, int Quantity, FInventoryStack* Stack);
 	bool RemoveItemById_Internal(const FPrimaryAssetId& AssetId, const FGuid& ItemId, int Quantity, FInventoryStack* Stack);
-	bool RemoveItem_InternalStack(const FPrimaryAssetId& AssetId, TArray<FInventoryItem>& ItemList, int Quantity);
-	bool RemoveItem_InternalRemove(const FPrimaryAssetId& AssetId, TArray<FInventoryItem>& ItemList, FInventoryItem* Item);
-	void RemoveItem_InternalUpdate(const FPrimaryAssetId& AssetId, TArray<FInventoryItem>& ItemList, bool bPersistWhenEmpty, FInventoryItem* Item, int Quantity);
+	bool RemoveItem_InternalStack(const FPrimaryAssetId& AssetId, TArray<FInventoryInstance>& ItemList, int Quantity);
+	bool RemoveItem_InternalRemove(const FPrimaryAssetId& AssetId, TArray<FInventoryInstance>& ItemList, FInventoryInstance* Item);
+	void RemoveItem_InternalUpdate(const FPrimaryAssetId& AssetId, TArray<FInventoryInstance>& ItemList, bool bPersistWhenEmpty, FInventoryInstance* Item, int Quantity);
 
 };
 

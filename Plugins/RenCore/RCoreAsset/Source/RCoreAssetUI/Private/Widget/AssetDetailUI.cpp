@@ -6,9 +6,12 @@
 // Engine Headers
 #include "Components/WidgetSwitcher.h"
 
-// Project Headers
 
 
+void UAssetDetailUI::ResetDetail()
+{
+	SwitchDetail(false);
+}
 
 void UAssetDetailUI::SwitchDetail(bool bPrimary)
 {

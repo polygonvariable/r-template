@@ -9,7 +9,7 @@
 
 // Project Headers
 #include "Asset/RPrimaryDataAsset.h"
-#include "Definition/Runtime/InventoryItem.h"
+#include "Definition/Runtime/InventoryInstance.h"
 #include "Storage/InventoryStorage.h"
 #include "Subsystem/InventorySubsystem.h"
 #include "Widget/AscensionDetailUI.h"
@@ -25,10 +25,10 @@ void UInventoryDetailUI::InitializeDetail()
 		return;
 	}
 
-	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(AssetSourceId);
+	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(PrimarySourceId);
 	if (IsValid(InventoryStorage) && bAutoRefresh)
 	{
-		InventoryStorage->OnInventoryRefreshed.AddUObject(this, &UInventoryDetailUI::RefreshDetail);
+		InventoryStorage->OnStorageUpdated.AddUObject(this, &UInventoryDetailUI::RefreshDetail);
 	}
 
 	Inventory = TWeakObjectPtr<UInventoryStorage>(InventoryStorage);
@@ -42,7 +42,7 @@ void UInventoryDetailUI::RefreshDetail()
 		return;
 	}
 
-	const FInventoryItem* Item = InventoryStorage->GetItemById(GetActiveAssetId(), ActiveItemId);
+	const FInventoryInstance* Item = InventoryStorage->GetInstanceById(GetActiveAssetId(), ActiveItemId);
 	if (!Item)
 	{
 		return;
@@ -52,7 +52,7 @@ void UInventoryDetailUI::RefreshDetail()
 	SetCustomDetails(Item, Quantity);
 }
 
-void UInventoryDetailUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UInventoryDetailUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
 {
 	if (!IsValid(Asset))
 	{
@@ -67,7 +67,7 @@ void UInventoryDetailUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrim
 	EntryIcon->SetBrushFromSoftTexture(Asset->Icon);
 }
 
-void UInventoryDetailUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UInventoryDetailUI::SetSecondaryDetail(const UAssetEntry* Entry)
 {
 	const UInventoryEntry* InventoryEntry = Cast<UInventoryEntry>(Entry);
 	if (!IsValid(InventoryEntry))
@@ -75,12 +75,12 @@ void UInventoryDetailUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPr
 		return;
 	}
 
-	const FInventoryItem* Item = InventoryEntry->Item;
+	const FInventoryInstance* Item = InventoryEntry->Item;
 	int Quantity = InventoryEntry->Quantity;
 	SetCustomDetails(Item, Quantity);
 }
 
-void UInventoryDetailUI::SetCustomDetails(const FInventoryItem* Item, int Quantity)
+void UInventoryDetailUI::SetCustomDetails(const FInventoryInstance* Item, int Quantity)
 {
 	if (!Item)
 	{
@@ -98,7 +98,7 @@ void UInventoryDetailUI::NativeDestruct()
 	UInventoryStorage* InventoryStorage = Inventory.Get();
 	if (IsValid(InventoryStorage))
 	{
-		InventoryStorage->OnInventoryRefreshed.RemoveAll(this);
+		InventoryStorage->OnStorageUpdated.RemoveAll(this);
 	}
 	Inventory.Reset();
 

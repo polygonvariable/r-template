@@ -36,7 +36,8 @@ protected:
 
 
 	// ~ UInventoryUI
-	virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const URPrimaryDataAsset* Asset) override;
+	virtual void SetSecondaryDetail(const UAssetEntry* Entry) override;
 	// ~ End of UInventoryUI
 
 };

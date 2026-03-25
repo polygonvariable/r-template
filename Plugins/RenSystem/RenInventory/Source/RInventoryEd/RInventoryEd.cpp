@@ -52,6 +52,12 @@ void FRInventoryEdModule::RegisterCommand()
 		FConsoleCommandWithWorldAndArgsDelegate::CreateRaw(this, &FRInventoryEdModule::GetItem),
 		ECVF_Cheat
 	));
+	Commands.Add(ConsoleManager.RegisterConsoleCommand(
+		TEXT("Inventory.QueryItems"),
+		TEXT("Prints all items, args=<CollectionId>"),
+		FConsoleCommandWithWorldAndArgsDelegate::CreateRaw(this, &FRInventoryEdModule::QueryItems),
+		ECVF_Cheat
+	));
 }
 
 void FRInventoryEdModule::UnregisterCommand()
@@ -88,7 +94,7 @@ void FRInventoryEdModule::AddItem(const TArray<FString>& Args, UWorld* World)
 		FPrimaryAssetId AssetId = FInventoryPrimaryAsset::GetPrimaryAssetId(FName(*Args[1]));
 		int Quantity = FCString::Atoi(*Args[2]);
 
-		Inventory->AddItem(AssetId, Quantity);
+		Inventory->AddInstance(AssetId, Quantity);
 	}
 }
 
@@ -106,7 +112,7 @@ void FRInventoryEdModule::RemoveItem(const TArray<FString>& Args, UWorld* World)
 		FPrimaryAssetId AssetId = FInventoryPrimaryAsset::GetPrimaryAssetId(FName(*Args[1]));
 		int Quantity = FCString::Atoi(*Args[2]);
 
-		Inventory->RemoveItem(AssetId, Quantity);
+		Inventory->RemoveInstance(AssetId, Quantity);
 	}
 }
 
@@ -122,7 +128,7 @@ void FRInventoryEdModule::GetItem(const TArray<FString>& Args, UWorld* World)
 	if (IsValid(Inventory))
 	{
 		FPrimaryAssetId AssetId = FInventoryPrimaryAsset::GetPrimaryAssetId(FName(*Args[1]));
-		const FInventoryItem* Item = Inventory->GetItem(AssetId);
+		const FInventoryInstance* Item = Inventory->GetInstance(AssetId);
 		if (!Item)
 		{
 			UE_LOG(LogTemp, Error, TEXT("Item not found"));
@@ -131,6 +137,15 @@ void FRInventoryEdModule::GetItem(const TArray<FString>& Args, UWorld* World)
 
 		FString ItemDebug = Item->ToString();
 		UE_LOG(LogTemp, Log, TEXT("%s"), *ItemDebug);
+	}
+}
+
+void FRInventoryEdModule::QueryItems(const TArray<FString>& Args, UWorld* World)
+{
+	if (Args.Num() < 1 || !IsValid(World))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Invalid arguments"));
+		return;
 	}
 }
 

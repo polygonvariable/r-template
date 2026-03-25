@@ -4,46 +4,28 @@
 #include "Storage/PartyStorage.h"
 
 // Project Headers
+#include "Library/CharacterPrimaryAsset.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
 #include "Settings/PartySettings.h"
 
 
 
 void UPartyStorage::InitializeDefaults()
 {
-	CharacterList = UPartySettings::Get()->DefaultCharacters;
-}
+	const UPartySettings* Settings = UPartySettings::Get();
 
-bool UPartyStorage::AddCharacter(const FPrimaryAssetId& AssetId, bool bTemporary)
-{
-	if (CharacterList.Contains(AssetId) || TemporaryList.Contains(AssetId))
+	CharacterSlot.Init(FPrimaryAssetId(), Settings->MaxPartySize);
+
+	const TArray<FPrimaryAssetId>& DefaultCharacters = Settings->DefaultCharacters;
+	int Num = DefaultCharacters.Num();
+	for (int i = 0; i < Num; i++)
 	{
-		return false;
+		if (CharacterSlot.IsValidIndex(i))
+		{
+			CharacterSlot[i] = DefaultCharacters[i];
+		}
 	}
-
-	if (bTemporary)
-	{
-		TemporaryList.Add(AssetId);
-	}
-	else
-	{
-		CharacterList.Add(AssetId);
-	}
-
-	OnStorageUpdated.Broadcast();
-	return true;
-}
-
-void UPartyStorage::RemoveCharacter(const FPrimaryAssetId& AssetId)
-{
-	CharacterList.Remove(AssetId);
-	TemporaryList.Remove(AssetId);
-
-	OnStorageUpdated.Broadcast();
-}
-
-bool UPartyStorage::HasCharacter(const FPrimaryAssetId& AssetId) const
-{
-    return (CharacterList.Contains(AssetId) || TemporaryList.Contains(AssetId));
 }
 
 FVector UPartyStorage::GetPartyLocation(const FName& Level) const
@@ -58,17 +40,87 @@ void UPartyStorage::SetPartyLocation(const FName& Level, const FVector& Location
 
 const TArray<FPrimaryAssetId>& UPartyStorage::GetCharacters() const
 {
-    return CharacterList;
+    return CharacterSlot;
 }
 
 const TArray<FPrimaryAssetId>& UPartyStorage::GetTemporaryCharacters() const
 {
-    return TemporaryList;
+    return TemporarySlot;
 }
 
 void UPartyStorage::GetAllCharacters(TArray<FPrimaryAssetId>& OutCharacters) const
 {
-	OutCharacters.Append(CharacterList);
-	OutCharacters.Append(TemporaryList);
+	OutCharacters.Empty();
+
+	for (const FPrimaryAssetId& AssetId : CharacterSlot)
+	{
+		if (AssetId.IsValid())
+		{
+			OutCharacters.Add(AssetId);
+		}
+	}
+	for (const FPrimaryAssetId& AssetId : TemporarySlot)
+	{
+		if (AssetId.IsValid())
+		{
+			OutCharacters.Add(AssetId);
+		}
+	}
+}
+
+FPrimaryAssetId UPartyStorage::GetCharacterAtSlot(int Slot) const
+{
+	return CharacterSlot.IsValidIndex(Slot) ? CharacterSlot[Slot] : FPrimaryAssetId();
+}
+
+bool UPartyStorage::SetCharacterAtSlot(int Slot, FPrimaryAssetId AssetId)
+{
+	if (!FCharacterPrimaryAsset::IsValid(AssetId))
+	{
+		LOG_ERROR(LogTemp, TEXT("Asset type is not character"));
+		return false;
+	}
+
+	if (!CharacterSlot.IsValidIndex(Slot))
+	{
+		return false;
+	}
+
+	int32 ExistingSlot = CharacterSlot.IndexOfByKey(AssetId);
+	if (ExistingSlot != INDEX_NONE)
+	{
+		CharacterSlot[ExistingSlot] = FPrimaryAssetId();
+	}
+
+	CharacterSlot[Slot] = AssetId;
+	OnStorageUpdated.Broadcast();
+
+	return true;
+}
+
+bool UPartyStorage::ClearSlot(int Slot)
+{
+	if (!CharacterSlot.IsValidIndex(Slot))
+	{
+		return false;
+	}
+
+	int NumValidCharacters = 0;
+	for (int i = 0; i < CharacterSlot.Num(); i++)
+	{
+		if (CharacterSlot[i].IsValid())
+		{
+			NumValidCharacters++;
+		}
+	}
+
+	if (NumValidCharacters == UPartySettings::Get()->MinPartySize)
+	{
+		return false;
+	}
+
+	CharacterSlot[Slot] = FPrimaryAssetId();
+	OnStorageUpdated.Broadcast();
+	return true;
 }
 

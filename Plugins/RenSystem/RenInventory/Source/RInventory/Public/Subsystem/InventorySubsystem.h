@@ -6,7 +6,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 
 // Project Headers
-#include "Interface/IAssetInstance.h"
+#include "Interface/IAssetInstanceCollectionProvider.h"
 
 // Generated Headers
 #include "InventorySubsystem.generated.h"
@@ -36,9 +36,9 @@ public:
 	RSYSTEM_API UInventoryStorage* GetInventory(const FName& InventoryId) const;
 
 	// ~ IAssetInstanceCollectionProvider
-	RSYSTEM_API virtual IAssetInstanceCollection* GetInstanceCollection(const FName& SourceId) const override;
-	RSYSTEM_API virtual FPrimaryAssetType GetSupportedAssetType() const override;
-	RSYSTEM_API virtual FName GetDefaultCollectionId() const override;
+	virtual IAssetInstanceCollection* GetInstanceCollection(const FName& SourceId) const override;
+	virtual FPrimaryAssetType GetSupportedAssetType() const override;
+	virtual FName GetDefaultCollectionId() const override;
 	// ~ End of IAssetInstanceCollectionProvider
 
 protected:

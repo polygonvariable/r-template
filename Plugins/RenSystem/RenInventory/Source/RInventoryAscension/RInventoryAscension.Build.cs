@@ -43,6 +43,7 @@ public class RInventoryAscension : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "RCoreAsset",
                 "RCoreAssetManager",
+                "RCoreAssetInstance",
                 "RCoreLibrary",
                 "RInventory",
             }

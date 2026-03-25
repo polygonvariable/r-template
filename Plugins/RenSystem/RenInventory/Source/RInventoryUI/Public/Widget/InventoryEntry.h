@@ -11,7 +11,7 @@
 #include "InventoryEntry.generated.h"
 
 // Forward Declarations
-struct FInventoryItem;
+struct FInventoryInstance;
 
 
 
@@ -27,7 +27,7 @@ class UInventoryEntry : public UAssetEntry
 public:
 
 	int Quantity = 0;
-	const FInventoryItem* Item = nullptr;
+	const FInventoryInstance* Item = nullptr;
 
 	// ~ UAssetEntry
 	virtual FGuid GetAssetInstanceId() const override;

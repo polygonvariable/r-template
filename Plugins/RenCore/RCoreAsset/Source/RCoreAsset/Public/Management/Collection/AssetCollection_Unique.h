@@ -51,7 +51,7 @@ protected:
 #if WITH_EDITORONLY_DATA
 
 	UPROPERTY(EditDefaultsOnly, Meta = (DisplayName = "Asset List (Editor)"))
-	TArray<FAssetDetail_UniqueEd> AssetListEd;
+	TArray<FAssetDetail_Unique> AssetListEd;
 
 #endif
 

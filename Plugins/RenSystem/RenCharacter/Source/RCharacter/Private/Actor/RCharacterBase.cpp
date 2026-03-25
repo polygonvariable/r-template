@@ -90,6 +90,15 @@ void ARCharacterBase::InitializeTags(const TMap<FGameplayTag, float>& Attributes
 	ASC->AddLooseGameplayTag(HealthTag);
 }
 
+void ARCharacterBase::DeinitializeCharacter()
+{
+	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+	if (IsValid(MovementComponent))
+	{
+		MovementComponent->SetMovementMode(MOVE_None);
+	}
+}
+
 
 
 void ARCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

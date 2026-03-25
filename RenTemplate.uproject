@@ -130,13 +130,6 @@
 			"Enabled": false
 		},
 		{
-			"Name": "TextureGraph",
-			"Enabled": true,
-			"SupportedTargetPlatforms": [
-				"Win64"
-			]
-		},
-		{
 			"Name": "NiagaraFluids",
 			"Enabled": true
 		},

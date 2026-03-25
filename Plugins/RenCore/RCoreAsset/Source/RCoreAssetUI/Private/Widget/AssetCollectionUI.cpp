@@ -20,6 +20,7 @@ void UAssetCollectionUI::InitializeCollection()
 
 void UAssetCollectionUI::DisplayEntries()
 {
+
 }
 
 void UAssetCollectionUI::ClearEntries(bool bRegenerate)

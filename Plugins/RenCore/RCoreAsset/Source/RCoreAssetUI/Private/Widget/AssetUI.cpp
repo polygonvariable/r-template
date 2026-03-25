@@ -19,25 +19,35 @@ void UAssetUI::InitializeDetail()
 
 }
 
-void UAssetUI::InitializeDetail(const UAssetEntry* Entry)
+void UAssetUI::InitializeAssetByEntry(const UAssetEntry* Entry)
 {
-	if (!IsValid(Entry) || !IsValid(AssetManager) || !Entry->AssetId.IsValid())
+	if (!IsValid(Entry))
 	{
-		LOG_ERROR(LogAsset, TEXT("Entry, AssetManager or AssetId is invalid"));
+		LOG_ERROR(LogAsset, TEXT("Entry is invalid"));
 		return;
 	}
 
-	if (_ActiveAssetId == Entry->AssetId && _ActiveAsset.IsValid())
+	InitializeEntryDetail(Entry);
+	InitializeAssetById(Entry->AssetId);
+}
+
+void UAssetUI::InitializeAssetById(const FPrimaryAssetId& AssetId)
+{
+	if (!IsValid(AssetManager) || !AssetId.IsValid())
 	{
-		const URPrimaryDataAsset* Asset = _ActiveAsset.Get();
-		SetPrimaryDetail(Entry, Asset);
-		SetSecondaryDetail(Entry, Asset);
+		LOG_ERROR(LogAsset, TEXT("AssetManager or AssetId is invalid"));
+		return;
+	}
+
+	if (_ActiveAssetId == AssetId && _ActiveAsset)
+	{
+		InitializeAssetDetail(_ActiveAsset.Get());
 		return;
 	}
 
 	AssetManager->CancelFetch(_ActiveLoadId);
 
-	_ActiveAssetId = Entry->AssetId;
+	_ActiveAssetId = AssetId;
 	_ActiveLoadId = FGuid::NewGuid();
 
 	TFuture<FLatentLoadedAsset<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAsset<URPrimaryDataAsset>(_ActiveLoadId, _ActiveAssetId);
@@ -47,35 +57,33 @@ void UAssetUI::InitializeDetail(const UAssetEntry* Entry)
 		return;
 	}
 
-	TWeakObjectPtr<const UAssetEntry> WeakEntry(Entry);
 	TWeakObjectPtr<UAssetUI> WeakThis(this);
-
-	Future.Next([WeakThis, WeakEntry](const FLatentLoadedAsset<URPrimaryDataAsset>& Result)
+	Future.Next([WeakThis](const FLatentLoadedAsset<URPrimaryDataAsset>& Result)
 		{
 			UAssetUI* This = WeakThis.Get();
-			const UAssetEntry* Entry = WeakEntry.Get();
 			if (IsValid(This) && Result.IsValid())
 			{
 				const URPrimaryDataAsset* Asset = Result.Get();
 
-				This->_ActiveAsset = TWeakObjectPtr<const URPrimaryDataAsset>(Asset);
-
-				This->SetPrimaryDetail(Entry, Asset);
-				This->SetSecondaryDetail(Entry, Asset);
+				This->_ActiveAsset = Asset;
+				This->InitializeAssetDetail(Asset);
 			}
 		}
 	);
 }
 
-void UAssetUI::InitializeDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UAssetUI::InitializeAssetDetail(const URPrimaryDataAsset* Asset)
 {
 	if (IsValid(Asset))
 	{
 		_ActiveAssetId = Asset->GetPrimaryAssetId();
 	}
+	SetPrimaryDetail(Asset);
+}
 
-	SetPrimaryDetail(Entry, Asset);
-	SetSecondaryDetail(Entry, Asset);
+void UAssetUI::InitializeEntryDetail(const UAssetEntry* Entry)
+{
+	SetSecondaryDetail(Entry);
 }
 
 const FPrimaryAssetId& UAssetUI::GetActiveAssetId() const
@@ -83,12 +91,17 @@ const FPrimaryAssetId& UAssetUI::GetActiveAssetId() const
 	return _ActiveAssetId;
 }
 
-void UAssetUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+const URPrimaryDataAsset* UAssetUI::GetActiveAsset() const
+{
+	return _ActiveAsset.Get();
+}
+
+void UAssetUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
 {
 
 }
 
-void UAssetUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UAssetUI::SetSecondaryDetail(const UAssetEntry* Entry)
 {
 
 }

@@ -15,7 +15,7 @@
 #include "Manager/RAssetManager.inl"
 #include "Storage/AvatarStorage.h"
 #include "Subsystem/AvatarSubsystem.h"
-#include "Library/AssetUtil.h"
+#include "Library/AssetInstanceUtil.h"
 
 
 
@@ -31,7 +31,7 @@ void UTask_GrantAvatarRank::OnStarted()
 		return;
 	}
 
-	UAvatarStorage* AvatarCollection = AvatarSubsystem->GetAvatarCollection(TargetSourceId);
+	UAvatarStorage* AvatarCollection = AvatarSubsystem->GetAvatarCollection();
 	if (!IsValid(AvatarCollection))
 	{
 		Fail(TEXT("AvatarStorage is invalid"));
@@ -133,7 +133,7 @@ void UTask_GrantAvatarRank::Step_CheckTarget()
 
 void UTask_GrantAvatarRank::Step_RemoveMaterial(const TMap<FPrimaryAssetId, int>& Materials, FPrimaryAssetType MaterialType)
 {
-	IAssetInstanceCollectionProvider* MaterialProvider = FAssetUtil::GetAssetInterchange(GetWorld(), MaterialType);
+	IAssetInstanceCollectionProvider* MaterialProvider = FAssetInstanceUtil::GetAssetInterchange(GetWorld(), MaterialType);
 	if (!MaterialProvider)
 	{
 		Fail(TEXT("Failed to get instance collection provider"));
@@ -148,7 +148,7 @@ void UTask_GrantAvatarRank::Step_RemoveMaterial(const TMap<FPrimaryAssetId, int>
 		return;
 	}
 
-	bool bRemoved = MaterialCollection->RemoveItems(Materials, 1);
+	bool bRemoved = MaterialCollection->RemoveInstances(Materials, 1);
 	if (!bRemoved)
 	{
 		Fail(TEXT("Failed to remove material"));
@@ -160,7 +160,7 @@ void UTask_GrantAvatarRank::Step_RemoveMaterial(const TMap<FPrimaryAssetId, int>
 
 void UTask_GrantAvatarRank::Step_AddRank()
 {
-	bool bSuccess = AvatarStorage->UpdateItem(TargetAssetId, [](FAvatarInstance* Instance)
+	bool bSuccess = AvatarStorage->UpdateInstance(TargetAssetId, [](FAvatarInstance* Instance)
 		{
 			if (Instance)
 			{

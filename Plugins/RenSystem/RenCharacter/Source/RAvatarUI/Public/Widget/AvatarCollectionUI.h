@@ -36,7 +36,7 @@ protected:
 	FAvatarQueryRule QueryRule;
 
 	UPROPERTY()
-	TWeakObjectPtr<UAvatarStorage> AvatarStorage = nullptr;
+	TObjectPtr<UAvatarStorage> AvatarStorage = nullptr;
 
 
 	// ~ UUserWidget

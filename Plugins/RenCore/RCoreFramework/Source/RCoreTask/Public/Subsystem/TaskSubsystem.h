@@ -5,8 +5,6 @@
 // Engine Headers
 #include "Subsystems/GameInstanceSubsystem.h"
 
-// Project Headers
-
 // Generated Headers
 #include "TaskSubsystem.generated.h"
 
@@ -71,7 +69,6 @@ public:
 	RCORE_API static UTaskSubsystem* Get(UGameInstance* GameInstance);
 
 };
-
 
 
 // Module Macros

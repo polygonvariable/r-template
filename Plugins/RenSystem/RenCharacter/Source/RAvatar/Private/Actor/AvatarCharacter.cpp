@@ -16,7 +16,6 @@
 #include "Subsystem/AvatarSubsystem.h"
 
 
-
 AAvatarCharacter::AAvatarCharacter() : Super()
 {
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
@@ -40,6 +39,16 @@ AAvatarCharacter::AAvatarCharacter() : Super()
 	bUseControllerRotationYaw = false;
 }
 
+FGuid AAvatarCharacter::GetInstanceId() const
+{
+	return AvatarId;
+}
+
+void AAvatarCharacter::SetInstanceId(const FGuid& InstanceId)
+{
+	AvatarId = InstanceId;
+}
+
 void AAvatarCharacter::CameraPan(FVector2D Axis)
 {
 	AddControllerYawInput(Axis.X);
@@ -57,6 +66,7 @@ void AAvatarCharacter::CameraZoom(float Delta, float Multiplier)
 
 
 
+
 void AAvatarCharacter::InitializeCharacter(const UCharacterAsset* CharacterAsset)
 {
 	UAvatarSubsystem* AvatarSubsystem = UAvatarSubsystem::Get(GetWorld());
@@ -65,16 +75,18 @@ void AAvatarCharacter::InitializeCharacter(const UCharacterAsset* CharacterAsset
 		return;
 	}
 
-	UAvatarStorage* AvatarCollection = AvatarSubsystem->GetAvatarCollection();
-	if (!IsValid(AvatarCollection))
+	AvatarStorage = AvatarSubsystem->GetAvatarCollection();
+	if (!IsValid(AvatarStorage))
 	{
 		return;
 	}
 
 	FPrimaryAssetId AssetId = CharacterAsset->GetPrimaryAssetId();
-	const FAvatarInstance* AvatarInstance = AvatarCollection->GetInstance(AssetId);
+	const FAvatarInstance* AvatarInstance = AvatarStorage->GetInstance(AssetId);
 	if (AvatarInstance)
 	{
+		AvatarId = AvatarInstance->AvatarId;
+
 		const UCharacterSettings* Settings = UCharacterSettings::Get();
 
 		TMap<FGameplayTag, float> Attributes;
@@ -84,6 +96,14 @@ void AAvatarCharacter::InitializeCharacter(const UCharacterAsset* CharacterAsset
 		InitializeTags(Attributes);
 	}
 
-	AvatarStorage = TWeakObjectPtr<UAvatarStorage>(AvatarCollection);
+	TArray<UActorComponent*> Components = GetComponentsByInterface(UAssetInstanceData::StaticClass());
+	for (UActorComponent* Component : Components)
+	{
+		IAssetInstanceData* AssetInstanceInterface = Cast<IAssetInstanceData>(Component);
+		if (AssetInstanceInterface)
+		{
+			AssetInstanceInterface->SetInstanceId(AvatarId);
+		}
+	}
 }
 

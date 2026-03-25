@@ -16,22 +16,6 @@
 /**
  *
  */
-struct FPartyMemberInfo
-{
-public:
-
-	FPartyMemberInfo() {}
-	FPartyMemberInfo(const FPrimaryAssetId& InAssetId, bool bInTemporary = false) : AssetId(InAssetId), bTemporary(bInTemporary) {}
-
-	FPrimaryAssetId AssetId;
-	bool bTemporary = false;
-};
-
-
-
-/**
- *
- */
 UCLASS(MinimalAPI)
 class UPartyStorage : public UStorage
 {
@@ -40,10 +24,6 @@ class UPartyStorage : public UStorage
 
 public:
 
-	RSYSTEM_API bool AddCharacter(const FPrimaryAssetId& AssetId, bool bTemporary = false);
-	RSYSTEM_API void RemoveCharacter(const FPrimaryAssetId& AssetId);
-	RSYSTEM_API bool HasCharacter(const FPrimaryAssetId& AssetId) const;
-
 	RSYSTEM_API FVector GetPartyLocation(const FName& Level) const;
 	RSYSTEM_API void SetPartyLocation(const FName& Level, const FVector& Location);
 
@@ -51,20 +31,25 @@ public:
 	RSYSTEM_API const TArray<FPrimaryAssetId>& GetTemporaryCharacters() const;
 	RSYSTEM_API void GetAllCharacters(TArray<FPrimaryAssetId>& OutCharacters) const;
 
+	RSYSTEM_API FPrimaryAssetId GetCharacterAtSlot(int Slot) const;
+	RSYSTEM_API bool SetCharacterAtSlot(int Slot, FPrimaryAssetId AssetId);
+	RSYSTEM_API bool ClearSlot(int Slot);
+
 	// ~ UStorage
 	RSYSTEM_API virtual void InitializeDefaults() override;
 	// ~ End of UStorage
 
 protected:
 
+	/* Party Locations on different levels */
 	UPROPERTY(SaveGame)
-	TMap<FName, FVector> PartyLocations; // Party Locations on different levels
+	TMap<FName, FVector> PartyLocations;
 
 	UPROPERTY(SaveGame)
-	TArray<FPrimaryAssetId> CharacterList;
+	TArray<FPrimaryAssetId> CharacterSlot;
 
 	UPROPERTY(Transient)
-	TArray<FPrimaryAssetId> TemporaryList;
+	TArray<FPrimaryAssetId> TemporarySlot;
 
 };
 

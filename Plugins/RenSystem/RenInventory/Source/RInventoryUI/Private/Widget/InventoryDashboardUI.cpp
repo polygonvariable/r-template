@@ -15,12 +15,20 @@
 
 void UInventoryDashboardUI::InitializeDetail()
 {
-	InventoryDetail->AssetSourceId = AssetSourceId;
+	InventoryDetail->PrimarySourceId = PrimarySourceId;
 	InventoryDetail->InitializeDetail();
 
-	InventoryCollection->AssetSourceId = AssetSourceId;
+	InventoryCollection->PrimarySourceId = PrimarySourceId;
 	InventoryCollection->InitializeCollection();
 	InventoryCollection->DisplayEntries();
+}
+
+void UInventoryDashboardUI::InitializeAssetDetail(const URPrimaryDataAsset* Asset)
+{
+	UAssetEntry* Entry = InventoryCollection->GetSelectedEntry();
+
+	InventoryDetail->InitializeEntryDetail(Entry);
+	InventoryDetail->InitializeAssetDetail(Asset);
 }
 
 void UInventoryDashboardUI::ResetDetail()
@@ -42,30 +50,15 @@ void UInventoryDashboardUI::RedirectToWidget(TSubclassOf<UAssetDashboardUI> Widg
 		return;
 	}
 
-	Widget->AssetSourceId = AssetSourceId;
+	Widget->PrimarySourceId = PrimarySourceId;
 	Widget->AddToViewport();
 	Widget->InitializeDetail();
-	Widget->InitializeDetail(SelectedEntry);
-}
-
-void UInventoryDashboardUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
-{
-	InventoryDetail->InitializeDetail(Entry, Asset);
-}
-
-void UInventoryDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
-{
-	const UInventoryAsset* InventoryAsset = Cast<UInventoryAsset>(Asset);
-	if (!IsValid(InventoryAsset))
-	{
-		return;
-	}
-	SetCustomDetail(InventoryAsset);
+	Widget->InitializeAssetByEntry(SelectedEntry);
 }
 
 void UInventoryDashboardUI::NativeConstruct()
 {
-	InventoryCollection->OnSelectionChanged.BindUObject(this, &UAssetDashboardUI::InitializeDetail);
+	InventoryCollection->OnSelectionChanged.BindUObject(this, &UAssetDashboardUI::InitializeAssetByEntry);
 	InventoryCollection->OnSelectionCleared.BindUObject(this, &UAssetDashboardUI::ResetDetail);
 	
 	Super::NativeConstruct();

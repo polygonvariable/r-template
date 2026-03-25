@@ -2,9 +2,8 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
+#include "Definition/AscensionData.h"
 #include "Widget/AssetDashboardUI.h"
 
 // Generated Headers
@@ -19,7 +18,7 @@ class UInventoryAscensionSubsystem;
 class URPrimaryDataAsset;
 class IAscensionProvider;
 
-struct FInventoryItem;
+struct FInventoryInstance;
 struct FTaskResult;
 
 
@@ -46,7 +45,9 @@ protected:
 	bool bAutoRefresh = false;
 
 	FGuid ActiveItemId;
-	const IAscensionProvider* ActiveItemAscension = nullptr;
+	const IAscensionProvider* ActiveAscensionProvider = nullptr;
+
+	FAscensionData AscensionData;
 
 	UPROPERTY()
 	TObjectPtr<UInventoryAscensionSubsystem> AscensionSubsystem = nullptr;
@@ -73,9 +74,9 @@ protected:
 	void EnableControls();
 	void DisableControls();
 
-	void ToggleAscension(const FInventoryItem* Item);
-	void ToggleLevelUp(const FInventoryItem* Item);
-	void ToggleRankUp(const FInventoryItem* Item);
+	void ToggleAscension(const FInventoryInstance* Item);
+	void ToggleLevelUp(const FInventoryInstance* Item);
+	void ToggleRankUp(const FInventoryInstance* Item);
 
 	void HandleTaskCallback(const FTaskResult& Result);
 
@@ -89,8 +90,8 @@ protected:
 	void HandleOnItemUpdated();
 
 	// ~ UAssetDashboardUI
-	virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
-	virtual void SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const URPrimaryDataAsset* Asset) override;
+	virtual void SetSecondaryDetail(const UAssetEntry* Entry) override;
 	// ~ End of UAssetDashboardUI
 
 	// ~ UUserWidget

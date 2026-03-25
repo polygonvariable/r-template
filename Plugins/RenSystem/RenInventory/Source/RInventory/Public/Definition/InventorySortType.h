@@ -11,7 +11,7 @@
 #include "InventorySortType.generated.h"
 
 // Forward Declarations
-struct FInventoryItem;
+struct FInventoryInstance;
 
 
 
@@ -43,10 +43,10 @@ public:
 	FPrimaryAssetId AssetId;
 	FText ItemName;
 	int Quantity = 0;
-	const FInventoryItem* Item = nullptr;
+	const FInventoryInstance* Item = nullptr;
 
 	FInventorySortEntry(FPrimaryAssetId InAssetId, FText InItemName, int InQuantity) : AssetId(InAssetId), ItemName(InItemName), Quantity(InQuantity) {}
-	FInventorySortEntry(FPrimaryAssetId InAssetId, FText InItemName, int InQuantity, const FInventoryItem* InItem) : AssetId(InAssetId), ItemName(InItemName), Quantity(InQuantity), Item(InItem) {}
+	FInventorySortEntry(FPrimaryAssetId InAssetId, FText InItemName, int InQuantity, const FInventoryInstance* InItem) : AssetId(InAssetId), ItemName(InItemName), Quantity(InQuantity), Item(InItem) {}
 
 };
 

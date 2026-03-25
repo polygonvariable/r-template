@@ -16,11 +16,21 @@ TFuture<FLatentLoadedAsset<T>> URAssetManager::FetchPrimaryAsset(const FGuid& La
 	TSharedPtr<TPromise<FLatentLoadedAsset<T>>> Promise = MakeShared<TPromise<FLatentLoadedAsset<T>>>();
 	TFuture<FLatentLoadedAsset<T>> Future = Promise->GetFuture();
 
+	//if (LoadingAssetsIds.Contains(AssetId))
+	//{
+	//	FLatentLoadedAsset<T> Result;
+	//	Result.bSuccess = false;
+	//	Promise->SetValue(MoveTemp(Result));
+	//	return Future;
+	//}
+
 	TSharedPtr<FLatentHandle> Handle = MakeShared<FLatentHandle, ESPMode::ThreadSafe>();
 	{
 		FScopeLock Lock(&LatentHandleLock);
 		LatentHandles.Add(LatentId, Handle);
 	};
+
+	// LoadingAssetsIds.Add(AssetId);
 
 	TWeakPtr<FLatentHandle> WeakHandle(Handle);
 	FStreamableDelegate Streamable = FStreamableDelegate::CreateWeakLambda(this, [this, AssetId, LatentId, WeakHandle, Promise]()
@@ -46,9 +56,11 @@ TFuture<FLatentLoadedAsset<T>> URAssetManager::FetchPrimaryAsset(const FGuid& La
 
 			FScopeLock Lock(&LatentHandleLock);
 			LatentHandles.Remove(LatentId);
+
+			// LoadingAssetsIds.Remove(AssetId);
 		}
 	);
-
+	
 	LoadPrimaryAsset(AssetId, AssetBundles, MoveTemp(Streamable));
 	return Future;
 }
@@ -64,6 +76,8 @@ TFuture<FLatentLoadedAssets<T>> URAssetManager::FetchPrimaryAssets(const FGuid& 
 		FScopeLock Lock(&LatentHandleLock);
 		LatentHandles.Add(LatentId, Handle);
 	};
+
+	// LoadingAssetsIds.Append(AssetIds);
 
 	TWeakPtr<FLatentHandle> WeakHandle(Handle);
 	FStreamableDelegate Streamable = FStreamableDelegate::CreateWeakLambda(this, [this, AssetIds, LatentId, WeakHandle, Promise]()
@@ -86,6 +100,7 @@ TFuture<FLatentLoadedAssets<T>> URAssetManager::FetchPrimaryAssets(const FGuid& 
 					{
 						Objects.Add(Object);
 					}
+					// LoadingAssetsIds.Remove(AssetId);
 				}
 
 				Result.bSuccess = (Objects.Num() == AssetIds.Num());

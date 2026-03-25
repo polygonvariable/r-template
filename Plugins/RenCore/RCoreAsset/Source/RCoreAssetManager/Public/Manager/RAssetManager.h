@@ -68,6 +68,8 @@ public:
 
 protected:
 
+	TSet<FPrimaryAssetId> LoadingAssetsIds;
+
 	TMap<FGuid, TSharedPtr<FLatentHandle>> LatentHandles;
 	FCriticalSection LatentHandleLock;
 

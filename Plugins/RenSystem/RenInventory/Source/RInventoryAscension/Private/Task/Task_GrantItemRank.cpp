@@ -8,7 +8,7 @@
 // Project Headers
 #include "Asset/InventoryAsset.h"
 #include "Asset/RPrimaryDataAsset.h"
-#include "Definition/Runtime/InventoryItem.h"
+#include "Definition/Runtime/InventoryInstance.h"
 #include "Interface/IAscensionProvider.h"
 #include "Library/AscensionLibrary.h"
 #include "Management/Collection/AssetCollection_Simple.h"
@@ -95,7 +95,7 @@ void UTask_GrantItemRank::Step_CheckTarget()
 		return;
 	}
 
-	const FInventoryItem* Item = Inventory->GetItemById(TargetAssetId, TargetId);
+	const FInventoryInstance* Item = Inventory->GetInstanceById(TargetAssetId, TargetId);
 	if (!IsValid(TargetAsset) || !Item)
 	{
 		Fail(TEXT("Item not found, TargetAsset is invalid"));
@@ -126,15 +126,15 @@ void UTask_GrantItemRank::Step_CheckTarget()
 	TMap<FPrimaryAssetId, int> AssetList;
 	RankItems->GetAssetList(AssetList);
 
-	bool bRemoved = Inventory->RemoveItems(AssetList, 1);
+	bool bRemoved = Inventory->RemoveInstances(AssetList, 1);
 	if (!bRemoved)
 	{
 		Fail(TEXT("Failed to remove material"));
 		return;
 	}
 
-	bool bSuccess = Inventory->UpdateItemById(TargetAssetId, TargetId,
-		[](FInventoryItem* Item)
+	bool bSuccess = Inventory->UpdateInstanceById(TargetAssetId, TargetId,
+		[](FInventoryInstance* Item)
 		{
 			if (Item)
 			{

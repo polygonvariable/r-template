@@ -30,6 +30,7 @@ public:
 
 	// ~ UAssetDashboardUI
 	virtual void InitializeDetail() override;
+	virtual void InitializeAssetDetail(const URPrimaryDataAsset* Asset) override;
 	virtual void ResetDetail() override;
 	// ~ End of UAssetDashboardUI
 
@@ -42,14 +43,8 @@ protected:
 	TObjectPtr<UAssetDetailUI> InventoryDetail = nullptr;
 
 
-	UFUNCTION(BlueprintNativeEvent)
-	void SetCustomDetail(const UInventoryAsset* Asset);
-	virtual void SetCustomDetail_Implementation(const UInventoryAsset* Asset) {};
-
 	// ~ UAssetDashboardUI
 	virtual void RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetClass) override;
-	virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
-	virtual void SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
 	// ~ End of UAssetDashboardUI
 
 	// ~ UUserWidget

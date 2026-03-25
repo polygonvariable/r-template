@@ -50,7 +50,7 @@ void UCraftDetailUI::RefreshCraftDetail()
 	CraftTime->SetText(FText::AsNumber(RemainingTime.GetSeconds()));
 }
 
-void UCraftDetailUI::SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UCraftDetailUI::SetSecondaryDetail(const UAssetEntry* Entry)
 {
 	const UCraftEntry* CraftEntry = Cast<UCraftEntry>(Entry);
 	if (!IsValid(CraftEntry))
@@ -69,7 +69,7 @@ void UCraftDetailUI::NativeConstruct()
 	UCraftSubsystem* CraftSubsystem = UCraftSubsystem::Get(GetGameInstance());
 	if (IsValid(CraftSubsystem))
 	{
-		UCraftStorage* Craft = CraftSubsystem->GetCraft(AssetSourceId);
+		UCraftStorage* Craft = CraftSubsystem->GetCraft(PrimarySourceId);
 		if (IsValid(Craft))
 		{
 			Craft->OnCraftUpdated.AddUObject(this, &UCraftDetailUI::RefreshDetail);

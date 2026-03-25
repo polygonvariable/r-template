@@ -39,11 +39,6 @@
 			"Name": "RInventoryAscensionUI",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
-		},
-		{
-			"Name": "RInventoryInstance",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
@@ -69,6 +64,10 @@
 		},
 		{
 			"Name": "RCoreFramework",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreEquipment",
 			"Enabled": true
 		},
 		{

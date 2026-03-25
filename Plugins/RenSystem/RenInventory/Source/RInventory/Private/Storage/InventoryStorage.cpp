@@ -25,13 +25,13 @@ void UInventoryStorage::InitializeDefaults()
 	InventoryStack = UInventorySettings::Get()->DefaultInventory;
 }
 
-bool UInventoryStorage::AddItem(const FPrimaryAssetId& AssetId, int Quantity)
+bool UInventoryStorage::AddInstance(const FPrimaryAssetId& AssetId, int Quantity)
 {
 	FInventoryStack* Stack = FindOrAddStack(AssetId);
 	return AddItem_Internal(AssetId, Quantity, Stack);
 }
 
-bool UInventoryStorage::AddItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier)
+bool UInventoryStorage::AddInstances(const TMap<FPrimaryAssetId, int>& Items, int Multiplier)
 {
 	for (const TPair<FPrimaryAssetId, int>& Kv : Items)
 	{
@@ -47,16 +47,15 @@ bool UInventoryStorage::AddItems(const TMap<FPrimaryAssetId, int>& Items, int Mu
 
 
 
-bool UInventoryStorage::RemoveItem(const FPrimaryAssetId& AssetId, int Quantity)
+bool UInventoryStorage::RemoveInstance(const FPrimaryAssetId& AssetId, int Quantity)
 {
 	FInventoryStack* Stack = FindOrAddStack(AssetId);
-
 	return RemoveItem_Internal(AssetId, Quantity, Stack);
 }
 
-bool UInventoryStorage::RemoveItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier)
+bool UInventoryStorage::RemoveInstances(const TMap<FPrimaryAssetId, int>& Items, int Multiplier)
 {
-	if (!ContainItems(Items, Multiplier))
+	if (!ContainInstances(Items, Multiplier))
 	{
 		LOG_ERROR(LogInventory, TEXT("Items not contain"));
 		return false;
@@ -81,18 +80,18 @@ bool UInventoryStorage::RemoveItems(const TMap<FPrimaryAssetId, int>& Items, int
 	return true;
 }
 
-bool UInventoryStorage::RemoveAnyItems(const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity)
+bool UInventoryStorage::RemoveAnyInstances(const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity)
 {
 	FPrimaryAssetId SelectedAssetId;
 	int SelectedQuantity = 0;
 
-	if (!ContainAnyItems(InItems, InMultiplier, SelectedAssetId, SelectedQuantity))
+	if (!ContainAnyInstances(InItems, InMultiplier, SelectedAssetId, SelectedQuantity))
 	{
 		LOG_ERROR(LogInventory, TEXT("Items not contain"));
 		return false;
 	}
 
-	bool bRemoved = RemoveItem(SelectedAssetId, SelectedQuantity);
+	bool bRemoved = RemoveInstance(SelectedAssetId, SelectedQuantity);
 	if (!bRemoved)
 	{
 		LOG_ERROR(LogInventory, TEXT("Items not contain"));
@@ -104,51 +103,53 @@ bool UInventoryStorage::RemoveAnyItems(const TMap<FPrimaryAssetId, int>& InItems
 	return true;
 }
 
-bool UInventoryStorage::RemoveItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId, int Quantity)
+bool UInventoryStorage::RemoveInstanceById(const FPrimaryAssetId& AssetId, const FGuid& ItemId, int Quantity)
 {
 	FInventoryStack* Stack = FindOrAddStack(AssetId);
-	bool bRemoved = RemoveItemById_Internal(AssetId, ItemId, Quantity, Stack);
-
-	return bRemoved;
+	return RemoveItemById_Internal(AssetId, ItemId, Quantity, Stack);
 }
 
 
 
-bool UInventoryStorage::UpdateItem(const FPrimaryAssetId& AssetId, TFunctionRef<void(FInventoryItem*)> Callback)
+const FAscensionData* UInventoryStorage::GetAscensionInstance(const FPrimaryAssetId& AssetId, const FGuid& InstanceId) const
 {
-	FInventoryItem* Item = GetMutableItemByIndex(AssetId, 0);
+	const FInventoryInstance* Instance = GetInstanceById(AssetId, InstanceId);
+	if (!Instance)
+	{
+		return nullptr;
+	}
+	return &Instance->Ascension;
+}
+
+bool UInventoryStorage::UpdateInstance(const FPrimaryAssetId& AssetId, TFunctionRef<void(FInventoryInstance*)> Callback)
+{
+	FInventoryInstance* Item = GetMutableItemByIndex(AssetId, 0);
 	if (!Item)
 	{
 		return false;
 	}
 
 	Callback(Item);
-
-	OnItemUpdated.Broadcast(AssetId, Item->ItemId);
-	OnInventoryRefreshed.Broadcast();
-
+	OnStorageUpdated.Broadcast();
 	return true;
 }
 
-bool UInventoryStorage::UpdateItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId, TFunctionRef<void(FInventoryItem*)> Callback)
+bool UInventoryStorage::UpdateInstanceById(const FPrimaryAssetId& AssetId, const FGuid& ItemId, TFunctionRef<void(FInventoryInstance*)> Callback)
 {
-	FInventoryItem* Item = GetMutableItemById(AssetId, ItemId);
+	FInventoryInstance* Item = GetMutableItemById(AssetId, ItemId);
 	if (!Item)
 	{
 		return false;
 	}
 
 	Callback(Item);
-
-	OnItemUpdated.Broadcast(AssetId, Item->ItemId);
-	OnInventoryRefreshed.Broadcast();
-
+	OnStorageUpdated.Broadcast();
 	return true;
 }
 
 
 
-bool UInventoryStorage::ContainItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier) const
+bool UInventoryStorage::ContainInstances(const TMap<FPrimaryAssetId, int>& Items, int Multiplier) const
 {
 	bool bResult = true;
 
@@ -170,7 +171,7 @@ bool UInventoryStorage::ContainItems(const TMap<FPrimaryAssetId, int>& Items, in
 			break;
 		}
 
-		const TArray<FInventoryItem>& ItemList = Stack->ItemList;
+		const TArray<FInventoryInstance>& ItemList = Stack->ItemList;
 		bool bStackable = Stack->bStackable;
 		int ItemQuantity = 0;
 		if (bStackable)
@@ -198,7 +199,7 @@ bool UInventoryStorage::ContainItems(const TMap<FPrimaryAssetId, int>& Items, in
 	return bResult;
 }
 
-bool UInventoryStorage::ContainAnyItems(const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const
+bool UInventoryStorage::ContainAnyInstances(const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const
 {
 	bool bResult = false;
 
@@ -218,7 +219,7 @@ bool UInventoryStorage::ContainAnyItems(const TMap<FPrimaryAssetId, int>& InItem
 			continue;
 		}
 
-		const TArray<FInventoryItem>& ItemList = Stack->ItemList;
+		const TArray<FInventoryInstance>& ItemList = Stack->ItemList;
 		bool bStackable = Stack->bStackable;
 		int ItemQuantity = 0;
 		if (bStackable)
@@ -228,7 +229,7 @@ bool UInventoryStorage::ContainAnyItems(const TMap<FPrimaryAssetId, int>& InItem
 				continue;
 			}
 
-			const FInventoryItem& Record = ItemList[0];
+			const FInventoryInstance& Record = ItemList[0];
 			ItemQuantity = Record.Quantity;
 		}
 		else
@@ -249,6 +250,11 @@ bool UInventoryStorage::ContainAnyItems(const TMap<FPrimaryAssetId, int>& InItem
 	return bResult;
 }
 
+FOnAssetInstanceCollectionUpdated& UInventoryStorage::GetOnAssetInstanceCollectionUpdated()
+{
+	return OnCollectionUpdated;
+}
+
 
 
 int UInventoryStorage::GetTotalQuantity(const FPrimaryAssetId& AssetId) const
@@ -256,7 +262,7 @@ int UInventoryStorage::GetTotalQuantity(const FPrimaryAssetId& AssetId) const
 	return GetItemQuantity_Internal(AssetId);
 }
 
-const FInventoryItem* UInventoryStorage::GetItem(const FPrimaryAssetId& AssetId) const
+const FInventoryInstance* UInventoryStorage::GetInstance(const FPrimaryAssetId& AssetId) const
 {
 	const FInventoryStack* Stack = GetStack(AssetId);
 	if (!Stack)
@@ -264,7 +270,7 @@ const FInventoryItem* UInventoryStorage::GetItem(const FPrimaryAssetId& AssetId)
 		return nullptr;
 	}
 
-	const TArray<FInventoryItem>& RecordList = Stack->ItemList;
+	const TArray<FInventoryInstance>& RecordList = Stack->ItemList;
 	if (RecordList.Num() <= 0)
 	{
 		return nullptr;
@@ -273,7 +279,7 @@ const FInventoryItem* UInventoryStorage::GetItem(const FPrimaryAssetId& AssetId)
 	return &RecordList[0];
 }
 
-const FInventoryItem* UInventoryStorage::GetItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId) const
+const FInventoryInstance* UInventoryStorage::GetInstanceById(const FPrimaryAssetId& AssetId, const FGuid& ItemId) const
 {
 	const FInventoryStack* Stack = GetStack(AssetId);
 	if (!Stack)
@@ -281,15 +287,15 @@ const FInventoryItem* UInventoryStorage::GetItemById(const FPrimaryAssetId& Asse
 		return nullptr;
 	}
 
-	const TArray<FInventoryItem>& RecordList = Stack->ItemList;
-	const FInventoryItem* Record = RecordList.FindByPredicate([ItemId](const FInventoryItem& Record) { return Record.ItemId == ItemId; });
+	const TArray<FInventoryInstance>& RecordList = Stack->ItemList;
+	const FInventoryInstance* Record = RecordList.FindByPredicate([ItemId](const FInventoryInstance& Record) { return Record.ItemId == ItemId; });
 
 	return Record;
 }
 
 
 
-void UInventoryStorage::QueryItems(const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback)
+void UInventoryStorage::QueryInstances(const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback)
 {
 	UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
 	if (!IsValid(AssetManager))
@@ -318,7 +324,7 @@ void UInventoryStorage::QueryItems(const UFilterCriterion* FilterCriterion, cons
 
 
 
-FInventoryItem* UInventoryStorage::GetMutableItemByIndex(const FPrimaryAssetId& AssetId, int Index)
+FInventoryInstance* UInventoryStorage::GetMutableItemByIndex(const FPrimaryAssetId& AssetId, int Index)
 {
 	FInventoryStack* Stack = FindOrAddStack(AssetId);
 	if (!Stack)
@@ -326,7 +332,7 @@ FInventoryItem* UInventoryStorage::GetMutableItemByIndex(const FPrimaryAssetId& 
 		return nullptr;
 	}
 
-	TArray<FInventoryItem>& ItemList = Stack->ItemList;
+	TArray<FInventoryInstance>& ItemList = Stack->ItemList;
 	if (!ItemList.IsValidIndex(Index))
 	{
 		return nullptr;
@@ -335,7 +341,7 @@ FInventoryItem* UInventoryStorage::GetMutableItemByIndex(const FPrimaryAssetId& 
 	return &ItemList[Index];
 }
 
-FInventoryItem* UInventoryStorage::GetMutableItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId)
+FInventoryInstance* UInventoryStorage::GetMutableItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId)
 {
 	FInventoryStack* Stack = FindOrAddStack(AssetId);
 	if (!Stack)
@@ -343,8 +349,8 @@ FInventoryItem* UInventoryStorage::GetMutableItemById(const FPrimaryAssetId& Ass
 		return nullptr;
 	}
 
-	TArray<FInventoryItem>& ItemList = Stack->ItemList;
-	FInventoryItem* Item = ItemList.FindByPredicate([ItemId](const FInventoryItem& Record) { return Record.ItemId == ItemId; });
+	TArray<FInventoryInstance>& ItemList = Stack->ItemList;
+	FInventoryInstance* Item = ItemList.FindByPredicate([ItemId](const FInventoryInstance& Record) { return Record.ItemId == ItemId; });
 
 	return Item;
 }
@@ -408,8 +414,10 @@ void UInventoryStorage::HandleItemSorting(TArray<FInventorySortEntry>& SortedIte
 void UInventoryStorage::QueryAssetItems(UAssetManager* AssetManager, const UFilterCriterion* FilterCriterion, TArray<FInventorySortEntry>& OutSortedItems) const
 {
 	TArray<FPrimaryAssetId> AssetIds;
-
-	AssetManager->GetPrimaryAssetIdList(FInventoryPrimaryAsset::GetAssetType(), AssetIds);
+	if (!AssetManager->GetPrimaryAssetIdList(FInventoryPrimaryAsset::GetAssetType(), AssetIds))
+	{
+		return;
+	}
 
 	OutSortedItems.Reserve(AssetIds.Num());
 
@@ -477,8 +485,8 @@ void UInventoryStorage::QueryInstanceItems(UAssetManager* AssetManager, const UF
 			continue;
 		}
 
-		const TArray<FInventoryItem>& ItemList = Stack->ItemList;
-		for (const FInventoryItem& Item : ItemList)
+		const TArray<FInventoryInstance>& ItemList = Stack->ItemList;
+		for (const FInventoryInstance& Item : ItemList)
 		{
 			int ItemQuantity = Item.Quantity;
 			if (IsValid(FilterCriterion))
@@ -555,7 +563,7 @@ int UInventoryStorage::GetItemQuantity_Internal(const FPrimaryAssetId& AssetId) 
 		return 0;
 	}
 
-	const TArray<FInventoryItem>& ItemList = Stack->ItemList;
+	const TArray<FInventoryInstance>& ItemList = Stack->ItemList;
 	bool bStackable = Stack->bStackable;
 	if (bStackable)
 	{
@@ -579,13 +587,13 @@ bool UInventoryStorage::AddItem_Internal(const FPrimaryAssetId& AssetId, int Qua
 		return false;
 	}
 
-	TArray<FInventoryItem>& ItemList = Stack->ItemList;
+	TArray<FInventoryInstance>& ItemList = Stack->ItemList;
 	bool bStackable = Stack->bStackable;
 	if (bStackable)
 	{
 		if (ItemList.IsValidIndex(0))
 		{
-			FInventoryItem& ItemData = ItemList[0];
+			FInventoryInstance& ItemData = ItemList[0];
 			AddItem_InternalUpdate(AssetId, ItemData, Quantity);
 			return true;
 		}
@@ -604,25 +612,22 @@ bool UInventoryStorage::AddItem_Internal(const FPrimaryAssetId& AssetId, int Qua
 	return true;
 }
 
-void UInventoryStorage::AddItem_InternalCreate(const FPrimaryAssetId& AssetId, TArray<FInventoryItem>& ItemList, int Quantity)
+void UInventoryStorage::AddItem_InternalCreate(const FPrimaryAssetId& AssetId, TArray<FInventoryInstance>& ItemList, int Quantity)
 {
-	FInventoryItem Item;
+	FInventoryInstance Item;
 	Item.ItemId = FGuid::NewGuid();
 	Item.Quantity = Quantity;
 	ItemList.Add(Item);
 
-	OnItemAdded.Broadcast(AssetId, Item.ItemId);
-	OnInventoryRefreshed.Broadcast();
+	OnStorageUpdated.Broadcast();
 
 	LOG_INFO(LogInventory, TEXT("New item added"));
 }
 
-void UInventoryStorage::AddItem_InternalUpdate(const FPrimaryAssetId& AssetId, FInventoryItem& Item, int Quantity)
+void UInventoryStorage::AddItem_InternalUpdate(const FPrimaryAssetId& AssetId, FInventoryInstance& Item, int Quantity)
 {
 	Item.Quantity += Quantity;
-
-	OnItemAdded.Broadcast(AssetId, Item.ItemId);
-	OnInventoryRefreshed.Broadcast();
+	OnStorageUpdated.Broadcast();
 
 	LOG_INFO(LogInventory, TEXT("Item updated"));
 }
@@ -637,7 +642,7 @@ bool UInventoryStorage::RemoveItem_Internal(const FPrimaryAssetId& AssetId, int 
 		return false;
 	}
 
-	TArray<FInventoryItem>& ItemList = Stack->ItemList;
+	TArray<FInventoryInstance>& ItemList = Stack->ItemList;
 	bool bStackable = Stack->bStackable;
 	if (bStackable)
 	{
@@ -645,7 +650,7 @@ bool UInventoryStorage::RemoveItem_Internal(const FPrimaryAssetId& AssetId, int 
 		{
 			bool bPersist = Stack->bPersistWhenEmpty;
 
-			FInventoryItem& Record = ItemList[0];
+			FInventoryInstance& Record = ItemList[0];
 			RemoveItem_InternalUpdate(AssetId, ItemList, bPersist, &Record, Quantity);
 
 			return true;
@@ -667,8 +672,8 @@ bool UInventoryStorage::RemoveItemById_Internal(const FPrimaryAssetId& AssetId, 
 		return false;
 	}
 
-	TArray<FInventoryItem>& ItemList = Stack->ItemList;
-	FInventoryItem* Item = ItemList.FindByPredicate([ItemId](const FInventoryItem& Item) { return Item.ItemId == ItemId; });
+	TArray<FInventoryInstance>& ItemList = Stack->ItemList;
+	FInventoryInstance* Item = ItemList.FindByPredicate([ItemId](const FInventoryInstance& Item) { return Item.ItemId == ItemId; });
 	if (!Item)
 	{
 		LOG_ERROR(LogInventory, TEXT("Item not found for ItemId"));
@@ -687,7 +692,7 @@ bool UInventoryStorage::RemoveItemById_Internal(const FPrimaryAssetId& AssetId, 
 	return bRemoved;
 }
 
-bool UInventoryStorage::RemoveItem_InternalStack(const FPrimaryAssetId& AssetId, TArray<FInventoryItem>& ItemList, int Quantity)
+bool UInventoryStorage::RemoveItem_InternalStack(const FPrimaryAssetId& AssetId, TArray<FInventoryInstance>& ItemList, int Quantity)
 {
 	int StackCount = ItemList.Num();
 	if (Quantity > StackCount)
@@ -697,18 +702,16 @@ bool UInventoryStorage::RemoveItem_InternalStack(const FPrimaryAssetId& AssetId,
 
 	for (int i = 0; i < Quantity; i++)
 	{
-		FInventoryItem Item = ItemList.Pop();
-
-		OnItemRemoved.Broadcast(AssetId, Item.ItemId);
-		OnInventoryRefreshed.Broadcast();
+		FInventoryInstance Item = ItemList.Pop();
+		OnStorageUpdated.Broadcast();
 	}
 
 	return true;
 }
 
-bool UInventoryStorage::RemoveItem_InternalRemove(const FPrimaryAssetId& AssetId, TArray<FInventoryItem>& ItemList, FInventoryItem* Item)
+bool UInventoryStorage::RemoveItem_InternalRemove(const FPrimaryAssetId& AssetId, TArray<FInventoryInstance>& ItemList, FInventoryInstance* Item)
 {
-	FInventoryItem TempItem = *Item;
+	FInventoryInstance TempItem = *Item;
 
 	int Count = ItemList.Remove(TempItem);
 	if (Count == 0)
@@ -716,13 +719,11 @@ bool UInventoryStorage::RemoveItem_InternalRemove(const FPrimaryAssetId& AssetId
 		return false;
 	}
 
-	OnItemRemoved.Broadcast(AssetId, TempItem.ItemId);
-	OnInventoryRefreshed.Broadcast();
-
+	OnStorageUpdated.Broadcast();
 	return true;
 }
 
-void UInventoryStorage::RemoveItem_InternalUpdate(const FPrimaryAssetId& AssetId, TArray<FInventoryItem>& ItemList, bool bPersistWhenEmpty, FInventoryItem* Item, int Quantity)
+void UInventoryStorage::RemoveItem_InternalUpdate(const FPrimaryAssetId& AssetId, TArray<FInventoryInstance>& ItemList, bool bPersistWhenEmpty, FInventoryInstance* Item, int Quantity)
 {
 	FGuid ItemId = Item->ItemId;
 	int ItemQuantity = Item->Quantity;
@@ -731,20 +732,14 @@ void UInventoryStorage::RemoveItem_InternalUpdate(const FPrimaryAssetId& AssetId
 	if (NewQuantity > 0)
 	{
 		Item->Quantity = NewQuantity;
-
-		OnItemRemoved.Broadcast(AssetId, ItemId);
-		OnInventoryRefreshed.Broadcast();
-
+		OnStorageUpdated.Broadcast();
 		return;
 	}
 
 	if (bPersistWhenEmpty)
 	{
 		Item->Quantity = 0;
-
-		OnItemRemoved.Broadcast(AssetId, ItemId);
-		OnInventoryRefreshed.Broadcast();
-
+		OnStorageUpdated.Broadcast();
 		return;
 	}
 

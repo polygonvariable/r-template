@@ -32,7 +32,7 @@ protected:
 	void RemoveItem(const TArray<FString>& Args, UWorld* World);
 	void GetItem(const TArray<FString>& Args, UWorld* World);
 
-	UAvatarStorage* GetAvatarCollection(UWorld* World, FName CollectionId);
+	UAvatarStorage* GetAvatarCollection(UWorld* World);
 
 };
 

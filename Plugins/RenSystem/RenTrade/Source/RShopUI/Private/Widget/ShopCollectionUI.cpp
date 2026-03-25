@@ -37,7 +37,7 @@ void UShopCollectionUI::NativeConstruct()
 	ShopSubsystem = UShopSubsystem::Get(GetGameInstance());
 	if (IsValid(ShopSubsystem))
 	{
-		UShopStorage* Shop = ShopSubsystem->GetShop(AssetSourceId);
+		UShopStorage* Shop = ShopSubsystem->GetShop(PrimarySourceId);
 		if (IsValid(Shop))
 		{
 			Shop->OnShopUpdated.AddUObject(this, &UShopCollectionUI::RefreshEntries);

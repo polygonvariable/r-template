@@ -10,6 +10,7 @@
 #include "Library/CharacterPrimaryAsset.h"
 #include "Subsystem/AvatarSubsystem.h"
 #include "Storage/AvatarStorage.h"
+#include "Settings/AvatarSettings.h"
 
 #define LOCTEXT_NAMESPACE "FRAvatarEdModule"
 
@@ -34,19 +35,19 @@ void FRAvatarEdModule::RegisterCommand()
 
 	Commands.Add(ConsoleManager.RegisterConsoleCommand(
 		TEXT("Avatar.AddItem"),
-		TEXT("Add avatar, args=<CollectionId> <AssetId>"),
+		TEXT("Add avatar, args=<AssetId>"),
 		FConsoleCommandWithWorldAndArgsDelegate::CreateRaw(this, &FRAvatarEdModule::AddItem),
 		ECVF_Cheat
 	));
 	Commands.Add(ConsoleManager.RegisterConsoleCommand(
 		TEXT("Avatar.RemoveItem"),
-		TEXT("Remove avatar, args=<CollectionId> <AssetId>"),
+		TEXT("Remove avatar, args=<AssetId>"),
 		FConsoleCommandWithWorldAndArgsDelegate::CreateRaw(this, &FRAvatarEdModule::RemoveItem),
 		ECVF_Cheat
 	));
 	Commands.Add(ConsoleManager.RegisterConsoleCommand(
 		TEXT("Avatar.GetItem"),
-		TEXT("Prints details of avatar, args=<CollectionId> <AssetId>"),
+		TEXT("Prints details of avatar, args=<AssetId>"),
 		FConsoleCommandWithWorldAndArgsDelegate::CreateRaw(this, &FRAvatarEdModule::GetItem),
 		ECVF_Cheat
 	));
@@ -62,60 +63,60 @@ void FRAvatarEdModule::UnregisterCommand()
 	}
 }
 
-UAvatarStorage* FRAvatarEdModule::GetAvatarCollection(UWorld* World, FName CollectionId)
+UAvatarStorage* FRAvatarEdModule::GetAvatarCollection(UWorld* World)
 {
 	UAvatarSubsystem* Subsystem = UAvatarSubsystem::Get(World);
 	if (!IsValid(Subsystem))
 	{
 		return nullptr;
 	}
-	return Subsystem->GetAvatarCollection(CollectionId);
+	return Subsystem->GetAvatarCollection();
 }
 
 void FRAvatarEdModule::AddItem(const TArray<FString>& Args, UWorld* World)
 {
-	if (Args.Num() < 2 || !IsValid(World))
+	if (Args.Num() < 1 || !IsValid(World))
 	{
 		UE_LOG(LogTemp, Error, TEXT("Invalid arguments"));
 		return;
 	}
 
-	UAvatarStorage* Collection = GetAvatarCollection(World, FName(*Args[0]));
+	UAvatarStorage* Collection = GetAvatarCollection(World);
 	if (IsValid(Collection))
 	{
-		FPrimaryAssetId AssetId = FCharacterPrimaryAsset::GetPrimaryAssetId(FName(*Args[1]));
-		Collection->AddItem(AssetId, 1);
+		FPrimaryAssetId AssetId = FCharacterPrimaryAsset::GetPrimaryAssetId(FName(*Args[0]));
+		Collection->AddInstance(AssetId, 1);
 	}
 }
 
 void FRAvatarEdModule::RemoveItem(const TArray<FString>& Args, UWorld* World)
 {
-	if (Args.Num() < 2 || !IsValid(World))
+	if (Args.Num() < 1 || !IsValid(World))
 	{
 		UE_LOG(LogTemp, Error, TEXT("Invalid arguments"));
 		return;
 	}
 
-	UAvatarStorage* Collection = GetAvatarCollection(World, FName(*Args[0]));
+	UAvatarStorage* Collection = GetAvatarCollection(World);
 	if (IsValid(Collection))
 	{
-		FPrimaryAssetId AssetId = FCharacterPrimaryAsset::GetPrimaryAssetId(FName(*Args[1]));
-		Collection->RemoveItem(AssetId, 1);
+		FPrimaryAssetId AssetId = FCharacterPrimaryAsset::GetPrimaryAssetId(FName(*Args[0]));
+		Collection->RemoveInstance(AssetId, 1);
 	}
 }
 
 void FRAvatarEdModule::GetItem(const TArray<FString>& Args, UWorld* World)
 {
-	if (Args.Num() < 2 || !IsValid(World))
+	if (Args.Num() < 1 || !IsValid(World))
 	{
 		UE_LOG(LogTemp, Error, TEXT("Invalid arguments"));
 		return;
 	}
 
-	UAvatarStorage* Collection = GetAvatarCollection(World, FName(*Args[0]));
+	UAvatarStorage* Collection = GetAvatarCollection(World);
 	if (IsValid(Collection))
 	{
-		FPrimaryAssetId AssetId = FCharacterPrimaryAsset::GetPrimaryAssetId(FName(*Args[1]));
+		FPrimaryAssetId AssetId = FCharacterPrimaryAsset::GetPrimaryAssetId(FName(*Args[0]));
 		const FAvatarInstance* Item = Collection->GetInstance(AssetId);
 		if (!Item)
 		{

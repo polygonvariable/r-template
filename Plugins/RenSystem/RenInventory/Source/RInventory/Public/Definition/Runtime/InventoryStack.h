@@ -5,7 +5,7 @@
 // Engine Headers
 
 // Project Headers
-#include "Definition/Runtime/InventoryItem.h"
+#include "Definition/Runtime/InventoryInstance.h"
 
 // Generated Headers
 #include "InventoryStack.generated.h"
@@ -28,7 +28,7 @@ public:
 
 
 	UPROPERTY(EditAnywhere, SaveGame)
-	TArray<FInventoryItem> ItemList;
+	TArray<FInventoryInstance> ItemList;
 
 	UPROPERTY(EditAnywhere, SaveGame)
 	FGuid StackId;

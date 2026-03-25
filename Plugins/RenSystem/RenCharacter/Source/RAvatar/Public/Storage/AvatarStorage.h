@@ -2,11 +2,10 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Definition/Runtime/AvatarInstance.h"
-#include "Interface/IAssetInstance.h"
+#include "Interface/IAscensionInstanceData.h"
+#include "Interface/IAssetInstanceCollection.h"
 #include "SaveGame/Storage.h"
 
 // Module Macros
@@ -28,49 +27,46 @@ struct FAvatarSortEntry;
  *
  */
 UCLASS(MinimalAPI)
-class UAvatarStorage : public UStorage, public IAssetInstanceCollection
+class UAvatarStorage : public UStorage, public IAssetInstanceCollection, public IAscensionInstanceData
 {
 
 	GENERATED_BODY()
 
 public:
 
-	DECLARE_MULTICAST_DELEGATE_TwoParams(FOnChanged, const FPrimaryAssetId& /* AssetId */, FGuid /* ItemId */);
-	FOnChanged OnAdded;
-	FOnChanged OnRemoved;
-	FOnChanged OnUpdated;
-
-	DECLARE_MULTICAST_DELEGATE(FOnRefreshed);
-	FOnRefreshed OnRefreshed;
-
-
-	// ~ IAssetInstanceCollection
-	RSYSTEM_API virtual bool AddItem(const FPrimaryAssetId& AssetId, int Quantity) override;
-	RSYSTEM_API virtual bool AddItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier) override;
-
-	RSYSTEM_API virtual bool RemoveItem(const FPrimaryAssetId& AssetId, int Quantity) override;
-	RSYSTEM_API virtual bool RemoveItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier) override;
-
-	RSYSTEM_API virtual bool RemoveAnyItems(const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) override;
-	RSYSTEM_API virtual bool RemoveItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId, int Quantity) override;
-
-	RSYSTEM_API virtual bool ContainItems(const TMap<FPrimaryAssetId, int>& Items, int Multiplier) const override;
-	RSYSTEM_API virtual bool ContainAnyItems(const TMap<FPrimaryAssetId, int>& InItems, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const override;
-	// ~ End of IAssetInstanceCollection
-
-
-	RSYSTEM_API const FAvatarInstance* GetInstance(const FPrimaryAssetId& AssetId) const;
-	RSYSTEM_API const FAvatarInstance* GetInstanceById(const FGuid& ItemId) const;
-
-	RSYSTEM_API bool UpdateItem(const FPrimaryAssetId& AssetId, TFunctionRef<void(FAvatarInstance*)> Callback);
-
-	RSYSTEM_API void QueryItems(const UFilterCriterion* FilterCriterion, const FAvatarQueryRule& QueryRule, TFunctionRef<void(const FAvatarSortEntry&)> Callback);
-
 	// ~ UStorage
 	RSYSTEM_API virtual void InitializeDefaults() override;
 	// ~ End of UStorage
 
+	// ~ IAssetInstanceCollection
+	RSYSTEM_API virtual bool AddInstance(const FPrimaryAssetId& AssetId, int Quantity) override;
+	RSYSTEM_API virtual bool AddInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) override;
+
+	RSYSTEM_API virtual bool RemoveInstance(const FPrimaryAssetId& AssetId, int Quantity) override;
+	RSYSTEM_API virtual bool RemoveInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) override;
+
+	RSYSTEM_API virtual bool RemoveAnyInstances(const TMap<FPrimaryAssetId, int>& InAssetIds, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) override;
+	RSYSTEM_API virtual bool RemoveInstanceById(const FPrimaryAssetId& AssetId, const FGuid& InstanceId, int Quantity) override;
+
+	RSYSTEM_API virtual bool ContainInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) const override;
+	RSYSTEM_API virtual bool ContainAnyInstances(const TMap<FPrimaryAssetId, int>& InAssetIds, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const override;
+
+	virtual FOnAssetInstanceCollectionUpdated& GetOnAssetInstanceCollectionUpdated() override;
+	// ~ End of IAssetInstanceCollection
+
+	// ~ IAscensionInstanceData
+	virtual const FAscensionData* GetAscensionInstance(const FPrimaryAssetId& AssetId, const FGuid& InstanceId) const override;
+	// ~ End of IAscensionInstanceData
+
+	RSYSTEM_API const FAvatarInstance* GetInstance(const FPrimaryAssetId& AssetId) const;
+	RSYSTEM_API const FAvatarInstance* GetInstanceById(const FGuid& InstanceId) const;
+
+	RSYSTEM_API bool UpdateInstance(const FPrimaryAssetId& AssetId, TFunctionRef<void(FAvatarInstance*)> Callback);
+	RSYSTEM_API void QueryInstances(const UFilterCriterion* FilterCriterion, const FAvatarQueryRule& QueryRule, TFunctionRef<void(const FAvatarSortEntry&)> Callback);
+
 protected:
+
+	FOnAssetInstanceCollectionUpdated OnCollectionUpdated;
 
 	UPROPERTY(SaveGame)
 	TMap<FPrimaryAssetId, FAvatarInstance> AvatarCollection;

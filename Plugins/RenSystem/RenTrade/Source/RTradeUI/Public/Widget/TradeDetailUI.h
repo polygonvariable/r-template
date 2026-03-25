@@ -40,7 +40,7 @@ public:
 protected:
 
 	// ~ UAssetDetailUI
-	RSYSTEM_API virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	RSYSTEM_API virtual void SetPrimaryDetail(const URPrimaryDataAsset* Asset) override;
 	// ~ End of UAssetDetailUI
 
 };

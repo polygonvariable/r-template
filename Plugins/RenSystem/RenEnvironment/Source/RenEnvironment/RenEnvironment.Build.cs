@@ -29,7 +29,7 @@ public class RenEnvironment : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
 				"RCoreCommon",
                 "Landscape",
-                "LandscapeEditor",
+                //"LandscapeEditor",
             }
 			);
 			
@@ -53,7 +53,7 @@ public class RenEnvironment : ModuleRules
 		
 		if (Target.bBuildEditor == true)
 		{
-            PrivateDependencyModuleNames.Add("UnrealEd");
+            //PrivateDependencyModuleNames.Add("UnrealEd");
 		}
 		
 		DynamicallyLoadedModuleNames.AddRange(

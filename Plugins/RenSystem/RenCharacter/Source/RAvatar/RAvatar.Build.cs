@@ -34,6 +34,7 @@ public class RAvatar : ModuleRules
                 "RCoreAscension",
                 "RCoreStorage",
                 "RCharacter",
+                "RCoreAssetInstance",
             }
 			);
 			

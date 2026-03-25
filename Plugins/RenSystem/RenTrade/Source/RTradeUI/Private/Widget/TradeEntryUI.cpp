@@ -13,7 +13,18 @@
 
 
 
-void UTradeEntryUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UTradeEntryUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
+{
+	if (!IsValid(Asset))
+	{
+		return;
+	}
+
+	EntryName->SetText(Asset->DisplayName);
+	EntryIcon->SetBrushFromSoftTexture(Asset->Icon);
+}
+
+void UTradeEntryUI::SetSecondaryDetail(const UAssetEntry* Entry)
 {
 	const UTradeEntry* ShopEntry = Cast<UTradeEntry>(Entry);
 	if (!IsValid(ShopEntry))
@@ -24,8 +35,6 @@ void UTradeEntryUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDa
 	int Quantity = ShopEntry->TradeDetail.Quantity;
 	int Quota = ShopEntry->TradeDetail.Quota;
 
-	EntryName->SetText(Asset->DisplayName);
-	EntryIcon->SetBrushFromSoftTexture(Asset->Icon);
 	TradeQuantity->SetText(FText::FromString(FString::FromInt(Quantity)));
 	TradeQuota->SetText(FText::FromString(FString::FromInt(Quota)));
 }

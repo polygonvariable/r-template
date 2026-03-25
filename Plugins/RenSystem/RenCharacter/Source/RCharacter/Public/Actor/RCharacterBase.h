@@ -54,6 +54,8 @@ public:
 	virtual void InitializeAttributes(const TMap<FGameplayTag, float>& Attributes);
 	virtual void InitializeTags(const TMap<FGameplayTag, float>& Attributes);
 
+	virtual void DeinitializeCharacter();
+
 
 
 	// ~ ACharacter

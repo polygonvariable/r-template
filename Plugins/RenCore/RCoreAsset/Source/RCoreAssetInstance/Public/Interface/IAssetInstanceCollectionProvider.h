@@ -1,0 +1,46 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+// Engine Headers
+#include "UObject/Interface.h"
+
+// Generated Headers
+#include "IAssetInstanceCollectionProvider.generated.h"
+
+// Module Macros
+#define RCORE_API RCOREASSETINSTANCE_API
+
+// Forward Declarations
+class IAssetInstanceCollection;
+
+
+
+UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
+class UAssetInstanceCollectionProvider : public UInterface
+{
+
+	GENERATED_BODY()
+
+};
+
+/**
+ *
+ */
+class RCORE_API IAssetInstanceCollectionProvider
+{
+
+	GENERATED_BODY()
+
+public:
+
+	virtual IAssetInstanceCollection* GetInstanceCollection(const FName& CollectionId) const = 0;
+	virtual FPrimaryAssetType GetSupportedAssetType() const = 0;
+	virtual FName GetDefaultCollectionId() const = 0;
+
+};
+
+
+// Module Macros
+#undef RCORE_API
+

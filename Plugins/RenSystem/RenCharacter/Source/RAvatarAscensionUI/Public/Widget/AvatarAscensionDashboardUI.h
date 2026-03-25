@@ -2,9 +2,8 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
+#include "Definition/AscensionData.h"
 #include "Widget/AssetDashboardUI.h"
 
 // Generated Headers
@@ -45,7 +44,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	bool bAutoRefresh = false;
 
-	const IAscensionProvider* ActiveInstanceAscension = nullptr;
+	FAscensionData AscensionData;
+
+	const IAscensionProvider* ActiveAscensionProvider = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<UAvatarAscensionSubsystem> AscensionSubsystem = nullptr;
@@ -86,8 +87,8 @@ protected:
 	void HandleRankUp();
 
 	// ~ UAssetDashboardUI
-	virtual void SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
-	virtual void SetSecondaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const URPrimaryDataAsset* Asset) override;
+	virtual void SetSecondaryDetail(const UAssetEntry* Entry) override;
 	// ~ End of UAssetDashboardUI
 
 	// ~ UUserWidget

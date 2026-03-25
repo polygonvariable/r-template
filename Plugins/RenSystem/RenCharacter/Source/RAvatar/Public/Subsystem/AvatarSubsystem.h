@@ -6,9 +6,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 
 // Project Headers
-#include "Definition/Runtime/AvatarInstance.h"
-#include "Definition/TaskType.h"
-#include "Interface/IAssetInstance.h"
+#include "Interface/IAssetInstanceCollectionProvider.h"
 
 // Generated Headers
 #include "AvatarSubsystem.generated.h"
@@ -36,12 +34,11 @@ class UAvatarSubsystem : public UGameInstanceSubsystem, public IAssetInstanceCol
 public:
 
 	RSYSTEM_API UAvatarStorage* GetAvatarCollection() const;
-	RSYSTEM_API UAvatarStorage* GetAvatarCollection(const FName& CollectionId) const;
 
 	// ~ IAssetInstanceCollectionProvider
-	RSYSTEM_API virtual IAssetInstanceCollection* GetInstanceCollection(const FName& CollectionId) const override;
-	RSYSTEM_API virtual FPrimaryAssetType GetSupportedAssetType() const override;
-	RSYSTEM_API virtual FName GetDefaultCollectionId() const override;
+	virtual IAssetInstanceCollection* GetInstanceCollection(const FName& CollectionId) const override;
+	virtual FPrimaryAssetType GetSupportedAssetType() const override;
+	virtual FName GetDefaultCollectionId() const override;
 	// ~ End of IAssetInstanceCollectionProvider
 
 protected:

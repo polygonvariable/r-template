@@ -5,12 +5,8 @@
 // Engine Headers
 #include "Engine/DataAsset.h"
 
-// Project Headers
-
 // Generated Headers
 #include "RPrimaryDataAsset.generated.h"
-
-// Forward Declarations
 
 
 
@@ -25,13 +21,13 @@ class URPrimaryDataAsset : public UPrimaryDataAsset
 
 public:
 
-	UPROPERTY(EditDefaultsOnly, AssetRegistrySearchable)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, AssetRegistrySearchable)
 	FText DisplayName = FText::GetEmpty();
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FText Description = FText::GetEmpty();
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSoftObjectPtr<UTexture2D> Icon = nullptr;
 
 };

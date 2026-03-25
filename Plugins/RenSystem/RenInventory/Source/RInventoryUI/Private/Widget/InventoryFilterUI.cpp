@@ -17,7 +17,7 @@
 
 
 
-void UInventoryFilterUI::SetPrimaryDetail(const UAssetEntry* Entry, const URPrimaryDataAsset* Asset)
+void UInventoryFilterUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
 {
 	if (!IsValid(AssetManager) || !IsValid(FilterRule))
 	{
